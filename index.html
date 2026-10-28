@@ -122,7 +122,6 @@
             box-shadow: 0 0 20px rgba(255, 0, 127, 0.5);
         }
 
-        /* BUSCADOR DE CANCIONES */
         .search-container {
             width: 100%; max-width: 600px; margin-bottom: 1.5rem; position: relative;
         }
@@ -275,11 +274,11 @@
         </div>
     </div>
 
-    <!-- BARRA DE BÚSQUEDA INTEGRADA -->
+    <!-- BARRA DE BÚSQUEDA -->
     <div class="search-container">
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" id="song-search-input" class="search-input" placeholder="Buscar canción por título..." oninput="handleSearchInput()" onkeydown="handleSearchKeyDown(event)">
+            <input type="text" id="song-search-input" class="search-input" placeholder="Buscar canción en todo el catálogo..." oninput="handleSearchInput()" onkeydown="handleSearchKeyDown(event)">
             <button id="clear-search-btn" class="clear-search-btn" onclick="clearSearch()">&times;</button>
         </div>
     </div>
@@ -457,16 +456,20 @@
             fetchSongsFromCloud();
         }
 
-        // Filtra canciones por Categoría y Texto del Buscador
+        // BÚSQUEDA GLOBAL: Si hay texto de búsqueda, ignoramos temporalmente el filtro de categoría para buscar en todo el catálogo
         function getFilteredSongs() {
             return songsCache.filter(song => {
                 const matchesGenre = (currentFilter === 'all' || song.genre === currentFilter);
                 const matchesQuery = !searchQuery || song.title.toLowerCase().includes(searchQuery.toLowerCase()) || song.genre.toLowerCase().includes(searchQuery.toLowerCase());
-                return matchesGenre && matchesQuery;
+                
+                // Si estamos buscando activamente, el buscador manda sobre todo el catálogo
+                if (searchQuery) {
+                    return matchesQuery;
+                }
+                return matchesGenre;
             });
         }
 
-        // Funciones del Buscador
         function handleSearchInput() {
             const input = document.getElementById('song-search-input');
             const clearBtn = document.getElementById('clear-search-btn');
@@ -477,12 +480,27 @@
             renderApp();
         }
 
+        // Al pulsar Enter al buscar, si el resultado pertenece a otra categoría, saltamos automáticamente a ella
         function handleSearchKeyDown(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 const filtered = getFilteredSongs();
                 if (filtered.length > 0) {
-                    loadSongToPlayer(0);
+                    const targetSong = filtered[0];
+                    
+                    // Si la canción encontrada está en otra categoría distinta a la actual (y no estamos en 'all'), saltamos a esa categoría
+                    if (currentFilter !== 'all' && targetSong.genre !== currentFilter) {
+                        currentFilter = targetSong.genre;
+                        updateCategoryUIButtons();
+                    }
+
+                    // Encontramos el índice exacto de la canción dentro de su categoría/catálogo actualizado
+                    const activeList = getFilteredSongs();
+                    const exactIndex = activeList.findIndex(s => s.id === targetSong.id);
+                    
+                    if (exactIndex !== -1) {
+                        loadSongToPlayer(exactIndex);
+                    }
                 }
             }
         }
@@ -495,6 +513,17 @@
             clearBtn.style.display = 'none';
             currentTrackIndex = 0;
             renderApp();
+        }
+
+        // Sincroniza visualmente los botones de las categorías con la variable currentFilter
+        function updateCategoryUIButtons() {
+            document.querySelectorAll('.cat-btn').forEach(b => {
+                if (b.getAttribute('data-filter') === currentFilter) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
         }
 
         function loadSongToPlayer(index) {
@@ -631,6 +660,15 @@
                 document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
                 currentFilter = e.target.getAttribute('data-filter');
+                
+                // Si cambias de categoría a mano, limpiamos la barra de búsqueda para explorar libremente
+                const searchInput = document.getElementById('song-search-input');
+                if (searchInput.value) {
+                    searchInput.value = '';
+                    searchQuery = '';
+                    document.getElementById('clear-search-btn').style.display = 'none';
+                }
+
                 currentTrackIndex = 0;
                 renderApp();
             });
