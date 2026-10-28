@@ -385,6 +385,263 @@
             .container.list-view .song-header { flex-direction: column; align-items: flex-start; }
             .container.list-view .song-actions-row { width: 100%; }
         }
+    
+        /* ===== IKA EXPERIENCE: atmósfera luminosa y musical ===== */
+        :root {
+            --ika-cyan: #35f5ff;
+            --ika-pink: #ff35b5;
+            --ika-violet: #9b5cff;
+            --ika-glow-cyan: 0 0 12px rgba(53,245,255,.55), 0 0 38px rgba(53,245,255,.22);
+            --ika-glow-pink: 0 0 12px rgba(255,53,181,.5), 0 0 38px rgba(255,53,181,.2);
+        }
+
+        body {
+            isolation: isolate;
+            background-color: #03040a;
+            background-image:
+                radial-gradient(ellipse at 8% 12%, rgba(0,240,255,.22), transparent 34%),
+                radial-gradient(ellipse at 92% 24%, rgba(255,0,127,.20), transparent 32%),
+                radial-gradient(ellipse at 52% 100%, rgba(105,49,255,.19), transparent 42%),
+                linear-gradient(to right, rgba(255,255,255,.025) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,.025) 1px, transparent 1px);
+            background-size: auto, auto, auto, 44px 44px, 44px 44px;
+        }
+
+        .ika-aurora {
+            position: fixed; inset: -18%;
+            z-index: -3; pointer-events: none; overflow: hidden;
+            background:
+                radial-gradient(ellipse at 22% 34%, rgba(0,240,255,.15), transparent 27%),
+                radial-gradient(ellipse at 72% 42%, rgba(255,0,127,.14), transparent 30%),
+                radial-gradient(ellipse at 52% 78%, rgba(116,65,255,.13), transparent 28%);
+            filter: blur(24px);
+            animation: ikaAuroraDrift 22s ease-in-out infinite alternate;
+            transform: translateZ(0);
+        }
+
+        .ika-aurora::before, .ika-aurora::after {
+            content: ""; position: absolute; width: 55vw; height: 55vw; min-width: 340px; min-height: 340px;
+            border-radius: 50%; filter: blur(55px); opacity: .48; mix-blend-mode: screen;
+        }
+        .ika-aurora::before {
+            left: -4%; top: 4%;
+            background: radial-gradient(circle, rgba(0,240,255,.28), rgba(0,240,255,0) 68%);
+            animation: ikaOrbOne 18s ease-in-out infinite alternate;
+        }
+        .ika-aurora::after {
+            right: -5%; bottom: -4%;
+            background: radial-gradient(circle, rgba(255,0,127,.25), rgba(255,0,127,0) 68%);
+            animation: ikaOrbTwo 24s ease-in-out infinite alternate;
+        }
+        @keyframes ikaAuroraDrift {
+            0% { transform: translate3d(-1.5%, -1%, 0) scale(1); }
+            100% { transform: translate3d(1.5%, 1.5%, 0) scale(1.08); }
+        }
+        @keyframes ikaOrbOne {
+            0% { transform: translate(0,0) scale(.85); }
+            100% { transform: translate(18vw,10vh) scale(1.18); }
+        }
+        @keyframes ikaOrbTwo {
+            0% { transform: translate(0,0) scale(1); }
+            100% { transform: translate(-16vw,-12vh) scale(.82); }
+        }
+
+        .ika-particle-field {
+            position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden;
+        }
+        .ika-particle {
+            position: absolute; bottom: -24px; left: var(--x);
+            width: var(--size); height: var(--size); border-radius: 50%;
+            background: var(--particle-color, var(--ika-cyan));
+            box-shadow: 0 0 8px currentColor, 0 0 18px currentColor;
+            opacity: 0; animation: ikaFloatUp var(--duration) linear var(--delay) infinite;
+        }
+        @keyframes ikaFloatUp {
+            0% { transform: translate3d(0,0,0) scale(.6); opacity: 0; }
+            12% { opacity: var(--opacity, .55); }
+            78% { opacity: calc(var(--opacity, .55) * .7); }
+            100% { transform: translate3d(var(--drift),-110vh,0) scale(1.25); opacity: 0; }
+        }
+
+        header {
+            position: relative;
+            animation: ikaHeaderIn .9s cubic-bezier(.2,.8,.2,1) both;
+        }
+        @keyframes ikaHeaderIn {
+            from { opacity: 0; transform: translateY(18px) scale(.985); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .brand-badge {
+            position: relative;
+            overflow: hidden;
+            border-color: rgba(53,245,255,.9);
+            background: linear-gradient(110deg, rgba(0,240,255,.13), rgba(155,92,255,.13), rgba(255,53,181,.13));
+            box-shadow: var(--ika-glow-cyan);
+        }
+        .brand-badge::after {
+            content: ""; position: absolute; top: -60%; bottom: -60%; left: -40%; width: 25%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
+            transform: rotate(22deg); animation: ikaBadgeSweep 5s ease-in-out infinite;
+        }
+        @keyframes ikaBadgeSweep {
+            0%, 62% { left: -40%; }
+            100% { left: 130%; }
+        }
+        header h1 {
+            background-size: 220% 220%;
+            animation: ikaTitleFlow 7s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 20px rgba(0,240,255,.38)) drop-shadow(0 0 38px rgba(255,0,127,.18));
+            letter-spacing: -.035em;
+        }
+        @keyframes ikaTitleFlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        .main-player-section {
+            isolation: isolate;
+            border: 1px solid rgba(255,53,181,.8);
+            background: linear-gradient(135deg, rgba(16,18,33,.92), rgba(13,11,28,.91));
+            box-shadow: 0 0 30px rgba(255,0,127,.22), 0 0 70px rgba(0,240,255,.10), inset 0 0 40px rgba(255,0,127,.09);
+            transition: border-color .5s ease, box-shadow .5s ease, transform .5s ease;
+        }
+        .main-player-section::before {
+            content: ""; position: absolute; inset: -1px; z-index: -2; pointer-events: none;
+            background: var(--ika-current-cover, none) center/cover no-repeat;
+            opacity: .17; filter: blur(28px) saturate(1.5); transform: scale(1.12);
+            transition: background-image .5s ease, opacity .5s ease;
+        }
+        .main-player-section::after {
+            content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+            background: linear-gradient(120deg, rgba(0,240,255,.075), transparent 38%, rgba(255,0,127,.075));
+            opacity: .9;
+        }
+        .main-player-section.ika-track-selected {
+            border-color: rgba(53,245,255,.92);
+            box-shadow: 0 0 28px rgba(0,240,255,.24), 0 0 68px rgba(255,0,127,.17), inset 0 0 42px rgba(0,240,255,.08);
+        }
+        .main-player-header h2 {
+            min-width: 0;
+            text-shadow: 0 0 18px rgba(53,245,255,.28);
+        }
+        #current-song-title {
+            display: inline-block;
+            text-align: left;
+            overflow-wrap: anywhere;
+            animation: ikaTrackReveal .55s cubic-bezier(.2,.8,.2,1) both;
+        }
+        @keyframes ikaTrackReveal {
+            from { opacity: 0; transform: translateY(7px); filter: blur(5px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+        .eq-bars {
+            height: 28px; gap: 4px; flex-shrink: 0;
+            filter: drop-shadow(0 0 7px rgba(53,245,255,.55));
+        }
+        .eq-bar {
+            width: 4px; min-height: 3px;
+            background: linear-gradient(to top, var(--ika-violet), var(--ika-cyan));
+            box-shadow: 0 0 8px rgba(53,245,255,.45);
+        }
+        .eq-bar:nth-child(3), .eq-bar:nth-child(4) {
+            background: linear-gradient(to top, var(--ika-pink), #ffb1e4);
+        }
+        body.ika-track-selected .eq-bar { animation-duration: .35s; }
+        .player-frame-wrapper {
+            position: relative;
+            border: 1px solid rgba(53,245,255,.82);
+            box-shadow: 0 0 18px rgba(0,240,255,.20), 0 0 42px rgba(255,0,127,.10);
+            background: radial-gradient(ellipse at center, rgba(0,240,255,.12), #05050a 70%);
+            transition: box-shadow .4s ease, border-color .4s ease;
+        }
+        .main-player-section.ika-track-selected .player-frame-wrapper {
+            box-shadow: 0 0 22px rgba(0,240,255,.28), 0 0 48px rgba(255,0,127,.14);
+        }
+        .player-frame-wrapper::after {
+            content: ""; position: absolute; pointer-events: none; inset: 0;
+            border-radius: inherit; border: 1px solid rgba(255,255,255,.08);
+            background: linear-gradient(115deg, rgba(255,255,255,.045), transparent 24%, transparent 76%, rgba(255,255,255,.035));
+        }
+
+        .control-btn, .cat-btn, .view-btn, .load-to-player-btn, .like-btn, .share-btn {
+            position: relative; overflow: hidden;
+            transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease;
+        }
+        .control-btn::after, .cat-btn::after, .view-btn::after, .load-to-player-btn::after {
+            content: ""; position: absolute; inset: 0; pointer-events: none;
+            background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.13) 48%, transparent 72%);
+            transform: translateX(-130%); transition: transform .55s ease;
+        }
+        .control-btn:hover::after, .cat-btn:hover::after, .view-btn:hover::after, .load-to-player-btn:hover::after {
+            transform: translateX(130%);
+        }
+        .control-btn.active-mode { box-shadow: 0 0 18px rgba(255,53,181,.3); }
+        .search-box:focus-within { filter: drop-shadow(0 0 16px rgba(53,245,255,.16)); }
+        .categories-controls-wrapper, .search-container, .container {
+            animation: ikaContentIn .7s ease both;
+        }
+        .search-container { animation-delay: .12s; }
+        .categories-controls-wrapper { animation-delay: .18s; }
+        @keyframes ikaContentIn {
+            from { opacity: 0; transform: translateY(13px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .song-card {
+            border-color: rgba(255,255,255,.11);
+            background: linear-gradient(145deg, rgba(20,23,39,.94), rgba(10,12,22,.96));
+            box-shadow: 0 8px 24px rgba(0,0,0,.2);
+            transform: translateY(0);
+            will-change: transform;
+        }
+        .song-card.ika-card-in {
+            animation: ikaCardIn .52s cubic-bezier(.2,.75,.25,1) both;
+            animation-delay: var(--ika-card-delay, 0ms);
+        }
+        @keyframes ikaCardIn {
+            from { opacity: 0; transform: translateY(18px) scale(.975); filter: blur(3px); }
+            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+        .song-card:hover {
+            border-color: rgba(53,245,255,.55);
+            box-shadow: 0 12px 34px rgba(0,240,255,.09), 0 0 24px rgba(255,0,127,.08);
+        }
+        .song-card.now-playing-card {
+            border-color: rgba(53,245,255,.82);
+            box-shadow: 0 0 0 1px rgba(53,245,255,.12), 0 0 25px rgba(0,240,255,.12), 0 0 36px rgba(255,0,127,.07);
+        }
+        .cover-container { background: linear-gradient(135deg, rgba(0,240,255,.1), rgba(255,0,127,.1)); }
+        .cover-img { transition: transform .7s cubic-bezier(.2,.8,.2,1), filter .7s ease; }
+        .song-card:hover .cover-img { filter: saturate(1.16) contrast(1.04); }
+        .song-genre { text-shadow: 0 0 12px rgba(0,240,255,.16); }
+
+        .ika-live-indicator {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 5px 10px; margin-left: 2px; border-radius: 30px;
+            border: 1px solid rgba(53,245,255,.3); background: rgba(0,240,255,.07);
+            color: #a8fbff; font-size: .68rem; font-weight: 800; letter-spacing: .12em;
+            text-transform: uppercase; white-space: nowrap;
+        }
+        .ika-live-dot {
+            width: 7px; height: 7px; border-radius: 50%; background: var(--ika-cyan);
+            box-shadow: 0 0 10px var(--ika-cyan); animation: ikaDotPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes ikaDotPulse { 50% { opacity: .45; transform: scale(.72); } }
+
+        @media (max-width: 640px) {
+            body { padding: 1.3rem .8rem 5rem; }
+            .main-player-section { padding: 1.1rem; border-radius: 20px; }
+            .main-player-header { align-items: flex-start; }
+            .main-player-header h2 { font-size: 1.08rem; }
+            .ika-live-indicator { font-size: .6rem; padding: 4px 8px; }
+            .player-controls-bar { gap: 8px; }
+            .control-btn { padding: .68rem .95rem; font-size: .82rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important; animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important; transition-duration: .01ms !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -532,7 +789,7 @@
         let currentPlayingSongId = null;
         let isShuffleActive = false;
         let isAutoChainActive = true;
-        let isListView = false; // Estado para controlar si estamos en modo lista o grid
+        let isListView = false;
         let songsCache = [];
         let radioTimer = null;
 
@@ -890,7 +1147,6 @@
                 container.appendChild(card);
             });
 
-            // Mantener la vista seleccionada al volver a renderizar
             if (isListView) {
                 container.classList.add('list-view');
             } else {
@@ -994,6 +1250,115 @@
         function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
 
         fetchSongsFromCloud();
+    </script>
+
+    <script>
+    /* Capa visual independiente: atmósfera luminosa y animaciones */
+    (function () {
+        const body = document.body;
+        const aurora = document.createElement('div');
+        aurora.className = 'ika-aurora';
+        aurora.setAttribute('aria-hidden', 'true');
+        body.prepend(aurora);
+
+        const particleField = document.createElement('div');
+        particleField.className = 'ika-particle-field';
+        particleField.setAttribute('aria-hidden', 'true');
+        body.prepend(particleField);
+
+        const particleCount = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 24;
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('span');
+            particle.className = 'ika-particle';
+            particle.style.setProperty('--x', (Math.random() * 100) + '%');
+            particle.style.setProperty('--size', (2 + Math.random() * 3) + 'px');
+            particle.style.setProperty('--duration', (13 + Math.random() * 19) + 's');
+            particle.style.setProperty('--delay', (-Math.random() * 28) + 's');
+            particle.style.setProperty('--drift', ((Math.random() * 140) - 70) + 'px');
+            particle.style.setProperty('--opacity', (0.2 + Math.random() * 0.5).toFixed(2));
+            particle.style.setProperty('--particle-color', Math.random() > 0.5 ? '#35f5ff' : '#ff35b5');
+            particleField.appendChild(particle);
+        }
+
+        const player = document.getElementById('main-player-box');
+        const title = document.getElementById('current-song-title');
+        const genre = document.getElementById('current-song-genre');
+        const eq = document.querySelector('.eq-bars');
+
+        if (eq && !document.querySelector('.ika-live-indicator')) {
+            const indicator = document.createElement('span');
+            indicator.className = 'ika-live-indicator';
+            indicator.innerHTML = '<span class="ika-live-dot"></span><span id="ika-live-label">ESTUDIO IKА</span>';
+            indicator.setAttribute('aria-label', 'Indicador visual del reproductor');
+            const heading = document.querySelector('.main-player-header h2');
+            if (heading) heading.appendChild(indicator);
+        }
+
+        function animateCards() {
+            const cards = document.querySelectorAll('#songs-container .song-card');
+            cards.forEach((card, index) => {
+                card.classList.remove('ika-card-in');
+                card.style.setProperty('--ika-card-delay', Math.min(index, 12) * 38 + 'ms');
+                void card.offsetWidth;
+                card.classList.add('ika-card-in');
+            });
+        }
+
+        const songContainer = document.getElementById('songs-container');
+        if (songContainer) {
+            const observer = new MutationObserver(() => {
+                requestAnimationFrame(() => {
+                    animateCards();
+                    refreshPlayerMood();
+                });
+            });
+            observer.observe(songContainer, { childList: true });
+        }
+
+        let lastTitle = '';
+        function refreshPlayerMood() {
+            const currentTitle = title ? title.textContent.trim() : '';
+            const currentGenre = genre ? genre.textContent.trim() : '';
+            if (currentTitle && currentTitle !== 'Cargando catálogo...' && currentTitle !== lastTitle) {
+                lastTitle = currentTitle;
+                body.classList.add('ika-track-selected');
+                if (player) {
+                    player.classList.add('ika-track-selected');
+                    const activeCard = document.querySelector('#songs-container .now-playing-card .cover-img');
+                    if (activeCard && activeCard.src) {
+                        player.style.setProperty('--ika-current-cover', 'url("' + activeCard.src.replace(/"/g, '\\"') + '")');
+                    } else {
+                        player.style.removeProperty('--ika-current-cover');
+                    }
+                }
+                if (eq) {
+                    eq.querySelectorAll('.eq-bar').forEach((bar, index) => {
+                        bar.style.animationDelay = (index * -0.09) + 's';
+                    });
+                }
+                const liveLabel = document.getElementById('ika-live-label');
+                if (liveLabel) liveLabel.textContent = 'EN ANTENA';
+                if (title) {
+                    title.style.animation = 'none';
+                    void title.offsetWidth;
+                    title.style.animation = '';
+                }
+            }
+            if (currentGenre && currentGenre !== '---' && player) {
+                player.dataset.genre = currentGenre;
+            }
+        }
+
+        if (title) {
+            new MutationObserver(refreshPlayerMood).observe(title, { childList: true, characterData: true, subtree: true });
+        }
+        if (genre) {
+            new MutationObserver(refreshPlayerMood).observe(genre, { childList: true, characterData: true, subtree: true });
+        }
+
+        requestAnimationFrame(animateCards);
+        refreshPlayerMood();
+    })();
     </script>
 </body>
 </html>
