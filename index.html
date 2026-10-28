@@ -68,12 +68,15 @@
             padding: 6px 16px; border-radius: 30px; font-weight: 700; font-size: 0.9rem;
             display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
         }
-        .contact-btn {
+        .contact-btn, .about-btn {
             background: rgba(0, 240, 255, 0.1); border: 1px solid var(--accent-primary); color: var(--accent-primary);
             padding: 6px 16px; border-radius: 30px; font-weight: 700; font-size: 0.9rem; text-decoration: none;
-            display: inline-flex; align-items: center; gap: 8px; transition: all 0.25s ease;
+            display: inline-flex; align-items: center; gap: 8px; transition: all 0.25s ease; cursor: pointer;
         }
-        .contact-btn:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); transform: translateY(-2px); }
+        .contact-btn:hover, .about-btn:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); transform: translateY(-2px); }
+
+        .about-btn { background: rgba(255, 0, 127, 0.1); border-color: var(--accent-secondary); color: var(--accent-secondary); }
+        .about-btn:hover { background: var(--accent-secondary); color: #fff; box-shadow: 0 0 20px rgba(255, 0, 127, 0.6); }
 
         .main-player-section {
             width: 100%; max-width: 900px;
@@ -225,6 +228,22 @@
             background: #121422; border: 2px solid var(--accent-primary); padding: 2.2rem;
             border-radius: 24px; max-width: 500px; width: 100%; position: relative; box-shadow: 0 0 45px rgba(0,240,255,0.4);
         }
+        
+        .about-modal-content {
+            border-color: var(--accent-secondary);
+            box-shadow: 0 0 45px rgba(255, 0, 127, 0.4);
+            text-align: center;
+        }
+        .about-modal-content h2 {
+            font-size: 1.8rem; margin-bottom: 1.2rem;
+            background: linear-gradient(135deg, #fff 20%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .about-modal-content p {
+            color: var(--text-muted); font-size: 1.05rem; line-height: 1.6; margin-bottom: 1.2rem;
+        }
+        .about-modal-content p strong { color: #fff; }
+
         .close-modal { position: absolute; top: 1.2rem; right: 1.2rem; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
         .close-modal:hover { color: var(--danger); }
         .form-group { margin-bottom: 1.2rem; }
@@ -246,6 +265,9 @@
                 <i class="fa-solid fa-heart" style="color: var(--accent-secondary);"></i>
                 <span id="global-likes-count">0</span> Likes Totales
             </div>
+            <button class="about-btn" onclick="openAboutModal()">
+                <i class="fa-solid fa-circle-info"></i> Sobre IkaMusicStudios
+            </button>
             <a href="mailto:contacto@ikamusicstudios.com" class="contact-btn">
                 <i class="fa-solid fa-envelope"></i> Contacto
             </a>
@@ -299,6 +321,18 @@
     <button class="admin-trigger" onclick="checkAdminPassword()">
         <i class="fa-solid fa-shield-halved"></i> <span id="admin-btn-text">Admin</span>
     </button>
+
+    <!-- MODAL SOBRE IKAMUSICSTUDIOS -->
+    <div class="modal" id="about-modal">
+        <div class="modal-content about-modal-content">
+            <button class="close-modal" onclick="closeModal('about-modal')">&times;</button>
+            <h2>Sobre IkaMusicStudios</h2>
+            <p>Somos <strong>dos amigos con una misma obsesión: la música.</strong> Si has acabado en este rincón de la red, lo más probable es que compartas esa misma pasión con nosotros.</p>
+            <p>Disfrutamos componiendo, produciendo y dando forma a nuestras canciones aprovechando al máximo las herramientas y la tecnología de hoy en día. Sin grandes sellos, sin trampa ni cartón.</p>
+            <p>No buscamos acumulaciones de <em>likes</em>, no perseguimos algoritmos ni vivimos de la monetización. Lo único que nos mueve es el <strong>placer del proceso creativo</strong> y las ganas de compartir lo que hacemos con quien quiera escucharlo.</p>
+            <p style="color: var(--accent-primary); font-weight: 700; margin-top: 1.5rem;">Sin publicidad, sin interrupciones y sin cortes... Solo pura pasión por la música.</p>
+        </div>
+    </div>
 
     <!-- MODAL ADMIN -->
     <div class="modal" id="admin-modal">
@@ -456,13 +490,11 @@
             fetchSongsFromCloud();
         }
 
-        // BÚSQUEDA GLOBAL: Si hay texto de búsqueda, ignoramos temporalmente el filtro de categoría para buscar en todo el catálogo
         function getFilteredSongs() {
             return songsCache.filter(song => {
                 const matchesGenre = (currentFilter === 'all' || song.genre === currentFilter);
                 const matchesQuery = !searchQuery || song.title.toLowerCase().includes(searchQuery.toLowerCase()) || song.genre.toLowerCase().includes(searchQuery.toLowerCase());
                 
-                // Si estamos buscando activamente, el buscador manda sobre todo el catálogo
                 if (searchQuery) {
                     return matchesQuery;
                 }
@@ -480,7 +512,6 @@
             renderApp();
         }
 
-        // Al pulsar Enter al buscar, si el resultado pertenece a otra categoría, saltamos automáticamente a ella
         function handleSearchKeyDown(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
@@ -488,13 +519,11 @@
                 if (filtered.length > 0) {
                     const targetSong = filtered[0];
                     
-                    // Si la canción encontrada está en otra categoría distinta a la actual (y no estamos en 'all'), saltamos a esa categoría
                     if (currentFilter !== 'all' && targetSong.genre !== currentFilter) {
                         currentFilter = targetSong.genre;
                         updateCategoryUIButtons();
                     }
 
-                    // Encontramos el índice exacto de la canción dentro de su categoría/catálogo actualizado
                     const activeList = getFilteredSongs();
                     const exactIndex = activeList.findIndex(s => s.id === targetSong.id);
                     
@@ -515,7 +544,6 @@
             renderApp();
         }
 
-        // Sincroniza visualmente los botones de las categorías con la variable currentFilter
         function updateCategoryUIButtons() {
             document.querySelectorAll('.cat-btn').forEach(b => {
                 if (b.getAttribute('data-filter') === currentFilter) {
@@ -661,7 +689,6 @@
                 e.target.classList.add('active');
                 currentFilter = e.target.getAttribute('data-filter');
                 
-                // Si cambias de categoría a mano, limpiamos la barra de búsqueda para explorar libremente
                 const searchInput = document.getElementById('song-search-input');
                 if (searchInput.value) {
                     searchInput.value = '';
@@ -673,6 +700,10 @@
                 renderApp();
             });
         });
+
+        function openAboutModal() {
+            document.getElementById('about-modal').style.display = 'flex';
+        }
 
         function checkAdminPassword() {
             if (isAdmin) {
