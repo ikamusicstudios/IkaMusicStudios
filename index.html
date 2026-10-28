@@ -41,7 +41,6 @@
             position: relative;
         }
 
-        /* 1. EFECTO DE PARTÍCULAS / POLVO ESTELAR DE FONDO */
         .stars-bg {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -105,7 +104,6 @@
         .about-btn { background: rgba(255, 0, 127, 0.1); border-color: var(--accent-secondary); color: var(--accent-secondary); }
         .about-btn:hover { background: var(--accent-secondary); color: #fff; box-shadow: 0 0 25px rgba(255, 0, 127, 0.7); }
 
-        /* 2. REPRODUCTOR CON PULSO RÍTMICO DINÁMICO */
         .main-player-section {
             width: 100%; max-width: 900px;
             background: var(--card-bg); border: 2px solid var(--accent-secondary);
@@ -126,7 +124,6 @@
         }
         .main-player-header h2 { font-size: 1.3rem; color: #fff; display: flex; align-items: center; gap: 12px; }
         
-        /* 3. ECUALIZADOR INTERACTIVO MÁS VIVO */
         .eq-bars { display: flex; align-items: flex-end; gap: 3px; height: 22px; }
         .eq-bar { width: 4px; background: var(--accent-primary); height: 20%; animation: eqBounce 0.5s infinite alternate ease-in-out; border-radius: 2px; }
         .eq-bar:nth-child(1) { animation-duration: 0.4s; }
@@ -186,10 +183,15 @@
         }
         .clear-search-btn:hover { color: var(--danger); }
 
-        .categories { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2.5rem; max-width: 900px; z-index: 2; }
+        .categories-controls-wrapper {
+            width: 100%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; 
+            flex-wrap: wrap; gap: 15px; margin-bottom: 2rem; z-index: 2;
+        }
+
+        .categories { display: flex; gap: 0.8rem; flex-wrap: wrap; }
         .cat-btn {
             background: rgba(22, 25, 38, 0.7); border: 1px solid var(--border-color); color: var(--text-muted);
-            padding: 0.75rem 1.8rem; border-radius: 30px; cursor: pointer; transition: all 0.3s ease; font-weight: 700; font-size: 0.95rem;
+            padding: 0.65rem 1.5rem; border-radius: 30px; cursor: pointer; transition: all 0.3s ease; font-weight: 700; font-size: 0.9rem;
             backdrop-filter: blur(5px);
         }
         .cat-btn:hover, .cat-btn.active { 
@@ -204,9 +206,54 @@
             box-shadow: 0 0 30px rgba(255, 0, 127, 0.7);
         }
 
-        .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; width: 100%; max-width: 1200px; z-index: 2; }
+        /* CONTROLES DE VISTA (GRID / LIST) */
+        .view-toggle-bar {
+            display: flex; gap: 8px; background: rgba(18, 20, 32, 0.8); border: 1px solid var(--border-color);
+            padding: 5px; border-radius: 30px; backdrop-filter: blur(5px);
+        }
+        .view-btn {
+            background: none; border: none; color: var(--text-muted); padding: 6px 14px; border-radius: 20px;
+            cursor: pointer; font-weight: 700; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+        }
+        .view-btn.active { background: var(--accent-primary); color: #000; box-shadow: 0 0 15px rgba(0, 240, 255, 0.5); }
+        .view-btn:hover:not(.active) { color: #fff; }
 
-        /* 4. TARJETAS CON EFECTO FLOTANTE (HOVER DINÁMICO) */
+        /* CONTENEDOR PRINCIPAL DE CANCIONES (GRID POR DEFECTO) */
+        .container { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; width: 100%; max-width: 1200px; z-index: 2; 
+        }
+
+        /* MODO LISTA */
+        .container.list-view {
+            display: flex; flex-direction: column; gap: 1rem;
+        }
+        .container.list-view .song-card {
+            flex-direction: row; align-items: center; justify-content: space-between; padding: 12px 20px;
+            height: auto;
+        }
+        .container.list-view .song-card:hover {
+            transform: translateX(6px) scale(1.01);
+        }
+        .container.list-view .cover-container {
+            width: 65px; height: 65px; border-radius: 12px; flex-shrink: 0;
+        }
+        .container.list-view .song-card-body {
+            flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; gap: 15px;
+        }
+        .container.list-view .song-header { margin-bottom: 0; flex-direction: row; align-items: center; gap: 15px; }
+        .container.list-view .song-info h3 { font-size: 1.1rem; margin-bottom: 2px; }
+        .container.list-view .song-stats-row { margin-bottom: 0; }
+        .container.list-view .song-actions-row { gap: 10px; }
+        .container.list-view .load-to-player-btn { padding: 0.5rem 1.2rem; flex: unset; }
+        .container.list-view .like-btn, .container.list-view .share-btn { padding: 0.5rem 0.9rem; }
+        .container.list-view .now-playing-badge {
+            top: 50% !important; left: -10px !important; transform: translateY(-50%); font-size: 0.6rem; padding: 3px 8px;
+        }
+        .container.list-view .new-badge {
+            position: relative; top: unset; right: unset; font-size: 0.65rem; padding: 2px 8px;
+        }
+
+        /* TARJETAS */
         .song-card {
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px;
             overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; 
@@ -246,7 +293,7 @@
         .cover-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
         .song-card:hover .cover-img { transform: scale(1.08); }
 
-        .song-card-body { padding: 1.4rem; }
+        .song-card-body { padding: 1.4rem; width: 100%; }
         .song-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem; }
         .song-info h3 { font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
         .song-genre {
@@ -329,6 +376,15 @@
             font-weight: 800; box-shadow: 0 0 25px rgba(0,240,255,0.6); z-index: 2000; transition: transform 0.3s ease;
         }
         .toast-notification.show { transform: translateX(-50%) translateY(0); }
+
+        /* Responsive para móvil en vista lista */
+        @media (max-width: 768px) {
+            .container.list-view .song-card { flex-direction: column; align-items: stretch; padding: 1rem; }
+            .container.list-view .cover-container { width: 100%; height: 160px; }
+            .container.list-view .song-card-body { padding: 1rem 0 0 0; flex-direction: column; align-items: stretch; gap: 10px; }
+            .container.list-view .song-header { flex-direction: column; align-items: flex-start; }
+            .container.list-view .song-actions-row { width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -384,14 +440,25 @@
         </div>
     </div>
 
-    <!-- CATEGORÍAS -->
-    <div class="categories" id="category-filters">
-        <button class="cat-btn active" data-filter="all">Todas</button>
-        <button class="cat-btn news-filter" data-filter="novedades"><i class="fa-solid fa-fire"></i> 🔥 Novedades</button>
-        <button class="cat-btn" data-filter="Pop / Flamenco">Pop / Flamenco</button>
-        <button class="cat-btn" data-filter="Rock">Rock</button>
-        <button class="cat-btn" data-filter="EDM">EDM</button>
-        <button class="cat-btn" data-filter="Miscelánea">Miscelánea</button>
+    <!-- CATEGORÍAS Y SELECTOR DE VISTA (GRID / LIST) -->
+    <div class="categories-controls-wrapper">
+        <div class="categories" id="category-filters">
+            <button class="cat-btn active" data-filter="all">Todas</button>
+            <button class="cat-btn news-filter" data-filter="novedades"><i class="fa-solid fa-fire"></i> 🔥 Novedades</button>
+            <button class="cat-btn" data-filter="Pop / Flamenco">Pop / Flamenco</button>
+            <button class="cat-btn" data-filter="Rock">Rock</button>
+            <button class="cat-btn" data-filter="EDM">EDM</button>
+            <button class="cat-btn" data-filter="Miscelánea">Miscelánea</button>
+        </div>
+
+        <div class="view-toggle-bar">
+            <button class="view-btn active" id="grid-view-btn" onclick="switchView('grid')" title="Vista en Cuadrícula">
+                <i class="fa-solid fa-border-all"></i> Grid
+            </button>
+            <button class="view-btn" id="list-view-btn" onclick="switchView('list')" title="Vista en Lista">
+                <i class="fa-solid fa-bars"></i> Lista
+            </button>
+        </div>
     </div>
 
     <div class="container" id="songs-container">
@@ -465,6 +532,7 @@
         let currentPlayingSongId = null;
         let isShuffleActive = false;
         let isAutoChainActive = true;
+        let isListView = false; // Estado para controlar si estamos en modo lista o grid
         let songsCache = [];
         let radioTimer = null;
 
@@ -658,6 +726,23 @@
             });
         }
 
+        function switchView(viewType) {
+            isListView = (viewType === 'list');
+            const container = document.getElementById('songs-container');
+            const gridBtn = document.getElementById('grid-view-btn');
+            const listBtn = document.getElementById('list-view-btn');
+
+            if (isListView) {
+                container.classList.add('list-view');
+                listBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+            } else {
+                container.classList.remove('list-view');
+                gridBtn.classList.add('active');
+                listBtn.classList.remove('active');
+            }
+        }
+
         function loadSongToPlayer(index) {
             const songs = getFilteredSongs();
             if (songs.length === 0) return;
@@ -670,8 +755,6 @@
 
             document.getElementById('current-song-title').innerText = song.title;
             document.getElementById('current-song-genre').innerText = song.genre;
-
-            // 5. TÍTULO DE LA PESTAÑA DINÁMICO (MARQUESINA / NOTA MUSICAL)
             document.title = `🎵 ${song.title} - IKAmusicstudios`;
 
             const frameWrapper = document.getElementById('frame-container');
@@ -806,6 +889,13 @@
                 `;
                 container.appendChild(card);
             });
+
+            // Mantener la vista seleccionada al volver a renderizar
+            if (isListView) {
+                container.classList.add('list-view');
+            } else {
+                container.classList.remove('list-view');
+            }
         }
 
         document.querySelectorAll('.cat-btn').forEach(btn => {
