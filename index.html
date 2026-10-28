@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IKAmusicstudios - Suno Showcase Cloud</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-color: #05060a;
+            --card-bg: rgba(18, 20, 32, 0.9);
+            --accent-primary: #00f0ff;
+            --accent-secondary: #ff007f;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.12);
+            --danger: #ff4757;
+            --gold: #ffd700;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.18) 0%, transparent 45%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 127, 0.18) 0%, transparent 45%),
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem 6rem 1rem;
+            overflow-x: hidden;
+        }
+
+        header { text-align: center; margin-top: 1rem; margin-bottom: 2rem; max-width: 900px; }
+
+        .brand-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(0, 240, 255, 0.1); border: 2px solid var(--accent-primary);
+            color: var(--accent-primary); padding: 8px 22px; border-radius: 50px;
+            font-size: 0.85rem; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase;
+            margin-bottom: 1rem; box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+        }
+
+        header h1 {
+            font-size: 3.5rem; font-weight: 900; line-height: 1.1;
+            background: linear-gradient(135deg, #ffffff 10%, var(--accent-primary) 50%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 20px rgba(0,240,255,0.4));
+        }
+
+        /* REPRODUCTOR PRINCIPAL */
+        .main-player-section {
+            width: 100%; max-width: 900px;
+            background: var(--card-bg); border: 2px solid var(--accent-secondary);
+            border-radius: 24px; padding: 1.8rem; margin-bottom: 2.5rem;
+            box-shadow: 0 0 40px rgba(255, 0, 127, 0.35), inset 0 0 30px rgba(255, 0, 127, 0.15);
+            backdrop-filter: blur(15px); text-align: center; position: relative; overflow: hidden;
+        }
+
+        .main-player-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 10px;
+        }
+        .main-player-header h2 { font-size: 1.3rem; color: #fff; display: flex; align-items: center; gap: 12px; }
+        
+        /* EQUALIZADOR NEÓN ANIMADO */
+        .eq-bars { display: flex; align-items: flex-end; gap: 3px; height: 22px; }
+        .eq-bar { width: 4px; background: var(--accent-primary); height: 20%; animation: eqBounce 0.8s infinite alternate ease-in-out; border-radius: 2px; }
+        .eq-bar:nth-child(2) { animation-delay: 0.15s; background: #00d8ff; }
+        .eq-bar:nth-child(3) { animation-delay: 0.3s; background: var(--accent-secondary); }
+        .eq-bar:nth-child(4) { animation-delay: 0.1s; background: #ff00bb; }
+        .eq-bar:nth-child(5) { animation-delay: 0.25s; background: var(--accent-primary); }
+
+        @keyframes eqBounce {
+            0% { height: 15%; }
+            100% { height: 100%; }
+        }
+
+        .player-frame-wrapper {
+            width: 100%; height: 160px; border-radius: 14px; overflow: hidden; background: #000; margin-bottom: 1.2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.8); border: 2px solid var(--accent-primary);
+        }
+        .player-frame-wrapper iframe { width: 100%; height: 100%; border: none; }
+
+        .player-controls-bar { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+        .control-btn {
+            background: rgba(22, 25, 38, 0.9); border: 1px solid var(--border-color); color: #fff;
+            padding: 0.75rem 1.5rem; border-radius: 50px; font-weight: 700; cursor: pointer; transition: all 0.25s ease;
+            display: flex; align-items: center; gap: 8px; font-size: 0.9rem;
+        }
+        .control-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); box-shadow: 0 0 20px rgba(0, 240, 255, 0.4); transform: translateY(-2px); }
+        .control-btn.primary-btn { background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: #000; border: none; font-weight: 800; }
+        .control-btn.primary-btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 0 30px rgba(255, 0, 127, 0.6); }
+
+        .control-btn.active-mode { 
+            border-color: var(--accent-secondary); color: var(--accent-secondary); background: rgba(255, 0, 127, 0.2); 
+            box-shadow: 0 0 20px rgba(255, 0, 127, 0.5);
+        }
+
+        /* CATEGORÍAS */
+        .categories { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2.5rem; max-width: 900px; }
+        .cat-btn {
+            background: rgba(22, 25, 38, 0.7); border: 1px solid var(--border-color); color: var(--text-muted);
+            padding: 0.75rem 1.8rem; border-radius: 30px; cursor: pointer; transition: all 0.3s ease; font-weight: 700; font-size: 0.95rem;
+            backdrop-filter: blur(5px);
+        }
+        .cat-btn:hover, .cat-btn.active { 
+            background: var(--accent-primary); color: #000; border-color: var(--accent-primary); 
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.6); transform: translateY(-3px); 
+        }
+
+        .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; width: 100%; max-width: 1200px; }
+
+        .song-card {
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px;
+            overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px); position: relative;
+        }
+        .song-card:hover { transform: translateY(-8px); border-color: var(--accent-primary); box-shadow: 0 12px 35px rgba(0, 240, 255, 0.3); }
+
+        .song-card.now-playing-card {
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 35px rgba(255, 215, 0, 0.5);
+        }
+        .now-playing-badge {
+            position: absolute; top: 12px; left: 12px; background: var(--gold); color: #000;
+            padding: 5px 14px; border-radius: 50px; font-size: 0.75rem; font-weight: 900; letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); z-index: 10; display: flex; align-items: center; gap: 6px;
+        }
+
+        .cover-container { width: 100%; height: 190px; position: relative; overflow: hidden; background: #111; }
+        .cover-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .song-card:hover .cover-img { transform: scale(1.08); }
+
+        .song-card-body { padding: 1.4rem; }
+        .song-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+        .song-info h3 { font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+        .song-genre {
+            font-size: 0.75rem; color: var(--accent-primary); text-transform: uppercase;
+            background: rgba(0, 240, 255, 0.15); padding: 4px 10px; border-radius: 6px; font-weight: 800; letter-spacing: 1px;
+        }
+
+        .load-to-player-btn {
+            width: 100%; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--accent-primary);
+            color: var(--accent-primary); padding: 0.85rem; border-radius: 12px; font-weight: 800;
+            cursor: pointer; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .load-to-player-btn:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 25px rgba(0, 240, 255, 0.6); }
+
+        .admin-trigger {
+            position: fixed; bottom: 25px; right: 25px; background: var(--card-bg);
+            border: 2px solid var(--accent-primary); color: var(--accent-primary); padding: 12px 24px;
+            border-radius: 50px; cursor: pointer; font-weight: 800; z-index: 900; box-shadow: 0 0 25px rgba(0,240,255,0.4);
+            backdrop-filter: blur(10px); transition: all 0.3s;
+        }
+        .admin-trigger:hover { background: var(--accent-primary); color: #000; transform: scale(1.05); box-shadow: 0 0 35px rgba(0,240,255,0.7); }
+
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.88); justify-content: center; align-items: center; padding: 1rem; z-index: 1000; backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            background: #121422; border: 2px solid var(--accent-primary); padding: 2.2rem;
+            border-radius: 24px; max-width: 500px; width: 100%; position: relative; box-shadow: 0 0 45px rgba(0,240,255,0.4);
+        }
+        .close-modal { position: absolute; top: 1.2rem; right: 1.2rem; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+        .close-modal:hover { color: var(--danger); }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 0.85rem; border-radius: 10px; border: 1px solid var(--border-color); background: #0a0b10; color: #fff; outline: none; font-size: 1rem;
+        }
+        .submit-btn { width: 100%; background: var(--accent-primary); color: #000; border: none; padding: 0.9rem; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand-badge"><i class="fa-solid fa-bolt"></i> Radio Master Active</div>
+        <h1>IKAmusicstudios</h1>
+        <p>Catálogo inteligente con salto automático por formato de tiempo.</p>
+    </header>
+
+    <!-- REPRODUCTOR PRINCIPAL -->
+    <div class="main-player-section" id="main-player-box">
+        <div class="main-player-header">
+            <h2>
+                <div class="eq-bars">
+                    <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                </div>
+                <span id="current-song-title">Cargando catálogo...</span>
+            </h2>
+            <span class="song-genre" id="current-song-genre">---</span>
+        </div>
+
+        <div class="player-frame-wrapper" id="frame-container"></div>
+
+        <div class="player-controls-bar">
+            <button class="control-btn" onclick="prevSong()"><i class="fa-solid fa-backward-step"></i> Anterior</button>
+            <button class="control-btn primary-btn" onclick="nextSong()"><i class="fa-solid fa-forward-step"></i> Siguiente Tema</button>
+            <button class="control-btn active-mode" id="auto-chain-btn" onclick="toggleAutoChain()"><i class="fa-solid fa-radio"></i> Radio Continua: ON</button>
+            <button class="control-btn" id="shuffle-btn" onclick="toggleShuffle()"><i class="fa-solid fa-shuffle"></i> Aleatorio: OFF</button>
+        </div>
+    </div>
+
+    <!-- CATEGORÍAS -->
+    <div class="categories" id="category-filters">
+        <button class="cat-btn active" data-filter="all">Todas</button>
+        <button class="cat-btn" data-filter="Pop / Flamenco">Pop / Flamenco</button>
+        <button class="cat-btn" data-filter="Rock">Rock</button>
+        <button class="cat-btn" data-filter="EDM">EDM</button>
+        <button class="cat-btn" data-filter="Miscelánea">Miscelánea</button>
+    </div>
+
+    <div class="container" id="songs-container">
+        <p style="text-align: center; color: var(--text-muted); grid-column: 1/-1;">Conectando con Supabase...</p>
+    </div>
+
+    <!-- BOTÓN ADMIN -->
+    <button class="admin-trigger" onclick="checkAdminPassword()">
+        <i class="fa-solid fa-shield-halved"></i> <span id="admin-btn-text">Admin</span>
+    </button>
+
+    <!-- MODAL ADMIN -->
+    <div class="modal" id="admin-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('admin-modal')">&times;</button>
+            <h2>Añadir Canción a la Nube</h2>
+            <form id="add-song-form" onsubmit="saveNewSong(event)">
+                <div class="form-group">
+                    <label>Título de la canción</label>
+                    <input type="text" id="song-title" required placeholder="Ej: Ritmo Gitano">
+                </div>
+                <div class="form-group">
+                    <label>Estilo / Género</label>
+                    <select id="song-genre" required>
+                        <option value="Pop / Flamenco">Pop / Flamenco</option>
+                        <option value="Rock">Rock</option>
+                        <option value="EDM">EDM</option>
+                        <option value="Miscelánea">Miscelánea</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Duración (Ej: 3:45)</label>
+                    <input type="text" id="song-duration" value="3:00" required placeholder="Ej: 3:35">
+                </div>
+                <div class="form-group">
+                    <label>URL de la Portada</label>
+                    <input type="url" id="song-cover" placeholder="https://cdn2.suno.ai/...">
+                </div>
+                <div class="form-group">
+                    <label>Enlace o Código Embed de Suno</label>
+                    <input type="text" id="song-embed" required placeholder="https://suno.com/embed/...">
+                </div>
+                <button type="submit" class="submit-btn">Guardar en Supabase</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://mouvifqcmdlypegtyjfw.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_5bqnQQBhY5QRnhGW9p7fuA_C4Y2crZP';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let isAdmin = false;
+        let currentFilter = 'all';
+        let currentTrackIndex = 0;
+        let isShuffleActive = false;
+        let isAutoChainActive = true;
+        let songsCache = [];
+        
+        let radioTimer = null;
+
+        function getEmbedUrl(inputUrl) {
+            if (!inputUrl) return '';
+            if (inputUrl.includes('<iframe')) {
+                const matchSrc = inputUrl.match(/src=["']([^"']+)["']/);
+                if (matchSrc) return matchSrc[1];
+            }
+            const clean = inputUrl.trim();
+            const songIdMatch = clean.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
+            return songIdMatch ? `https://suno.com/embed/${songIdMatch[0]}` : clean;
+        }
+
+        // Función para convertir "M:SS" o segundos a milisegundos restando 2 segundos de margen
+        function parseDurationToMilliseconds(durationInput) {
+            if (!durationInput) return 178000; // Por defecto ~3 min menos 2s
+            
+            let totalSeconds = 180;
+            const strVal = String(durationInput).trim();
+
+            if (strVal.includes(':')) {
+                const parts = strVal.split(':');
+                const mins = parseInt(parts[0]) || 0;
+                const secs = parseInt(parts[1]) || 0;
+                totalSeconds = (mins * 60) + secs;
+            } else {
+                totalSeconds = parseInt(strVal) || 180;
+            }
+
+            // Restamos 2 segundos automáticamente para que salte antes de que Suno repita
+            const targetSeconds = Math.max(5, totalSeconds - 2);
+            return targetSeconds * 1000;
+        }
+
+        async function fetchSongsFromCloud() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('songs')
+                    .select('*')
+                    .order('id', { ascending: false });
+
+                if (error) {
+                    console.error("Error de Supabase:", error);
+                    return;
+                }
+
+                songsCache = data || [];
+                if (songsCache.length === 0) {
+                    await insertDefaultSong();
+                    return;
+                }
+
+                renderApp();
+                if (songsCache.length > 0 && !document.getElementById('main-embed-frame')) {
+                    loadSongToPlayer(0);
+                }
+            } catch (err) {
+                console.error("Excepción:", err);
+            }
+        }
+
+        async function insertDefaultSong() {
+            const defaultSong = {
+                title: "La que manda",
+                genre: "Pop / Flamenco",
+                duration: "3:00",
+                cover_url: "https://cdn2.suno.ai/image_large_b514f38c-a411-49df-b62c-2e09361f90bc.jpeg",
+                embed_url: "https://suno.com/embed/b514f38c-a411-49df-b62c-2e09361f90bc"
+            };
+            await supabaseClient.from('songs').insert([defaultSong]);
+            fetchSongsFromCloud();
+        }
+
+        function getFilteredSongs() {
+            return currentFilter === 'all' ? songsCache : songsCache.filter(s => s.genre === currentFilter);
+        }
+
+        function loadSongToPlayer(index) {
+            const songs = getFilteredSongs();
+            if (songs.length === 0) return;
+            
+            currentTrackIndex = index;
+            const song = songs[currentTrackIndex];
+            
+            document.getElementById('current-song-title').innerText = song.title;
+            document.getElementById('current-song-genre').innerText = song.genre;
+
+            const frameWrapper = document.getElementById('frame-container');
+            let embedUrl = song.embed_url.split('&autoplay')[0].split('?autoplay')[0];
+            embedUrl += (embedUrl.includes('?') ? '&' : '?') + 'autoplay=true';
+
+            frameWrapper.innerHTML = `<iframe id="main-embed-frame" src="${embedUrl}" allow="autoplay; encrypted-media"></iframe>`;
+
+            renderApp();
+
+            if (radioTimer) {
+                clearTimeout(radioTimer);
+                radioTimer = null;
+            }
+
+            if (isAutoChainActive) {
+                // Convertimos el texto (ej: "3:45") a milisegundos restando 2s automáticamente
+                const targetMilliseconds = parseDurationToMilliseconds(song.duration);
+
+                radioTimer = setTimeout(() => {
+                    nextSong();
+                }, targetMilliseconds);
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextSong() {
+            const songs = getFilteredSongs();
+            if (songs.length === 0) return;
+
+            if (isShuffleActive) {
+                const randomIndex = Math.floor(Math.random() * songs.length);
+                loadSongToPlayer(randomIndex);
+            } else {
+                currentTrackIndex = (currentTrackIndex + 1) % songs.length;
+                loadSongToPlayer(currentTrackIndex);
+            }
+        }
+
+        function prevSong() {
+            const songs = getFilteredSongs();
+            if (songs.length === 0) return;
+            currentTrackIndex = (currentTrackIndex - 1 + songs.length) % songs.length;
+            loadSongToPlayer(currentTrackIndex);
+        }
+
+        function toggleAutoChain() {
+            isAutoChainActive = !isAutoChainActive;
+            const btn = document.getElementById('auto-chain-btn');
+            if (isAutoChainActive) {
+                btn.classList.add('active-mode');
+                btn.innerHTML = `<i class="fa-solid fa-radio"></i> Radio Continua: ON`;
+                loadSongToPlayer(currentTrackIndex);
+            } else {
+                btn.classList.remove('active-mode');
+                btn.innerHTML = `<i class="fa-solid fa-radio"></i> Radio Continua: OFF`;
+                if (radioTimer) {
+                    clearTimeout(radioTimer);
+                    radioTimer = null;
+                }
+            }
+        }
+
+        function toggleShuffle() {
+            isShuffleActive = !isShuffleActive;
+            const btn = document.getElementById('shuffle-btn');
+            if (isShuffleActive) {
+                btn.classList.add('active-mode');
+                btn.innerHTML = `<i class="fa-solid fa-shuffle"></i> Aleatorio: ON`;
+            } else {
+                btn.classList.remove('active-mode');
+                btn.innerHTML = `<i class="fa-solid fa-shuffle"></i> Aleatorio: OFF`;
+            }
+        }
+
+        function renderApp() {
+            const container = document.getElementById('songs-container');
+            container.innerHTML = '';
+            const songs = getFilteredSongs();
+
+            if (songs.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:var(--text-muted); grid-column:1/-1;">No hay canciones en este género todavía.</p>`;
+                return;
+            }
+
+            songs.forEach((song, index) => {
+                const isCurrentPlaying = (index === currentTrackIndex);
+                const card = document.createElement('div');
+                card.className = `song-card ${isCurrentPlaying ? 'now-playing-card' : ''}`;
+                
+                card.innerHTML = `
+                    ${isCurrentPlaying ? '<div class="now-playing-badge"><i class="fa-solid fa-headphones"></i> SONANDO</div>' : ''}
+                    <div class="cover-container">
+                        <img src="${song.cover_url || 'https://via.placeholder.com/300/111/00f0ff?text=IKA'}" class="cover-img" alt="${song.title}">
+                    </div>
+                    <div class="song-card-body">
+                        <div class="song-header">
+                            <div class="song-info">
+                                <span class="song-genre">${song.genre}</span>
+                                <h3>${song.title}</h3>
+                            </div>
+                            ${isAdmin ? `<button class="close-modal" style="position:relative;top:0;right:0;color:#ff4757;" onclick="deleteSong(${song.id})">&times;</button>` : ''}
+                        </div>
+                        <button class="load-to-player-btn" onclick="loadSongToPlayer(${index})">
+                            <i class="fa-solid fa-play"></i> Reproducir Tema
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentFilter = e.target.getAttribute('data-filter');
+                currentTrackIndex = 0;
+                renderApp();
+                loadSongToPlayer(0);
+            });
+        });
+
+        function checkAdminPassword() {
+            if (isAdmin) {
+                document.getElementById('admin-modal').style.display = 'flex';
+                return;
+            }
+            const password = prompt("Contraseña de administración:");
+            if (password === "ika123") {
+                isAdmin = true;
+                document.getElementById('admin-btn-text').innerText = "Panel Admin (Activo)";
+                document.getElementById('admin-modal').style.display = 'flex';
+                renderApp();
+            } else if (password !== null) {
+                alert("Contraseña incorrecta.");
+            }
+        }
+
+        async function saveNewSong(event) {
+            event.preventDefault();
+            
+            const newSong = {
+                title: document.getElementById('song-title').value,
+                genre: document.getElementById('song-genre').value,
+                duration: document.getElementById('song-duration').value, // Guarda tal cual el formato "3:45"
+                cover_url: document.getElementById('song-cover').value,
+                embed_url: getEmbedUrl(document.getElementById('song-embed').value)
+            };
+
+            const { error } = await supabaseClient.from('songs').insert([newSong]);
+
+            if (error) {
+                alert("Hubo un error al guardar: " + error.message);
+                return;
+            }
+
+            document.getElementById('add-song-form').reset();
+            closeModal('admin-modal');
+            alert("¡Canción guardada en Supabase con éxito!");
+            fetchSongsFromCloud();
+        }
+
+        async function deleteSong(id) {
+            if (confirm("¿Estás seguro de eliminar esta canción de la base de datos global?")) {
+                const { error } = await supabaseClient.from('songs').delete().eq('id', id);
+                if (error) {
+                    alert("Error al eliminar: " + error.message);
+                    return;
+                }
+                fetchSongsFromCloud();
+            }
+        }
+
+        function closeModal(modalId) { document.getElementById(modalId).style.display = 'none'; }
+
+        fetchSongsFromCloud();
+    </script>
+</body>
+</html>
