@@ -308,7 +308,7 @@
             <button class="about-btn" onclick="openAboutModal()">
                 <i class="fa-solid fa-circle-info"></i> Sobre IkaMusicStudios
             </button>
-            <a href="mailto:contacto@ikamusicstudios.com" class="contact-btn">
+            <a href="mailto:ikamusicstudios@gmail.com" class="contact-btn">
                 <i class="fa-solid fa-envelope"></i> Contacto
             </a>
         </div>
@@ -423,6 +423,7 @@
         let currentFilter = 'all';
         let searchQuery = '';
         let currentTrackIndex = 0;
+        let currentPlayingSongId = null; // ID estricto de la canción que suena
         let isShuffleActive = false;
         let isAutoChainActive = true;
         let songsCache = [];
@@ -477,7 +478,6 @@
                 updateGlobalLikesCount();
                 renderApp();
 
-                // Comprobar si viene un parámetro 'song' en la URL para reproducirla directamente
                 const urlParams = new URLSearchParams(window.location.search);
                 const targetSongId = parseInt(urlParams.get('song'));
                 
@@ -553,7 +553,6 @@
                 let matchesFilter = true;
 
                 if (currentFilter === 'novedades') {
-                    // Muestra únicamente las 3 primeras canciones (por ID descendiente son las más recientes)
                     matchesFilter = index < 3;
                 } else if (currentFilter !== 'all') {
                     matchesFilter = (song.genre === currentFilter);
@@ -626,6 +625,7 @@
             
             currentTrackIndex = index;
             const song = songs[currentTrackIndex];
+            currentPlayingSongId = song.id; // Asignamos el ID real de la canción en reproducción
             
             incrementSongViews(song.id);
 
@@ -726,8 +726,8 @@
             }
 
             songs.forEach((song, index) => {
-                const isCurrentPlaying = (index === currentTrackIndex);
-                // Si estamos en vista general y es uno de los 3 primeros por ID, marcar como novedad
+                // Comprobación exacta por ID de Supabase para el estado "SONANDO"
+                const isCurrentPlaying = (song.id === currentPlayingSongId);
                 const isNew = songsCache.findIndex(s => s.id === song.id) < 3;
 
                 const card = document.createElement('div');
@@ -771,7 +771,6 @@
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
                 
-                // Buscar el botón clicado (puede que hayan pulsado el icono interior)
                 const targetBtn = e.target.closest('.cat-btn');
                 targetBtn.classList.add('active');
                 
