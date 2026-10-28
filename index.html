@@ -162,14 +162,19 @@
         .song-card:hover .cover-img { transform: scale(1.08); }
 
         .song-card-body { padding: 1.4rem; }
-        .song-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+        .song-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem; }
         .song-info h3 { font-size: 1.25rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
         .song-genre {
             font-size: 0.75rem; color: var(--accent-primary); text-transform: uppercase;
             background: rgba(0, 240, 255, 0.15); padding: 4px 10px; border-radius: 6px; font-weight: 800; letter-spacing: 1px;
         }
 
-        .song-actions-row { display: flex; gap: 10px; margin-top: 10px; }
+        .song-stats-row {
+            display: flex; align-items: center; gap: 15px; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;
+        }
+        .song-stats-row span { display: inline-flex; align-items: center; gap: 5px; }
+
+        .song-actions-row { display: flex; gap: 10px; }
         
         .load-to-player-btn {
             flex: 1; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--accent-primary);
@@ -399,12 +404,27 @@
                 .eq('id', songId);
         }
 
+        async function incrementSongViews(songId) {
+            const song = songsCache.find(s => s.id === songId);
+            if (!song) return;
+
+            const newViews = (song.views || 0) + 1;
+            song.views = newViews;
+            renderApp();
+
+            await supabaseClient
+                .from('songs')
+                .update({ views: newViews })
+                .eq('id', songId);
+        }
+
         async function insertDefaultSong() {
             const defaultSong = {
                 title: "La que manda",
                 genre: "Pop / Flamenco",
                 duration: "3:00",
                 likes: 0,
+                views: 0,
                 cover_url: "https://cdn2.suno.ai/image_large_b514f38c-a411-49df-b62c-2e09361f90bc.jpeg",
                 embed_url: "https://suno.com/embed/b514f38c-a411-49df-b62c-2e09361f90bc"
             };
@@ -423,6 +443,9 @@
             currentTrackIndex = index;
             const song = songs[currentTrackIndex];
             
+            // Incrementar vistas en Supabase y localmente
+            incrementSongViews(song.id);
+
             document.getElementById('current-song-title').innerText = song.title;
             document.getElementById('current-song-genre').innerText = song.genre;
 
@@ -526,6 +549,9 @@
                             </div>
                             ${isAdmin ? `<button class="close-modal" style="position:relative;top:0;right:0;color:#ff4757;" onclick="deleteSong(${song.id})">&times;</button>` : ''}
                         </div>
+                        <div class="song-stats-row">
+                            <span><i class="fa-solid fa-eye" style="color: var(--accent-primary);"></i> ${song.views || 0} reproducciones</span>
+                        </div>
                         <div class="song-actions-row">
                             <button class="load-to-player-btn" onclick="loadSongToPlayer(${index})">
                                 <i class="fa-solid fa-play"></i> Reproducir
@@ -575,6 +601,7 @@
                 genre: document.getElementById('song-genre').value,
                 duration: document.getElementById('song-duration').value,
                 likes: 0,
+                views: 0,
                 cover_url: document.getElementById('song-cover').value,
                 embed_url: getEmbedUrl(document.getElementById('song-embed').value)
             };
