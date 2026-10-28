@@ -50,7 +50,6 @@
             margin-bottom: 1rem; box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
         }
 
-        /* TÍTULO ADAPTABLE FLUIDO (CLAMP) PARA MÓVILES */
         header h1 {
             font-size: clamp(2rem, 8vw, 3.5rem); 
             font-weight: 900; line-height: 1.1;
@@ -61,7 +60,6 @@
             word-break: break-word;
         }
 
-        /* BARRA SUPERIOR: CONTADOR GLOBAL + CONTACTO */
         .top-info-bar {
             display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 1.5rem;
         }
@@ -77,7 +75,7 @@
         }
         .contact-btn:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); transform: translateY(-2px); }
 
-        /* REPRODUCTOR PRINCIPAL */
+        /* REPRODUCTOR PRINCIPAL NATIVO */
         .main-player-section {
             width: 100%; max-width: 900px;
             background: var(--card-bg); border: 2px solid var(--accent-secondary);
@@ -91,7 +89,6 @@
         }
         .main-player-header h2 { font-size: 1.3rem; color: #fff; display: flex; align-items: center; gap: 12px; }
         
-        /* EQUALIZADOR NEÓN ANIMADO */
         .eq-bars { display: flex; align-items: flex-end; gap: 3px; height: 22px; }
         .eq-bar { width: 4px; background: var(--accent-primary); height: 20%; animation: eqBounce 0.8s infinite alternate ease-in-out; border-radius: 2px; }
         .eq-bar:nth-child(2) { animation-delay: 0.15s; background: #00d8ff; }
@@ -104,11 +101,10 @@
             100% { height: 100%; }
         }
 
-        .player-frame-wrapper {
-            width: 100%; height: 160px; border-radius: 14px; overflow: hidden; background: #000; margin-bottom: 1.2rem;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.8); border: 2px solid var(--accent-primary);
+        .player-audio-wrapper {
+            width: 100%; margin-bottom: 1.2rem; background: rgba(0, 0, 0, 0.6); padding: 15px; border-radius: 16px; border: 1px solid var(--accent-primary);
         }
-        .player-frame-wrapper iframe { width: 100%; height: 100%; border: none; }
+        audio { width: 100%; outline: none; border-radius: 8px; filter: invert(0.9) hue-rotate(180deg); }
 
         .player-controls-bar { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
 
@@ -126,7 +122,6 @@
             box-shadow: 0 0 20px rgba(255, 0, 127, 0.5);
         }
 
-        /* CATEGORÍAS */
         .categories { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2.5rem; max-width: 900px; }
         .cat-btn {
             background: rgba(22, 25, 38, 0.7); border: 1px solid var(--border-color); color: var(--text-muted);
@@ -222,7 +217,6 @@
         <div class="brand-badge"><i class="fa-solid fa-bolt"></i> Radio Master Active</div>
         <h1>IKAmusicstudios</h1>
         
-        <!-- BARRA CON CONTADOR GLOBAL Y CONTACTO -->
         <div class="top-info-bar">
             <div class="global-likes-badge">
                 <i class="fa-solid fa-heart" style="color: var(--accent-secondary);"></i>
@@ -234,7 +228,7 @@
         </div>
     </header>
 
-    <!-- REPRODUCTOR PRINCIPAL -->
+    <!-- REPRODUCTOR PRINCIPAL NATIVO -->
     <div class="main-player-section" id="main-player-box">
         <div class="main-player-header">
             <h2>
@@ -246,7 +240,9 @@
             <span class="song-genre" id="current-song-genre">---</span>
         </div>
 
-        <div class="player-frame-wrapper" id="frame-container"></div>
+        <div class="player-audio-wrapper">
+            <audio id="audio-player" controls preload="metadata"></audio>
+        </div>
 
         <div class="player-controls-bar">
             <button class="control-btn" onclick="prevSong()"><i class="fa-solid fa-backward-step"></i> Anterior</button>
@@ -256,7 +252,6 @@
         </div>
     </div>
 
-    <!-- CATEGORÍAS -->
     <div class="categories" id="category-filters">
         <button class="cat-btn active" data-filter="all">Todas</button>
         <button class="cat-btn" data-filter="Pop / Flamenco">Pop / Flamenco</button>
@@ -269,12 +264,10 @@
         <p style="text-align: center; color: var(--text-muted); grid-column: 1/-1;">Conectando con Supabase...</p>
     </div>
 
-    <!-- BOTÓN ADMIN -->
     <button class="admin-trigger" onclick="checkAdminPassword()">
         <i class="fa-solid fa-shield-halved"></i> <span id="admin-btn-text">Admin</span>
     </button>
 
-    <!-- MODAL ADMIN -->
     <div class="modal" id="admin-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('admin-modal')">&times;</button>
@@ -294,16 +287,12 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Duración (Ej: 3:45)</label>
-                    <input type="text" id="song-duration" value="3:00" required placeholder="Ej: 3:35">
-                </div>
-                <div class="form-group">
                     <label>URL de la Portada</label>
                     <input type="url" id="song-cover" placeholder="https://cdn2.suno.ai/...">
                 </div>
                 <div class="form-group">
-                    <label>Enlace o Código Embed de Suno</label>
-                    <input type="text" id="song-embed" required placeholder="https://suno.com/embed/...">
+                    <label>Enlace de Suno (Enlace o Embed)</label>
+                    <input type="text" id="song-embed" required placeholder="https://suno.com/song/eb282994-45ce-419f-a5d3-78dcb7224eb1">
                 </div>
                 <button type="submit" class="submit-btn">Guardar en Supabase</button>
             </form>
@@ -322,37 +311,14 @@
         let isShuffleActive = false;
         let isAutoChainActive = true;
         let songsCache = [];
-        
-        let radioTimer = null;
 
-        function getEmbedUrl(inputUrl) {
+        const audioPlayer = document.getElementById('audio-player');
+
+        // Extraer la URL del MP3 directo de Suno desde cualquier enlace o embed
+        function getDirectMp3Url(inputUrl) {
             if (!inputUrl) return '';
-            if (inputUrl.includes('<iframe')) {
-                const matchSrc = inputUrl.match(/src=["']([^"']+)["']/);
-                if (matchSrc) return matchSrc[1];
-            }
-            const clean = inputUrl.trim();
-            const songIdMatch = clean.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
-            return songIdMatch ? `https://suno.com/embed/${songIdMatch[0]}` : clean;
-        }
-
-        function parseDurationToMilliseconds(durationInput) {
-            if (!durationInput) return 178000;
-            
-            let totalSeconds = 180;
-            const strVal = String(durationInput).trim();
-
-            if (strVal.includes(':')) {
-                const parts = strVal.split(':');
-                const mins = parseInt(parts[0]) || 0;
-                const secs = parseInt(parts[1]) || 0;
-                totalSeconds = (mins * 60) + secs;
-            } else {
-                totalSeconds = parseInt(strVal) || 180;
-            }
-
-            const targetSeconds = Math.max(5, totalSeconds - 2);
-            return targetSeconds * 1000;
+            const songIdMatch = inputUrl.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
+            return songIdMatch ? `https://cdn1.suno.ai/${songIdMatch[0]}.mp3` : inputUrl.trim();
         }
 
         async function fetchSongsFromCloud() {
@@ -375,8 +341,8 @@
 
                 updateGlobalLikesCount();
                 renderApp();
-                if (songsCache.length > 0 && !document.getElementById('main-embed-frame')) {
-                    loadSongToPlayer(0);
+                if (songsCache.length > 0 && !audioPlayer.src) {
+                    loadSongToPlayer(0, false);
                 }
             } catch (err) {
                 console.error("Excepción:", err);
@@ -426,7 +392,7 @@
                 likes: 0,
                 views: 0,
                 cover_url: "https://cdn2.suno.ai/image_large_b514f38c-a411-49df-b62c-2e09361f90bc.jpeg",
-                embed_url: "https://suno.com/embed/b514f38c-a411-49df-b62c-2e09361f90bc"
+                embed_url: "https://suno.com/song/b514f38c-a411-49df-b62c-2e09361f90bc"
             };
             await supabaseClient.from('songs').insert([defaultSong]);
             fetchSongsFromCloud();
@@ -436,41 +402,35 @@
             return currentFilter === 'all' ? songsCache : songsCache.filter(s => s.genre === currentFilter);
         }
 
-        function loadSongToPlayer(index) {
+        function loadSongToPlayer(index, autoPlay = true) {
             const songs = getFilteredSongs();
             if (songs.length === 0) return;
             
             currentTrackIndex = index;
             const song = songs[currentTrackIndex];
             
-            // Incrementar vistas en Supabase y localmente
             incrementSongViews(song.id);
 
             document.getElementById('current-song-title').innerText = song.title;
             document.getElementById('current-song-genre').innerText = song.genre;
 
-            const frameWrapper = document.getElementById('frame-container');
-            let embedUrl = song.embed_url.split('&autoplay')[0].split('?autoplay')[0];
-            embedUrl += (embedUrl.includes('?') ? '&' : '?') + 'autoplay=true';
+            const mp3Url = getDirectMp3Url(song.embed_url);
+            audioPlayer.src = mp3Url;
 
-            frameWrapper.innerHTML = `<iframe id="main-embed-frame" src="${embedUrl}" allow="autoplay; encrypted-media"></iframe>`;
+            if (autoPlay) {
+                audioPlayer.play().catch(e => console.log("Autoplay bloqueado por interacción previa:", e));
+            }
 
             renderApp();
-
-            if (radioTimer) {
-                clearTimeout(radioTimer);
-                radioTimer = null;
-            }
-
-            if (isAutoChainActive) {
-                const targetMilliseconds = parseDurationToMilliseconds(song.duration);
-                radioTimer = setTimeout(() => {
-                    nextSong();
-                }, targetMilliseconds);
-            }
-
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        // EVENTO NATIVO: Cuando la canción se termina de reproducir
+        audioPlayer.addEventListener('ended', () => {
+            if (isAutoChainActive) {
+                nextSong();
+            }
+        });
 
         function nextSong() {
             const songs = getFilteredSongs();
@@ -478,10 +438,10 @@
 
             if (isShuffleActive) {
                 const randomIndex = Math.floor(Math.random() * songs.length);
-                loadSongToPlayer(randomIndex);
+                loadSongToPlayer(randomIndex, true);
             } else {
                 currentTrackIndex = (currentTrackIndex + 1) % songs.length;
-                loadSongToPlayer(currentTrackIndex);
+                loadSongToPlayer(currentTrackIndex, true);
             }
         }
 
@@ -489,7 +449,7 @@
             const songs = getFilteredSongs();
             if (songs.length === 0) return;
             currentTrackIndex = (currentTrackIndex - 1 + songs.length) % songs.length;
-            loadSongToPlayer(currentTrackIndex);
+            loadSongToPlayer(currentTrackIndex, true);
         }
 
         function toggleAutoChain() {
@@ -498,14 +458,9 @@
             if (isAutoChainActive) {
                 btn.classList.add('active-mode');
                 btn.innerHTML = `<i class="fa-solid fa-radio"></i> Radio Continua: ON`;
-                loadSongToPlayer(currentTrackIndex);
             } else {
                 btn.classList.remove('active-mode');
                 btn.innerHTML = `<i class="fa-solid fa-radio"></i> Radio Continua: OFF`;
-                if (radioTimer) {
-                    clearTimeout(radioTimer);
-                    radioTimer = null;
-                }
             }
         }
 
@@ -553,7 +508,7 @@
                             <span><i class="fa-solid fa-eye" style="color: var(--accent-primary);"></i> ${song.views || 0} reproducciones</span>
                         </div>
                         <div class="song-actions-row">
-                            <button class="load-to-player-btn" onclick="loadSongToPlayer(${index})">
+                            <button class="load-to-player-btn" onclick="loadSongToPlayer(${index}, true)">
                                 <i class="fa-solid fa-play"></i> Reproducir
                             </button>
                             <button class="like-btn" onclick="likeSong(${song.id})">
@@ -573,7 +528,7 @@
                 currentFilter = e.target.getAttribute('data-filter');
                 currentTrackIndex = 0;
                 renderApp();
-                loadSongToPlayer(0);
+                loadSongToPlayer(0, false);
             });
         });
 
@@ -599,11 +554,11 @@
             const newSong = {
                 title: document.getElementById('song-title').value,
                 genre: document.getElementById('song-genre').value,
-                duration: document.getElementById('song-duration').value,
+                duration: "3:00",
                 likes: 0,
                 views: 0,
                 cover_url: document.getElementById('song-cover').value,
-                embed_url: getEmbedUrl(document.getElementById('song-embed').value)
+                embed_url: document.getElementById('song-embed').value
             };
 
             const { error } = await supabaseClient.from('songs').insert([newSong]);
