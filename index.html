@@ -38,9 +38,30 @@
             align-items: center;
             padding: 2rem 1rem 6rem 1rem;
             overflow-x: hidden;
+            position: relative;
         }
 
-        header { text-align: center; margin-top: 1rem; margin-bottom: 1.5rem; max-width: 900px; width: 100%; }
+        /* 1. EFECTO DE PARTÍCULAS / POLVO ESTELAR DE FONDO */
+        .stars-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: radial-gradient(2px 2px at 20px 30px, #00f0ff, rgba(0,0,0,0)),
+                              radial-gradient(2px 2px at 40px 70px, #ff007f, rgba(0,0,0,0)),
+                              radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.25;
+            animation: starDrift 60s linear infinite;
+        }
+
+        @keyframes starDrift {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-200px); }
+        }
+
+        header { text-align: center; margin-top: 1rem; margin-bottom: 1.5rem; max-width: 900px; width: 100%; z-index: 2; }
 
         .brand-badge {
             display: inline-flex; align-items: center; gap: 8px;
@@ -84,12 +105,20 @@
         .about-btn { background: rgba(255, 0, 127, 0.1); border-color: var(--accent-secondary); color: var(--accent-secondary); }
         .about-btn:hover { background: var(--accent-secondary); color: #fff; box-shadow: 0 0 25px rgba(255, 0, 127, 0.7); }
 
+        /* 2. REPRODUCTOR CON PULSO RÍTMICO DINÁMICO */
         .main-player-section {
             width: 100%; max-width: 900px;
             background: var(--card-bg); border: 2px solid var(--accent-secondary);
             border-radius: 24px; padding: 1.8rem; margin-bottom: 2rem;
             box-shadow: 0 0 50px rgba(255, 0, 127, 0.4), inset 0 0 35px rgba(255, 0, 127, 0.18);
             backdrop-filter: blur(15px); text-align: center; position: relative; overflow: hidden;
+            animation: playerBreathe 4s infinite alternate ease-in-out;
+            z-index: 2;
+        }
+
+        @keyframes playerBreathe {
+            0% { box-shadow: 0 0 35px rgba(255, 0, 127, 0.3), inset 0 0 20px rgba(255, 0, 127, 0.1); }
+            100% { box-shadow: 0 0 60px rgba(0, 240, 255, 0.4), inset 0 0 40px rgba(0, 240, 255, 0.15); }
         }
 
         .main-player-header {
@@ -97,15 +126,17 @@
         }
         .main-player-header h2 { font-size: 1.3rem; color: #fff; display: flex; align-items: center; gap: 12px; }
         
+        /* 3. ECUALIZADOR INTERACTIVO MÁS VIVO */
         .eq-bars { display: flex; align-items: flex-end; gap: 3px; height: 22px; }
-        .eq-bar { width: 4px; background: var(--accent-primary); height: 20%; animation: eqBounce 0.8s infinite alternate ease-in-out; border-radius: 2px; }
-        .eq-bar:nth-child(2) { animation-delay: 0.15s; background: #00d8ff; }
-        .eq-bar:nth-child(3) { animation-delay: 0.3s; background: var(--accent-secondary); }
-        .eq-bar:nth-child(4) { animation-delay: 0.1s; background: #ff00bb; }
-        .eq-bar:nth-child(5) { animation-delay: 0.25s; background: var(--accent-primary); }
+        .eq-bar { width: 4px; background: var(--accent-primary); height: 20%; animation: eqBounce 0.5s infinite alternate ease-in-out; border-radius: 2px; }
+        .eq-bar:nth-child(1) { animation-duration: 0.4s; }
+        .eq-bar:nth-child(2) { animation-duration: 0.6s; background: #00d8ff; }
+        .eq-bar:nth-child(3) { animation-duration: 0.35s; background: var(--accent-secondary); }
+        .eq-bar:nth-child(4) { animation-duration: 0.55s; background: #ff00bb; }
+        .eq-bar:nth-child(5) { animation-duration: 0.45s; background: var(--accent-primary); }
 
         @keyframes eqBounce {
-            0% { height: 15%; }
+            0% { height: 10%; }
             100% { height: 100%; }
         }
 
@@ -132,7 +163,7 @@
         }
 
         .search-container {
-            width: 100%; max-width: 600px; margin-bottom: 1.5rem; position: relative;
+            width: 100%; max-width: 600px; margin-bottom: 1.5rem; position: relative; z-index: 2;
         }
         .search-box {
             width: 100%; position: relative; display: flex; align-items: center;
@@ -155,7 +186,7 @@
         }
         .clear-search-btn:hover { color: var(--danger); }
 
-        .categories { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2.5rem; max-width: 900px; }
+        .categories { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2.5rem; max-width: 900px; z-index: 2; }
         .cat-btn {
             background: rgba(22, 25, 38, 0.7); border: 1px solid var(--border-color); color: var(--text-muted);
             padding: 0.75rem 1.8rem; border-radius: 30px; cursor: pointer; transition: all 0.3s ease; font-weight: 700; font-size: 0.95rem;
@@ -173,14 +204,20 @@
             box-shadow: 0 0 30px rgba(255, 0, 127, 0.7);
         }
 
-        .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; width: 100%; max-width: 1200px; }
+        .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; width: 100%; max-width: 1200px; z-index: 2; }
 
+        /* 4. TARJETAS CON EFECTO FLOTANTE (HOVER DINÁMICO) */
         .song-card {
             background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px;
-            overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             backdrop-filter: blur(10px); position: relative;
         }
-        .song-card:hover { transform: translateY(-8px); border-color: var(--accent-primary); box-shadow: 0 15px 40px rgba(0, 240, 255, 0.35); }
+        .song-card:hover { 
+            transform: translateY(-10px) scale(1.02); 
+            border-color: var(--accent-primary); 
+            box-shadow: 0 20px 45px rgba(0, 240, 255, 0.4); 
+        }
 
         .song-card.now-playing-card {
             border: 2px solid var(--gold);
@@ -296,6 +333,8 @@
 </head>
 <body>
 
+    <div class="stars-bg"></div>
+
     <header>
         <div class="brand-badge"><i class="fa-solid fa-bolt"></i> Radio Master Active</div>
         <h1>IKAmusicstudios</h1>
@@ -308,7 +347,7 @@
             <button class="about-btn" onclick="openAboutModal()">
                 <i class="fa-solid fa-circle-info"></i> Sobre IkaMusicStudios
             </button>
-            <a href="mailto:ikamusicstudios@gmail.com" class="contact-btn">
+            <a href="mailto:contacto@ikamusicstudios.com" class="contact-btn">
                 <i class="fa-solid fa-envelope"></i> Contacto
             </a>
         </div>
@@ -423,7 +462,7 @@
         let currentFilter = 'all';
         let searchQuery = '';
         let currentTrackIndex = 0;
-        let currentPlayingSongId = null; // ID estricto de la canción que suena
+        let currentPlayingSongId = null;
         let isShuffleActive = false;
         let isAutoChainActive = true;
         let songsCache = [];
@@ -625,12 +664,15 @@
             
             currentTrackIndex = index;
             const song = songs[currentTrackIndex];
-            currentPlayingSongId = song.id; // Asignamos el ID real de la canción en reproducción
+            currentPlayingSongId = song.id;
             
             incrementSongViews(song.id);
 
             document.getElementById('current-song-title').innerText = song.title;
             document.getElementById('current-song-genre').innerText = song.genre;
+
+            // 5. TÍTULO DE LA PESTAÑA DINÁMICO (MARQUESINA / NOTA MUSICAL)
+            document.title = `🎵 ${song.title} - IKAmusicstudios`;
 
             const frameWrapper = document.getElementById('frame-container');
             let embedUrl = song.embed_url.split('&autoplay')[0].split('?autoplay')[0];
@@ -726,7 +768,6 @@
             }
 
             songs.forEach((song, index) => {
-                // Comprobación exacta por ID de Supabase para el estado "SONANDO"
                 const isCurrentPlaying = (song.id === currentPlayingSongId);
                 const isNew = songsCache.findIndex(s => s.id === song.id) < 3;
 
