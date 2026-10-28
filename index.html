@@ -318,7 +318,9 @@
         function getDirectMp3Url(inputUrl) {
             if (!inputUrl) return '';
             const songIdMatch = inputUrl.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
-            return songIdMatch ? `https://cdn1.suno.ai/${songIdMatch[0]}.mp3` : inputUrl.trim();
+            if (!songIdMatch) return inputUrl.trim();
+            
+            return `https://cdn1.suno.ai/${songIdMatch[0]}.mp3`;
         }
 
         async function fetchSongsFromCloud() {
