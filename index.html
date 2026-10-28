@@ -40,7 +40,7 @@
             overflow-x: hidden;
         }
 
-        header { text-align: center; margin-top: 1rem; margin-bottom: 2rem; max-width: 900px; }
+        header { text-align: center; margin-top: 1rem; margin-bottom: 1.5rem; max-width: 900px; width: 100%; }
 
         .brand-badge {
             display: inline-flex; align-items: center; gap: 8px;
@@ -50,12 +50,32 @@
             margin-bottom: 1rem; box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
         }
 
+        /* TÍTULO ADAPTABLE FLUIDO (CLAMP) PARA MÓVILES */
         header h1 {
-            font-size: 3.5rem; font-weight: 900; line-height: 1.1;
+            font-size: clamp(2rem, 8vw, 3.5rem); 
+            font-weight: 900; line-height: 1.1;
             background: linear-gradient(135deg, #ffffff 10%, var(--accent-primary) 50%, var(--accent-secondary) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.5rem;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+            margin-bottom: 0.8rem;
             filter: drop-shadow(0 0 20px rgba(0,240,255,0.4));
+            word-break: break-word;
         }
+
+        /* BARRA SUPERIOR: CONTADOR GLOBAL + CONTACTO */
+        .top-info-bar {
+            display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 1.5rem;
+        }
+        .global-likes-badge {
+            background: rgba(255, 0, 127, 0.15); border: 1px solid var(--accent-secondary); color: #fff;
+            padding: 6px 16px; border-radius: 30px; font-weight: 700; font-size: 0.9rem;
+            display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+        }
+        .contact-btn {
+            background: rgba(0, 240, 255, 0.1); border: 1px solid var(--accent-primary); color: var(--accent-primary);
+            padding: 6px 16px; border-radius: 30px; font-weight: 700; font-size: 0.9rem; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px; transition: all 0.25s ease;
+        }
+        .contact-btn:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); transform: translateY(-2px); }
 
         /* REPRODUCTOR PRINCIPAL */
         .main-player-section {
@@ -149,12 +169,21 @@
             background: rgba(0, 240, 255, 0.15); padding: 4px 10px; border-radius: 6px; font-weight: 800; letter-spacing: 1px;
         }
 
+        .song-actions-row { display: flex; gap: 10px; margin-top: 10px; }
+        
         .load-to-player-btn {
-            width: 100%; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--accent-primary);
+            flex: 1; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--accent-primary);
             color: var(--accent-primary); padding: 0.85rem; border-radius: 12px; font-weight: 800;
             cursor: pointer; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
         }
         .load-to-player-btn:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 25px rgba(0, 240, 255, 0.6); }
+
+        .like-btn {
+            background: rgba(255, 0, 127, 0.12); border: 1px solid var(--accent-secondary); color: var(--accent-secondary);
+            padding: 0.85rem 1rem; border-radius: 12px; font-weight: 800; cursor: pointer; transition: all 0.25s ease;
+            display: flex; align-items: center; gap: 6px; font-size: 0.9rem;
+        }
+        .like-btn:hover { background: var(--accent-secondary); color: #fff; box-shadow: 0 0 20px rgba(255, 0, 127, 0.6); transform: scale(1.05); }
 
         .admin-trigger {
             position: fixed; bottom: 25px; right: 25px; background: var(--card-bg);
@@ -187,7 +216,17 @@
     <header>
         <div class="brand-badge"><i class="fa-solid fa-bolt"></i> Radio Master Active</div>
         <h1>IKAmusicstudios</h1>
-        <p>Catálogo inteligente con salto automático por formato de tiempo.</p>
+        
+        <!-- BARRA CON CONTADOR GLOBAL Y CONTACTO -->
+        <div class="top-info-bar">
+            <div class="global-likes-badge">
+                <i class="fa-solid fa-heart" style="color: var(--accent-secondary);"></i>
+                <span id="global-likes-count">0</span> Likes Totales
+            </div>
+            <a href="mailto:contacto@ikamusicstudios.com" class="contact-btn">
+                <i class="fa-solid fa-envelope"></i> Contacto
+            </a>
+        </div>
     </header>
 
     <!-- REPRODUCTOR PRINCIPAL -->
@@ -292,9 +331,8 @@
             return songIdMatch ? `https://suno.com/embed/${songIdMatch[0]}` : clean;
         }
 
-        // Función para convertir "M:SS" o segundos a milisegundos restando 2 segundos de margen
         function parseDurationToMilliseconds(durationInput) {
-            if (!durationInput) return 178000; // Por defecto ~3 min menos 2s
+            if (!durationInput) return 178000;
             
             let totalSeconds = 180;
             const strVal = String(durationInput).trim();
@@ -308,7 +346,6 @@
                 totalSeconds = parseInt(strVal) || 180;
             }
 
-            // Restamos 2 segundos automáticamente para que salte antes de que Suno repita
             const targetSeconds = Math.max(5, totalSeconds - 2);
             return targetSeconds * 1000;
         }
@@ -331,6 +368,7 @@
                     return;
                 }
 
+                updateGlobalLikesCount();
                 renderApp();
                 if (songsCache.length > 0 && !document.getElementById('main-embed-frame')) {
                     loadSongToPlayer(0);
@@ -340,11 +378,33 @@
             }
         }
 
+        function updateGlobalLikesCount() {
+            const total = songsCache.reduce((sum, song) => sum + (song.likes || 0), 0);
+            document.getElementById('global-likes-count').innerText = total;
+        }
+
+        async function likeSong(songId) {
+            const song = songsCache.find(s => s.id === songId);
+            if (!song) return;
+
+            const newLikes = (song.likes || 0) + 1;
+            song.likes = newLikes;
+
+            updateGlobalLikesCount();
+            renderApp();
+
+            await supabaseClient
+                .from('songs')
+                .update({ likes: newLikes })
+                .eq('id', songId);
+        }
+
         async function insertDefaultSong() {
             const defaultSong = {
                 title: "La que manda",
                 genre: "Pop / Flamenco",
                 duration: "3:00",
+                likes: 0,
                 cover_url: "https://cdn2.suno.ai/image_large_b514f38c-a411-49df-b62c-2e09361f90bc.jpeg",
                 embed_url: "https://suno.com/embed/b514f38c-a411-49df-b62c-2e09361f90bc"
             };
@@ -380,9 +440,7 @@
             }
 
             if (isAutoChainActive) {
-                // Convertimos el texto (ej: "3:45") a milisegundos restando 2s automáticamente
                 const targetMilliseconds = parseDurationToMilliseconds(song.duration);
-
                 radioTimer = setTimeout(() => {
                     nextSong();
                 }, targetMilliseconds);
@@ -468,9 +526,14 @@
                             </div>
                             ${isAdmin ? `<button class="close-modal" style="position:relative;top:0;right:0;color:#ff4757;" onclick="deleteSong(${song.id})">&times;</button>` : ''}
                         </div>
-                        <button class="load-to-player-btn" onclick="loadSongToPlayer(${index})">
-                            <i class="fa-solid fa-play"></i> Reproducir Tema
-                        </button>
+                        <div class="song-actions-row">
+                            <button class="load-to-player-btn" onclick="loadSongToPlayer(${index})">
+                                <i class="fa-solid fa-play"></i> Reproducir
+                            </button>
+                            <button class="like-btn" onclick="likeSong(${song.id})">
+                                <i class="fa-solid fa-heart"></i> ${song.likes || 0}
+                            </button>
+                        </div>
                     </div>
                 `;
                 container.appendChild(card);
@@ -510,7 +573,8 @@
             const newSong = {
                 title: document.getElementById('song-title').value,
                 genre: document.getElementById('song-genre').value,
-                duration: document.getElementById('song-duration').value, // Guarda tal cual el formato "3:45"
+                duration: document.getElementById('song-duration').value,
+                likes: 0,
                 cover_url: document.getElementById('song-cover').value,
                 embed_url: getEmbedUrl(document.getElementById('song-embed').value)
             };
