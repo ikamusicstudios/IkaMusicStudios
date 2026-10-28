@@ -78,7 +78,7 @@
         .main-player-section {
             width: 100%; max-width: 900px;
             background: var(--card-bg); border: 2px solid var(--accent-secondary);
-            border-radius: 24px; padding: 1.8rem; margin-bottom: 2.5rem;
+            border-radius: 24px; padding: 1.8rem; margin-bottom: 2rem;
             box-shadow: 0 0 40px rgba(255, 0, 127, 0.35), inset 0 0 30px rgba(255, 0, 127, 0.15);
             backdrop-filter: blur(15px); text-align: center; position: relative; overflow: hidden;
         }
@@ -121,6 +121,31 @@
             border-color: var(--accent-secondary); color: var(--accent-secondary); background: rgba(255, 0, 127, 0.2); 
             box-shadow: 0 0 20px rgba(255, 0, 127, 0.5);
         }
+
+        /* BUSCADOR DE CANCIONES */
+        .search-container {
+            width: 100%; max-width: 600px; margin-bottom: 1.5rem; position: relative;
+        }
+        .search-box {
+            width: 100%; position: relative; display: flex; align-items: center;
+        }
+        .search-box i.search-icon {
+            position: absolute; left: 18px; color: var(--accent-primary); font-size: 1.1rem;
+        }
+        .search-input {
+            width: 100%; padding: 0.9rem 2.8rem 0.9rem 3.2rem; border-radius: 50px;
+            border: 2px solid var(--border-color); background: rgba(18, 20, 32, 0.85); color: #fff;
+            font-size: 1rem; outline: none; transition: all 0.3s ease; backdrop-filter: blur(10px);
+        }
+        .search-input:focus {
+            border-color: var(--accent-primary); box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
+            background: rgba(18, 20, 32, 0.95);
+        }
+        .clear-search-btn {
+            position: absolute; right: 15px; background: none; border: none; color: var(--text-muted);
+            font-size: 1.2rem; cursor: pointer; display: none; transition: color 0.2s;
+        }
+        .clear-search-btn:hover { color: var(--danger); }
 
         .categories { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2.5rem; max-width: 900px; }
         .cat-btn {
@@ -228,7 +253,7 @@
         </div>
     </header>
 
-    <!-- REPRODUCTOR PRINCIPAL CON IFRAME DE SUNO -->
+    <!-- REPRODUCTOR PRINCIPAL -->
     <div class="main-player-section" id="main-player-box">
         <div class="main-player-header">
             <h2>
@@ -250,6 +275,16 @@
         </div>
     </div>
 
+    <!-- BARRA DE BÚSQUEDA INTEGRADA -->
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="song-search-input" class="search-input" placeholder="Buscar canción por título..." oninput="handleSearchInput()" onkeydown="handleSearchKeyDown(event)">
+            <button id="clear-search-btn" class="clear-search-btn" onclick="clearSearch()">&times;</button>
+        </div>
+    </div>
+
+    <!-- CATEGORÍAS -->
     <div class="categories" id="category-filters">
         <button class="cat-btn active" data-filter="all">Todas</button>
         <button class="cat-btn" data-filter="Pop / Flamenco">Pop / Flamenco</button>
@@ -266,7 +301,7 @@
         <i class="fa-solid fa-shield-halved"></i> <span id="admin-btn-text">Admin</span>
     </button>
 
-    <!-- MODAL ADMIN CON EL CAMPO DE DURACIÓN (FORMATO MM:SS) -->
+    <!-- MODAL ADMIN -->
     <div class="modal" id="admin-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('admin-modal')">&times;</button>
@@ -310,6 +345,7 @@
 
         let isAdmin = false;
         let currentFilter = 'all';
+        let searchQuery = '';
         let currentTrackIndex = 0;
         let isShuffleActive = false;
         let isAutoChainActive = true;
@@ -327,7 +363,6 @@
             return songIdMatch ? `https://suno.com/embed/${songIdMatch[0]}` : clean;
         }
 
-        // Convierte el formato de duración introducido (MM:SS o segundos) a milisegundos restándole 1 segundo de margen para el salto automático
         function parseDurationToMilliseconds(durationInput) {
             let totalSeconds = 180;
             const strVal = String(durationInput).trim();
@@ -422,8 +457,44 @@
             fetchSongsFromCloud();
         }
 
+        // Filtra canciones por Categoría y Texto del Buscador
         function getFilteredSongs() {
-            return currentFilter === 'all' ? songsCache : songsCache.filter(s => s.genre === currentFilter);
+            return songsCache.filter(song => {
+                const matchesGenre = (currentFilter === 'all' || song.genre === currentFilter);
+                const matchesQuery = !searchQuery || song.title.toLowerCase().includes(searchQuery.toLowerCase()) || song.genre.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesGenre && matchesQuery;
+            });
+        }
+
+        // Funciones del Buscador
+        function handleSearchInput() {
+            const input = document.getElementById('song-search-input');
+            const clearBtn = document.getElementById('clear-search-btn');
+            searchQuery = input.value.trim();
+
+            clearBtn.style.display = searchQuery ? 'block' : 'none';
+            currentTrackIndex = 0;
+            renderApp();
+        }
+
+        function handleSearchKeyDown(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const filtered = getFilteredSongs();
+                if (filtered.length > 0) {
+                    loadSongToPlayer(0);
+                }
+            }
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('song-search-input');
+            const clearBtn = document.getElementById('clear-search-btn');
+            input.value = '';
+            searchQuery = '';
+            clearBtn.style.display = 'none';
+            currentTrackIndex = 0;
+            renderApp();
         }
 
         function loadSongToPlayer(index) {
@@ -516,7 +587,7 @@
             const songs = getFilteredSongs();
 
             if (songs.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:var(--text-muted); grid-column:1/-1;">No hay canciones en este género todavía.</p>`;
+                container.innerHTML = `<p style="text-align:center; color:var(--text-muted); grid-column:1/-1;">No se encontraron canciones que coincidan con la búsqueda.</p>`;
                 return;
             }
 
@@ -562,7 +633,6 @@
                 currentFilter = e.target.getAttribute('data-filter');
                 currentTrackIndex = 0;
                 renderApp();
-                loadSongToPlayer(0);
             });
         });
 
@@ -582,7 +652,6 @@
             }
         }
 
-        // Transforma lo que escribes en minutos/segundos a segundos puros para guardarlo en la base de datos de Supabase
         function convertInputToSeconds(durationStr) {
             if (!durationStr) return 180;
             const cleanStr = String(durationStr).trim();
