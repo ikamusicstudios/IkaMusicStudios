@@ -268,7 +268,7 @@
         <i class="fa-solid fa-shield-halved"></i> <span id="admin-btn-text">Admin</span>
     </button>
 
-    <!-- MODAL ADMIN SIN CAMPO DE DURACIÓN -->
+    <!-- MODAL ADMIN -->
     <div class="modal" id="admin-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('admin-modal')">&times;</button>
@@ -315,7 +315,6 @@
 
         const audioPlayer = document.getElementById('audio-player');
 
-        // Extraer ID de Suno y construir enlace directo de audio
         function getDirectMp3Url(inputUrl) {
             if (!inputUrl) return '';
             const songIdMatch = inputUrl.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
@@ -425,7 +424,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // SALTO AUTOMÁTICO PERFECTO CON EL REPRODUCTOR NATIVO
         audioPlayer.addEventListener('ended', () => {
             if (isAutoChainActive) {
                 nextSong();
