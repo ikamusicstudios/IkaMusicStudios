@@ -337,6 +337,45 @@
         }
         .admin-trigger:hover { background: var(--accent-primary); color: #000; transform: scale(1.05); box-shadow: 0 0 40px rgba(0,240,255,0.8); }
 
+        /* ===== NUEVO BOTÓN VOLVER ARRIBA CENTRADO ===== */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            opacity: 0;
+            visibility: hidden;
+            background: rgba(18, 20, 32, 0.92);
+            border: 2px solid var(--accent-primary);
+            color: var(--accent-primary);
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+            z-index: 890;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+            backdrop-filter: blur(12px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease, visibility 0.3s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .scroll-top-btn.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .scroll-top-btn:hover {
+            background: var(--accent-primary);
+            color: #000;
+            box-shadow: 0 0 35px rgba(0, 240, 255, 0.8);
+            transform: translateX(-50%) translateY(-4px) scale(1.05);
+        }
+
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.88); justify-content: center; align-items: center; padding: 1rem; z-index: 1000; backdrop-filter: blur(10px);
@@ -635,6 +674,7 @@
             .ika-live-indicator { font-size: .6rem; padding: 4px 8px; }
             .player-controls-bar { gap: 8px; }
             .control-btn { padding: .68rem .95rem; font-size: .82rem; }
+            .scroll-top-btn { bottom: 15px; padding: 8px 18px; font-size: 0.8rem; }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after {
@@ -721,6 +761,11 @@
     <div class="container" id="songs-container">
         <p style="text-align: center; color: var(--text-muted); grid-column: 1/-1;">Conectando con Supabase...</p>
     </div>
+
+    <!-- BOTÓN VOLVER ARRIBA CENTRADO -->
+    <button id="scroll-top-btn" class="scroll-top-btn" onclick="scrollToTop()" title="Haz clic para volver al reproductor arriba">
+        <i class="fa-solid fa-arrow-up"></i> Volver arriba
+    </button>
 
     <button class="admin-trigger" onclick="checkAdminPassword()">
         <i class="fa-solid fa-shield-halved"></i> <span id="admin-btn-text">Admin</span>
@@ -1033,9 +1078,6 @@
                     nextSong();
                 }, targetMilliseconds);
             }
-
-            // NOTA: Se ha eliminado el scrollTo automático para que la página
-            // no salte arriba del todo y te permita seguir donde estabas curioseando.
         }
 
         function nextSong() {
@@ -1097,6 +1139,24 @@
                 }, 2500);
             });
         }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // CONTROL DE VISIBILIDAD DEL BOTÓN VOLVER ARRIBA
+        window.addEventListener('scroll', () => {
+            const scrollTopBtn = document.getElementById('scroll-top-btn');
+            const playerBox = document.getElementById('main-player-box');
+            if (!playerBox || !scrollTopBtn) return;
+
+            const playerBottom = playerBox.getBoundingClientRect().bottom;
+            if (playerBottom < 0) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
 
         function renderApp() {
             const container = document.getElementById('songs-container');
