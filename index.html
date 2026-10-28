@@ -317,10 +317,15 @@
 
         function getDirectMp3Url(inputUrl) {
             if (!inputUrl) return '';
-            const songIdMatch = inputUrl.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
-            if (!songIdMatch) return inputUrl.trim();
+            const clean = inputUrl.trim();
             
-            return `https://cdn1.suno.ai/${songIdMatch[0]}.mp3`;
+            const songIdMatch = clean.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
+            
+            if (songIdMatch) {
+                return `https://cdn1.suno.ai/${songIdMatch[0]}.mp3`;
+            }
+            
+            return clean;
         }
 
         async function fetchSongsFromCloud() {
