@@ -15,7 +15,7 @@
             --accent-secondary: #ff007f;
             --text-main: #ffffff;
             --text-muted: #94a3b8;
-            --border-color: rgba(255, 255, 255, 0.12);
+            --border-color: rgba(255, 255, 255, 0.15);
             --danger: #ff4757;
             --gold: #ffd700;
         }
@@ -25,10 +25,10 @@
         body {
             background-color: var(--bg-color);
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.18) 0%, transparent 45%),
-                radial-gradient(circle at 90% 80%, rgba(255, 0, 127, 0.18) 0%, transparent 45%),
-                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+                radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.22) 0%, transparent 45%),
+                radial-gradient(circle at 90% 80%, rgba(255, 0, 127, 0.22) 0%, transparent 45%),
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
             background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
             background-attachment: fixed;
             color: var(--text-main);
@@ -44,10 +44,16 @@
 
         .brand-badge {
             display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(0, 240, 255, 0.1); border: 2px solid var(--accent-primary);
+            background: rgba(0, 240, 255, 0.12); border: 2px solid var(--accent-primary);
             color: var(--accent-primary); padding: 8px 22px; border-radius: 50px;
             font-size: 0.85rem; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase;
-            margin-bottom: 1rem; box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+            margin-bottom: 1rem; box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+            animation: neonPulse 3s infinite alternate;
+        }
+
+        @keyframes neonPulse {
+            0% { box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); }
+            100% { box-shadow: 0 0 35px rgba(0, 240, 255, 0.7); }
         }
 
         header h1 {
@@ -56,7 +62,7 @@
             background: linear-gradient(135deg, #ffffff 10%, var(--accent-primary) 50%, var(--accent-secondary) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
             margin-bottom: 0.8rem;
-            filter: drop-shadow(0 0 20px rgba(0,240,255,0.4));
+            filter: drop-shadow(0 0 25px rgba(0,240,255,0.5));
             word-break: break-word;
         }
 
@@ -66,23 +72,23 @@
         .global-likes-badge {
             background: rgba(255, 0, 127, 0.15); border: 1px solid var(--accent-secondary); color: #fff;
             padding: 6px 16px; border-radius: 30px; font-weight: 700; font-size: 0.9rem;
-            display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+            display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 20px rgba(255, 0, 127, 0.4);
         }
         .contact-btn, .about-btn {
             background: rgba(0, 240, 255, 0.1); border: 1px solid var(--accent-primary); color: var(--accent-primary);
             padding: 6px 16px; border-radius: 30px; font-weight: 700; font-size: 0.9rem; text-decoration: none;
             display: inline-flex; align-items: center; gap: 8px; transition: all 0.25s ease; cursor: pointer;
         }
-        .contact-btn:hover, .about-btn:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); transform: translateY(-2px); }
+        .contact-btn:hover, .about-btn:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 25px rgba(0, 240, 255, 0.7); transform: translateY(-2px); }
 
         .about-btn { background: rgba(255, 0, 127, 0.1); border-color: var(--accent-secondary); color: var(--accent-secondary); }
-        .about-btn:hover { background: var(--accent-secondary); color: #fff; box-shadow: 0 0 20px rgba(255, 0, 127, 0.6); }
+        .about-btn:hover { background: var(--accent-secondary); color: #fff; box-shadow: 0 0 25px rgba(255, 0, 127, 0.7); }
 
         .main-player-section {
             width: 100%; max-width: 900px;
             background: var(--card-bg); border: 2px solid var(--accent-secondary);
             border-radius: 24px; padding: 1.8rem; margin-bottom: 2rem;
-            box-shadow: 0 0 40px rgba(255, 0, 127, 0.35), inset 0 0 30px rgba(255, 0, 127, 0.15);
+            box-shadow: 0 0 50px rgba(255, 0, 127, 0.4), inset 0 0 35px rgba(255, 0, 127, 0.18);
             backdrop-filter: blur(15px); text-align: center; position: relative; overflow: hidden;
         }
 
@@ -105,7 +111,7 @@
 
         .player-frame-wrapper {
             width: 100%; height: 160px; border-radius: 14px; overflow: hidden; background: #000; margin-bottom: 1.2rem;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.8); border: 2px solid var(--accent-primary);
+            box-shadow: 0 0 35px rgba(0, 240, 255, 0.3); border: 2px solid var(--accent-primary);
         }
         .player-frame-wrapper iframe { width: 100%; height: 100%; border: none; }
 
@@ -140,7 +146,7 @@
             font-size: 1rem; outline: none; transition: all 0.3s ease; backdrop-filter: blur(10px);
         }
         .search-input:focus {
-            border-color: var(--accent-primary); box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
+            border-color: var(--accent-primary); box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
             background: rgba(18, 20, 32, 0.95);
         }
         .clear-search-btn {
@@ -157,7 +163,14 @@
         }
         .cat-btn:hover, .cat-btn.active { 
             background: var(--accent-primary); color: #000; border-color: var(--accent-primary); 
-            box-shadow: 0 0 25px rgba(0, 240, 255, 0.6); transform: translateY(-3px); 
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.7); transform: translateY(-3px); 
+        }
+        .cat-btn.news-filter {
+            border-color: var(--accent-secondary); color: var(--accent-secondary); background: rgba(255, 0, 127, 0.1);
+        }
+        .cat-btn.news-filter:hover, .cat-btn.news-filter.active {
+            background: var(--accent-secondary); color: #fff; border-color: var(--accent-secondary);
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.7);
         }
 
         .container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem; width: 100%; max-width: 1200px; }
@@ -167,16 +180,29 @@
             overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(10px); position: relative;
         }
-        .song-card:hover { transform: translateY(-8px); border-color: var(--accent-primary); box-shadow: 0 12px 35px rgba(0, 240, 255, 0.3); }
+        .song-card:hover { transform: translateY(-8px); border-color: var(--accent-primary); box-shadow: 0 15px 40px rgba(0, 240, 255, 0.35); }
 
         .song-card.now-playing-card {
             border: 2px solid var(--gold);
-            box-shadow: 0 0 35px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+            animation: cardGlow 2s infinite alternate;
         }
+
+        @keyframes cardGlow {
+            0% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.4); }
+            100% { box-shadow: 0 0 45px rgba(255, 215, 0, 0.75); }
+        }
+
         .now-playing-badge {
             position: absolute; top: 12px; left: 12px; background: var(--gold); color: #000;
             padding: 5px 14px; border-radius: 50px; font-size: 0.75rem; font-weight: 900; letter-spacing: 1px;
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); z-index: 10; display: flex; align-items: center; gap: 6px;
+        }
+        
+        .new-badge {
+            position: absolute; top: 12px; right: 12px; background: var(--accent-secondary); color: #fff;
+            padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 900; letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.8); z-index: 10; text-transform: uppercase;
         }
 
         .cover-container { width: 100%; height: 190px; position: relative; overflow: hidden; background: #111; }
@@ -192,33 +218,40 @@
         }
 
         .song-stats-row {
-            display: flex; align-items: center; gap: 15px; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;
+            display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;
         }
         .song-stats-row span { display: inline-flex; align-items: center; gap: 5px; }
 
-        .song-actions-row { display: flex; gap: 10px; }
+        .song-actions-row { display: flex; gap: 8px; }
         
         .load-to-player-btn {
             flex: 1; background: rgba(0, 240, 255, 0.12); border: 1px solid var(--accent-primary);
-            color: var(--accent-primary); padding: 0.85rem; border-radius: 12px; font-weight: 800;
-            cursor: pointer; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
+            color: var(--accent-primary); padding: 0.75rem; border-radius: 12px; font-weight: 800;
+            cursor: pointer; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.9rem;
         }
-        .load-to-player-btn:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 25px rgba(0, 240, 255, 0.6); }
+        .load-to-player-btn:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 25px rgba(0, 240, 255, 0.7); }
 
         .like-btn {
             background: rgba(255, 0, 127, 0.12); border: 1px solid var(--accent-secondary); color: var(--accent-secondary);
-            padding: 0.85rem 1rem; border-radius: 12px; font-weight: 800; cursor: pointer; transition: all 0.25s ease;
-            display: flex; align-items: center; gap: 6px; font-size: 0.9rem;
+            padding: 0.75rem 0.9rem; border-radius: 12px; font-weight: 800; cursor: pointer; transition: all 0.25s ease;
+            display: flex; align-items: center; gap: 5px; font-size: 0.9rem;
         }
-        .like-btn:hover { background: var(--accent-secondary); color: #fff; box-shadow: 0 0 20px rgba(255, 0, 127, 0.6); transform: scale(1.05); }
+        .like-btn:hover { background: var(--accent-secondary); color: #fff; box-shadow: 0 0 20px rgba(255, 0, 127, 0.7); transform: scale(1.05); }
+
+        .share-btn {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid var(--border-color); color: var(--text-muted);
+            padding: 0.75rem 0.9rem; border-radius: 12px; font-weight: 800; cursor: pointer; transition: all 0.25s ease;
+            display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
+        }
+        .share-btn:hover { border-color: #fff; color: #fff; background: rgba(255, 255, 255, 0.15); box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
 
         .admin-trigger {
             position: fixed; bottom: 25px; right: 25px; background: var(--card-bg);
             border: 2px solid var(--accent-primary); color: var(--accent-primary); padding: 12px 24px;
-            border-radius: 50px; cursor: pointer; font-weight: 800; z-index: 900; box-shadow: 0 0 25px rgba(0,240,255,0.4);
+            border-radius: 50px; cursor: pointer; font-weight: 800; z-index: 900; box-shadow: 0 0 30px rgba(0,240,255,0.5);
             backdrop-filter: blur(10px); transition: all 0.3s;
         }
-        .admin-trigger:hover { background: var(--accent-primary); color: #000; transform: scale(1.05); box-shadow: 0 0 35px rgba(0,240,255,0.7); }
+        .admin-trigger:hover { background: var(--accent-primary); color: #000; transform: scale(1.05); box-shadow: 0 0 40px rgba(0,240,255,0.8); }
 
         .modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -226,12 +259,12 @@
         }
         .modal-content {
             background: #121422; border: 2px solid var(--accent-primary); padding: 2.2rem;
-            border-radius: 24px; max-width: 500px; width: 100%; position: relative; box-shadow: 0 0 45px rgba(0,240,255,0.4);
+            border-radius: 24px; max-width: 500px; width: 100%; position: relative; box-shadow: 0 0 50px rgba(0,240,255,0.5);
         }
         
         .about-modal-content {
             border-color: var(--accent-secondary);
-            box-shadow: 0 0 45px rgba(255, 0, 127, 0.4);
+            box-shadow: 0 0 50px rgba(255, 0, 127, 0.5);
             text-align: center;
         }
         .about-modal-content h2 {
@@ -252,6 +285,13 @@
             width: 100%; padding: 0.85rem; border-radius: 10px; border: 1px solid var(--border-color); background: #0a0b10; color: #fff; outline: none; font-size: 1rem;
         }
         .submit-btn { width: 100%; background: var(--accent-primary); color: #000; border: none; padding: 0.9rem; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 1rem; }
+        
+        .toast-notification {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--accent-primary); color: #000; padding: 10px 24px; border-radius: 50px;
+            font-weight: 800; box-shadow: 0 0 25px rgba(0,240,255,0.6); z-index: 2000; transition: transform 0.3s ease;
+        }
+        .toast-notification.show { transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
@@ -308,6 +348,7 @@
     <!-- CATEGORÍAS -->
     <div class="categories" id="category-filters">
         <button class="cat-btn active" data-filter="all">Todas</button>
+        <button class="cat-btn news-filter" data-filter="novedades"><i class="fa-solid fa-fire"></i> 🔥 Novedades</button>
         <button class="cat-btn" data-filter="Pop / Flamenco">Pop / Flamenco</button>
         <button class="cat-btn" data-filter="Rock">Rock</button>
         <button class="cat-btn" data-filter="EDM">EDM</button>
@@ -369,6 +410,8 @@
             </form>
         </div>
     </div>
+
+    <div class="toast-notification" id="toast">¡Enlace copiado al portapapeles!</div>
 
     <script>
         const SUPABASE_URL = 'https://mouvifqcmdlypegtyjfw.supabase.co';
@@ -433,8 +476,23 @@
 
                 updateGlobalLikesCount();
                 renderApp();
-                if (songsCache.length > 0 && !document.getElementById('main-embed-frame')) {
-                    loadSongToPlayer(0);
+
+                // Comprobar si viene un parámetro 'song' en la URL para reproducirla directamente
+                const urlParams = new URLSearchParams(window.location.search);
+                const targetSongId = parseInt(urlParams.get('song'));
+                
+                if (targetSongId) {
+                    const filteredList = getFilteredSongs();
+                    const songIndex = filteredList.findIndex(s => s.id === targetSongId);
+                    if (songIndex !== -1) {
+                        loadSongToPlayer(songIndex);
+                    } else if (songsCache.length > 0) {
+                        loadSongToPlayer(0);
+                    }
+                } else {
+                    if (songsCache.length > 0 && !document.getElementById('main-embed-frame')) {
+                        loadSongToPlayer(0);
+                    }
                 }
             } catch (err) {
                 console.error("Excepción:", err);
@@ -491,14 +549,22 @@
         }
 
         function getFilteredSongs() {
-            return songsCache.filter(song => {
-                const matchesGenre = (currentFilter === 'all' || song.genre === currentFilter);
+            return songsCache.filter((song, index) => {
+                let matchesFilter = true;
+
+                if (currentFilter === 'novedades') {
+                    // Muestra únicamente las 3 primeras canciones (por ID descendiente son las más recientes)
+                    matchesFilter = index < 3;
+                } else if (currentFilter !== 'all') {
+                    matchesFilter = (song.genre === currentFilter);
+                }
+
                 const matchesQuery = !searchQuery || song.title.toLowerCase().includes(searchQuery.toLowerCase()) || song.genre.toLowerCase().includes(searchQuery.toLowerCase());
                 
                 if (searchQuery) {
                     return matchesQuery;
                 }
-                return matchesGenre;
+                return matchesFilter;
             });
         }
 
@@ -519,7 +585,7 @@
                 if (filtered.length > 0) {
                     const targetSong = filtered[0];
                     
-                    if (currentFilter !== 'all' && targetSong.genre !== currentFilter) {
+                    if (currentFilter !== 'all' && currentFilter !== 'novedades' && targetSong.genre !== currentFilter) {
                         currentFilter = targetSong.genre;
                         updateCategoryUIButtons();
                     }
@@ -638,23 +704,38 @@
             }
         }
 
+        function shareSong(songId) {
+            const shareUrl = `${window.location.origin}${window.location.pathname}?song=${songId}`;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2500);
+            });
+        }
+
         function renderApp() {
             const container = document.getElementById('songs-container');
             container.innerHTML = '';
             const songs = getFilteredSongs();
 
             if (songs.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:var(--text-muted); grid-column:1/-1;">No se encontraron canciones que coincidan con la búsqueda.</p>`;
+                container.innerHTML = `<p style="text-align:center; color:var(--text-muted); grid-column:1/-1;">No se encontraron canciones disponibles.</p>`;
                 return;
             }
 
             songs.forEach((song, index) => {
                 const isCurrentPlaying = (index === currentTrackIndex);
+                // Si estamos en vista general y es uno de los 3 primeros por ID, marcar como novedad
+                const isNew = songsCache.findIndex(s => s.id === song.id) < 3;
+
                 const card = document.createElement('div');
                 card.className = `song-card ${isCurrentPlaying ? 'now-playing-card' : ''}`;
                 
                 card.innerHTML = `
                     ${isCurrentPlaying ? '<div class="now-playing-badge"><i class="fa-solid fa-headphones"></i> SONANDO</div>' : ''}
+                    ${isNew && !isCurrentPlaying ? '<div class="new-badge">NUEVO</div>' : ''}
                     <div class="cover-container">
                         <img src="${song.cover_url || 'https://via.placeholder.com/300/111/00f0ff?text=IKA'}" class="cover-img" alt="${song.title}">
                     </div>
@@ -676,6 +757,9 @@
                             <button class="like-btn" onclick="likeSong(${song.id})">
                                 <i class="fa-solid fa-heart"></i> ${song.likes || 0}
                             </button>
+                            <button class="share-btn" onclick="shareSong(${song.id})" title="Compartir enlace directo">
+                                <i class="fa-solid fa-share-nodes"></i>
+                            </button>
                         </div>
                     </div>
                 `;
@@ -686,8 +770,12 @@
         document.querySelectorAll('.cat-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                currentFilter = e.target.getAttribute('data-filter');
+                
+                // Buscar el botón clicado (puede que hayan pulsado el icono interior)
+                const targetBtn = e.target.closest('.cat-btn');
+                targetBtn.classList.add('active');
+                
+                currentFilter = targetBtn.getAttribute('data-filter');
                 
                 const searchInput = document.getElementById('song-search-input');
                 if (searchInput.value) {
