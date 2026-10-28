@@ -75,7 +75,6 @@
         }
         .contact-btn:hover { background: var(--accent-primary); color: #000; box-shadow: 0 0 20px rgba(0, 240, 255, 0.6); transform: translateY(-2px); }
 
-        /* REPRODUCTOR PRINCIPAL NATIVO */
         .main-player-section {
             width: 100%; max-width: 900px;
             background: var(--card-bg); border: 2px solid var(--accent-secondary);
@@ -101,10 +100,11 @@
             100% { height: 100%; }
         }
 
-        .player-audio-wrapper {
-            width: 100%; margin-bottom: 1.2rem; background: rgba(0, 0, 0, 0.6); padding: 15px; border-radius: 16px; border: 1px solid var(--accent-primary);
+        .player-frame-wrapper {
+            width: 100%; height: 160px; border-radius: 14px; overflow: hidden; background: #000; margin-bottom: 1.2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.8); border: 2px solid var(--accent-primary);
         }
-        audio { width: 100%; outline: none; border-radius: 8px; filter: invert(0.9) hue-rotate(180deg); }
+        .player-frame-wrapper iframe { width: 100%; height: 100%; border: none; }
 
         .player-controls-bar { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
 
@@ -228,7 +228,7 @@
         </div>
     </header>
 
-    <!-- REPRODUCTOR PRINCIPAL NATIVO -->
+    <!-- REPRODUCTOR PRINCIPAL CON IFRAME DE SUNO -->
     <div class="main-player-section" id="main-player-box">
         <div class="main-player-header">
             <h2>
@@ -240,9 +240,7 @@
             <span class="song-genre" id="current-song-genre">---</span>
         </div>
 
-        <div class="player-audio-wrapper">
-            <audio id="audio-player" controls preload="metadata"></audio>
-        </div>
+        <div class="player-frame-wrapper" id="frame-container"></div>
 
         <div class="player-controls-bar">
             <button class="control-btn" onclick="prevSong()"><i class="fa-solid fa-backward-step"></i> Anterior</button>
@@ -268,7 +266,7 @@
         <i class="fa-solid fa-shield-halved"></i> <span id="admin-btn-text">Admin</span>
     </button>
 
-    <!-- MODAL ADMIN -->
+    <!-- MODAL ADMIN CON EL CAMPO DE DURACIÓN (FORMATO MM:SS) -->
     <div class="modal" id="admin-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('admin-modal')">&times;</button>
@@ -288,12 +286,16 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Duración (Ej: 3:35)</label>
+                    <input type="text" id="song-duration" required placeholder="3:35">
+                </div>
+                <div class="form-group">
                     <label>URL de la Portada</label>
                     <input type="url" id="song-cover" placeholder="https://cdn2.suno.ai/...">
                 </div>
                 <div class="form-group">
-                    <label>Enlace de Suno (ej: https://suno.com/song/...)</label>
-                    <input type="text" id="song-embed" required placeholder="https://suno.com/song/eb282994-45ce-419f-a5d3-78dcb7224eb1">
+                    <label>Enlace o Código Embed de Suno</label>
+                    <input type="text" id="song-embed" required placeholder="https://suno.com/embed/...">
                 </div>
                 <button type="submit" class="submit-btn">Guardar en Supabase</button>
             </form>
@@ -312,20 +314,35 @@
         let isShuffleActive = false;
         let isAutoChainActive = true;
         let songsCache = [];
+        let radioTimer = null;
 
-        const audioPlayer = document.getElementById('audio-player');
-
-        function getDirectMp3Url(inputUrl) {
+        function getEmbedUrl(inputUrl) {
             if (!inputUrl) return '';
-            const clean = inputUrl.trim();
-            
-            const songIdMatch = clean.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
-            
-            if (songIdMatch) {
-                return `https://cdn1.suno.ai/${songIdMatch[0]}.mp3`;
+            if (inputUrl.includes('<iframe')) {
+                const matchSrc = inputUrl.match(/src=["']([^"']+)["']/);
+                if (matchSrc) return matchSrc[1];
             }
-            
-            return clean;
+            const clean = inputUrl.trim();
+            const songIdMatch = clean.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
+            return songIdMatch ? `https://suno.com/embed/${songIdMatch[0]}` : clean;
+        }
+
+        // Convierte el formato de duración introducido (MM:SS o segundos) a milisegundos restándole 1 segundo de margen para el salto automático
+        function parseDurationToMilliseconds(durationInput) {
+            let totalSeconds = 180;
+            const strVal = String(durationInput).trim();
+
+            if (strVal.includes(':')) {
+                const parts = strVal.split(':');
+                const mins = parseInt(parts[0]) || 0;
+                const secs = parseInt(parts[1]) || 0;
+                totalSeconds = (mins * 60) + secs;
+            } else {
+                totalSeconds = parseInt(strVal) || 180;
+            }
+
+            const targetSeconds = Math.max(5, totalSeconds - 1);
+            return targetSeconds * 1000;
         }
 
         async function fetchSongsFromCloud() {
@@ -348,8 +365,8 @@
 
                 updateGlobalLikesCount();
                 renderApp();
-                if (songsCache.length > 0 && !audioPlayer.src) {
-                    loadSongToPlayer(0, false);
+                if (songsCache.length > 0 && !document.getElementById('main-embed-frame')) {
+                    loadSongToPlayer(0);
                 }
             } catch (err) {
                 console.error("Excepción:", err);
@@ -395,10 +412,11 @@
             const defaultSong = {
                 title: "La que manda",
                 genre: "Pop / Flamenco",
+                duration: 180,
                 likes: 0,
                 views: 0,
                 cover_url: "https://cdn2.suno.ai/image_large_b514f38c-a411-49df-b62c-2e09361f90bc.jpeg",
-                embed_url: "https://suno.com/song/b514f38c-a411-49df-b62c-2e09361f90bc"
+                embed_url: "https://suno.com/embed/b514f38c-a411-49df-b62c-2e09361f90bc"
             };
             await supabaseClient.from('songs').insert([defaultSong]);
             fetchSongsFromCloud();
@@ -408,7 +426,7 @@
             return currentFilter === 'all' ? songsCache : songsCache.filter(s => s.genre === currentFilter);
         }
 
-        function loadSongToPlayer(index, autoPlay = true) {
+        function loadSongToPlayer(index) {
             const songs = getFilteredSongs();
             if (songs.length === 0) return;
             
@@ -420,22 +438,28 @@
             document.getElementById('current-song-title').innerText = song.title;
             document.getElementById('current-song-genre').innerText = song.genre;
 
-            const mp3Url = getDirectMp3Url(song.embed_url);
-            audioPlayer.src = mp3Url;
+            const frameWrapper = document.getElementById('frame-container');
+            let embedUrl = song.embed_url.split('&autoplay')[0].split('?autoplay')[0];
+            embedUrl += (embedUrl.includes('?') ? '&' : '?') + 'autoplay=true';
 
-            if (autoPlay) {
-                audioPlayer.play().catch(e => console.log("Autoplay bloqueado:", e));
-            }
+            frameWrapper.innerHTML = `<iframe id="main-embed-frame" src="${embedUrl}" allow="autoplay; encrypted-media"></iframe>`;
 
             renderApp();
+
+            if (radioTimer) {
+                clearTimeout(radioTimer);
+                radioTimer = null;
+            }
+
+            if (isAutoChainActive) {
+                const targetMilliseconds = parseDurationToMilliseconds(song.duration);
+                radioTimer = setTimeout(() => {
+                    nextSong();
+                }, targetMilliseconds);
+            }
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-
-        audioPlayer.addEventListener('ended', () => {
-            if (isAutoChainActive) {
-                nextSong();
-            }
-        });
 
         function nextSong() {
             const songs = getFilteredSongs();
@@ -443,10 +467,10 @@
 
             if (isShuffleActive) {
                 const randomIndex = Math.floor(Math.random() * songs.length);
-                loadSongToPlayer(randomIndex, true);
+                loadSongToPlayer(randomIndex);
             } else {
                 currentTrackIndex = (currentTrackIndex + 1) % songs.length;
-                loadSongToPlayer(currentTrackIndex, true);
+                loadSongToPlayer(currentTrackIndex);
             }
         }
 
@@ -454,7 +478,7 @@
             const songs = getFilteredSongs();
             if (songs.length === 0) return;
             currentTrackIndex = (currentTrackIndex - 1 + songs.length) % songs.length;
-            loadSongToPlayer(currentTrackIndex, true);
+            loadSongToPlayer(currentTrackIndex);
         }
 
         function toggleAutoChain() {
@@ -463,9 +487,14 @@
             if (isAutoChainActive) {
                 btn.classList.add('active-mode');
                 btn.innerHTML = `<i class="fa-solid fa-radio"></i> Radio Continua: ON`;
+                loadSongToPlayer(currentTrackIndex);
             } else {
                 btn.classList.remove('active-mode');
                 btn.innerHTML = `<i class="fa-solid fa-radio"></i> Radio Continua: OFF`;
+                if (radioTimer) {
+                    clearTimeout(radioTimer);
+                    radioTimer = null;
+                }
             }
         }
 
@@ -513,7 +542,7 @@
                             <span><i class="fa-solid fa-eye" style="color: var(--accent-primary);"></i> ${song.views || 0} reproducciones</span>
                         </div>
                         <div class="song-actions-row">
-                            <button class="load-to-player-btn" onclick="loadSongToPlayer(${index}, true)">
+                            <button class="load-to-player-btn" onclick="loadSongToPlayer(${index})">
                                 <i class="fa-solid fa-play"></i> Reproducir
                             </button>
                             <button class="like-btn" onclick="likeSong(${song.id})">
@@ -533,7 +562,7 @@
                 currentFilter = e.target.getAttribute('data-filter');
                 currentTrackIndex = 0;
                 renderApp();
-                loadSongToPlayer(0, false);
+                loadSongToPlayer(0);
             });
         });
 
@@ -553,16 +582,33 @@
             }
         }
 
+        // Transforma lo que escribes en minutos/segundos a segundos puros para guardarlo en la base de datos de Supabase
+        function convertInputToSeconds(durationStr) {
+            if (!durationStr) return 180;
+            const cleanStr = String(durationStr).trim();
+            if (cleanStr.includes(':')) {
+                const parts = cleanStr.split(':');
+                const mins = parseInt(parts[0]) || 0;
+                const secs = parseInt(parts[1]) || 0;
+                return (mins * 60) + secs;
+            }
+            return parseInt(cleanStr) || 180;
+        }
+
         async function saveNewSong(event) {
             event.preventDefault();
             
+            const rawDurationInput = document.getElementById('song-duration').value;
+            const durationInSeconds = convertInputToSeconds(rawDurationInput);
+
             const newSong = {
                 title: document.getElementById('song-title').value,
                 genre: document.getElementById('song-genre').value,
+                duration: durationInSeconds,
                 likes: 0,
                 views: 0,
                 cover_url: document.getElementById('song-cover').value,
-                embed_url: document.getElementById('song-embed').value
+                embed_url: getEmbedUrl(document.getElementById('song-embed').value)
             };
 
             const { error } = await supabaseClient.from('songs').insert([newSong]);
