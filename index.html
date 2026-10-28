@@ -660,7 +660,7 @@
             <button class="about-btn" onclick="openAboutModal()">
                 <i class="fa-solid fa-circle-info"></i> Sobre IkaMusicStudios
             </button>
-            <a href="mailto:ikamusicstudios@gmail.com" class="contact-btn">
+            <a href="mailto:contacto@ikamusicstudios.com" class="contact-btn">
                 <i class="fa-solid fa-envelope"></i> Contacto
             </a>
         </div>
@@ -1034,7 +1034,8 @@
                 }, targetMilliseconds);
             }
 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // NOTA: Se ha eliminado el scrollTo automático para que la página
+            // no salte arriba del todo y te permita seguir donde estabas curioseando.
         }
 
         function nextSong() {
