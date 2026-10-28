@@ -268,6 +268,7 @@
         <i class="fa-solid fa-shield-halved"></i> <span id="admin-btn-text">Admin</span>
     </button>
 
+    <!-- MODAL ADMIN SIN CAMPO DE DURACIÓN -->
     <div class="modal" id="admin-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('admin-modal')">&times;</button>
@@ -291,7 +292,7 @@
                     <input type="url" id="song-cover" placeholder="https://cdn2.suno.ai/...">
                 </div>
                 <div class="form-group">
-                    <label>Enlace de Suno (Enlace o Embed)</label>
+                    <label>Enlace de Suno (ej: https://suno.com/song/...)</label>
                     <input type="text" id="song-embed" required placeholder="https://suno.com/song/eb282994-45ce-419f-a5d3-78dcb7224eb1">
                 </div>
                 <button type="submit" class="submit-btn">Guardar en Supabase</button>
@@ -314,7 +315,7 @@
 
         const audioPlayer = document.getElementById('audio-player');
 
-        // Extraer la URL del MP3 directo de Suno desde cualquier enlace o embed
+        // Extraer ID de Suno y construir enlace directo de audio
         function getDirectMp3Url(inputUrl) {
             if (!inputUrl) return '';
             const songIdMatch = inputUrl.match(/([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})/i);
@@ -388,7 +389,6 @@
             const defaultSong = {
                 title: "La que manda",
                 genre: "Pop / Flamenco",
-                duration: "3:00",
                 likes: 0,
                 views: 0,
                 cover_url: "https://cdn2.suno.ai/image_large_b514f38c-a411-49df-b62c-2e09361f90bc.jpeg",
@@ -418,14 +418,14 @@
             audioPlayer.src = mp3Url;
 
             if (autoPlay) {
-                audioPlayer.play().catch(e => console.log("Autoplay bloqueado por interacción previa:", e));
+                audioPlayer.play().catch(e => console.log("Autoplay bloqueado:", e));
             }
 
             renderApp();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // EVENTO NATIVO: Cuando la canción se termina de reproducir
+        // SALTO AUTOMÁTICO PERFECTO CON EL REPRODUCTOR NATIVO
         audioPlayer.addEventListener('ended', () => {
             if (isAutoChainActive) {
                 nextSong();
@@ -554,7 +554,6 @@
             const newSong = {
                 title: document.getElementById('song-title').value,
                 genre: document.getElementById('song-genre').value,
-                duration: "3:00",
                 likes: 0,
                 views: 0,
                 cover_url: document.getElementById('song-cover').value,
