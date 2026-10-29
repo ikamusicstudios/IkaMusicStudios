@@ -168,6 +168,40 @@
         .control-btn.primary-btn:hover { transform: translateY(-2px) scale(1.04); box-shadow: 0 0 30px rgba(255, 0, 127, 0.6); color: #000; }
         .control-btn.active-mode { border-color: var(--accent-secondary); color: var(--accent-secondary); background: rgba(255, 0, 127, 0.2); box-shadow: 0 0 20px rgba(255, 0, 127, 0.5); }
 
+        /* SECCIÓN DE INTERACCIÓN: "¿Qué te gustaría escuchar?" */
+        .interactive-mood-box {
+            width: 100%; max-width: 900px;
+            background: rgba(18, 20, 32, 0.85);
+            border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 1.2rem 1.5rem; margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4); backdrop-filter: blur(10px);
+            z-index: 2; text-align: center;
+        }
+
+        .interactive-mood-box h3 {
+            font-size: 1.1rem; font-weight: 800; color: var(--accent-primary);
+            margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+
+        .interactive-controls {
+            display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap;
+        }
+
+        .interactive-select {
+            background: rgba(10, 12, 20, 0.9); border: 1.5px solid var(--accent-primary);
+            color: #fff; padding: 0.6rem 1.2rem; border-radius: 30px; font-weight: 700;
+            font-size: 0.9rem; outline: none; cursor: pointer; transition: all 0.25s ease;
+        }
+        .interactive-select:disabled { opacity: 0.4; cursor: not-allowed; border-color: var(--border-color); }
+        .interactive-select:focus { box-shadow: 0 0 20px rgba(0, 240, 255, 0.4); }
+
+        .reset-filter-btn {
+            background: rgba(255, 0, 127, 0.15); border: 1px solid var(--accent-secondary);
+            color: var(--accent-secondary); padding: 0.6rem 1rem; border-radius: 30px; font-weight: 700;
+            font-size: 0.85rem; cursor: pointer; transition: all 0.25s ease;
+        }
+        .reset-filter-btn:hover { background: var(--accent-secondary); color: #fff; box-shadow: 0 0 20px rgba(255, 0, 127, 0.6); }
+
         .search-container { width: 100%; max-width: 600px; margin-bottom: 1.5rem; position: relative; z-index: 2; }
         .search-box { width: 100%; position: relative; display: flex; align-items: center; }
         .search-box i.search-icon { position: absolute; left: 18px; color: var(--accent-primary); font-size: 1.1rem; }
@@ -454,6 +488,36 @@
         </div>
     </div>
 
+    <!-- SECCIÓN INTERACTIVA DE IDIOMA / ESTILO -->
+    <div class="interactive-mood-box">
+        <h3><i class="fa-solid fa-sliders"></i> ¿Qué te gustaría escuchar?</h3>
+        <div class="interactive-controls">
+            <select id="select-language" class="interactive-select" onchange="handleLanguageChange()">
+                <option value="">-- Elige Idioma --</option>
+                <option value="Español">Español</option>
+                <option value="Inglés">Inglés</option>
+                <option value="Francés">Francés</option>
+                <option value="Italiano">Italiano</option>
+                <option value="Griego">Griego</option>
+                <option value="Turco">Turco</option>
+                <option value="Ruso">Ruso</option>
+            </select>
+
+            <select id="select-style" class="interactive-select" disabled onchange="handleStyleChange()">
+                <option value="">-- Elige Estilo --</option>
+                <option value="Pop">Pop</option>
+                <option value="Rock">Rock</option>
+                <option value="Folk">Folk</option>
+                <option value="EDM">EDM</option>
+                <option value="Baladas">Baladas</option>
+            </select>
+
+            <button class="reset-filter-btn" id="reset-interactive-btn" style="display:none;" onclick="resetInteractiveFilters()">
+                <i class="fa-solid fa-rotate-left"></i> Limpiar filtro
+            </button>
+        </div>
+    </div>
+
     <!-- BUSCADOR -->
     <div class="search-container">
         <div class="search-box">
@@ -468,10 +532,6 @@
         <div class="categories" id="category-filters">
             <button class="cat-btn active" data-filter="all">Todas</button>
             <button class="cat-btn news-filter" data-filter="novedades"><i class="fa-solid fa-fire"></i> 🔥 Novedades</button>
-            <button class="cat-btn" data-filter="Pop / Flamenco">Pop / Flamenco</button>
-            <button class="cat-btn" data-filter="Rock">Rock</button>
-            <button class="cat-btn" data-filter="EDM">EDM</button>
-            <button class="cat-btn" data-filter="Miscelánea">Miscelánea</button>
         </div>
 
         <div class="view-toggle-bar">
@@ -538,12 +598,25 @@
                     <input type="text" id="song-title" required placeholder="Ej: Donde Arde el Sur">
                 </div>
                 <div class="form-group">
+                    <label>Idioma</label>
+                    <select id="song-lang-input" required>
+                        <option value="Español">Español</option>
+                        <option value="Inglés">Inglés</option>
+                        <option value="Francés">Francés</option>
+                        <option value="Italiano">Italiano</option>
+                        <option value="Griego">Griego</option>
+                        <option value="Turco">Turco</option>
+                        <option value="Ruso">Ruso</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Estilo / Género</label>
-                    <select id="song-genre" required>
-                        <option value="Pop / Flamenco">Pop / Flamenco</option>
+                    <select id="song-style-input" required>
+                        <option value="Pop">Pop</option>
                         <option value="Rock">Rock</option>
+                        <option value="Folk">Folk</option>
                         <option value="EDM">EDM</option>
-                        <option value="Miscelánea">Miscelánea</option>
+                        <option value="Baladas">Baladas</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -570,6 +643,8 @@
         let adminMode = 'add';
         let currentFilter = 'all';
         let searchQuery = '';
+        let selectedLang = '';
+        let selectedStyle = '';
         let currentTrackIndex = 0;
         let currentPlayingSongId = null;
         let isShuffleActive = false;
@@ -734,7 +809,49 @@
             isShuffleActive = !isShuffleActive;
             const btn = document.getElementById('shuffle-btn');
             btn.classList.toggle('active-mode', isShuffleActive);
-            btn.innerHTML = `<i class="fa-solid fa-shuffle"></i> Random: ${isShuffleActive ? 'ON' : 'OFF'}`;
+            btn.innerHTML = `<i class="fa-solid fa-shuffle"></i> Random: ${isShuffleActive ? 'OFF' : 'OFF'}`;
+        }
+
+        /* LÓGICA DE INTERACCIÓN IDIOMA Y ESTILO */
+        function handleLanguageChange() {
+            const langSelect = document.getElementById('select-language');
+            const styleSelect = document.getElementById('select-style');
+            selectedLang = langSelect.value;
+            
+            if (selectedLang) {
+                styleSelect.disabled = false;
+            } else {
+                styleSelect.disabled = true;
+                styleSelect.value = "";
+                selectedStyle = "";
+            }
+            updateInteractiveResetButton();
+            currentTrackIndex = 0;
+            renderApp();
+        }
+
+        function handleStyleChange() {
+            selectedStyle = document.getElementById('select-style').value;
+            updateInteractiveResetButton();
+            currentTrackIndex = 0;
+            renderApp();
+        }
+
+        function resetInteractiveFilters() {
+            document.getElementById('select-language').value = "";
+            const styleSelect = document.getElementById('select-style');
+            styleSelect.value = "";
+            styleSelect.disabled = true;
+            selectedLang = "";
+            selectedStyle = "";
+            updateInteractiveResetButton();
+            currentTrackIndex = 0;
+            renderApp();
+        }
+
+        function updateInteractiveResetButton() {
+            const resetBtn = document.getElementById('reset-interactive-btn');
+            resetBtn.style.display = (selectedLang || selectedStyle) ? 'inline-flex' : 'none';
         }
 
         async function likeSong(songId) {
@@ -758,9 +875,19 @@
             return songsCache.filter((song, index) => {
                 let matchesFilter = true;
                 if (currentFilter === 'novedades') matchesFilter = index < 3;
-                else if (currentFilter !== 'all') matchesFilter = (song.genre === currentFilter);
+
+                // Filtro por interacción (Idioma - Estilo)
+                let matchesInteractive = true;
+                const songGenreStr = song.genre || '';
+                if (selectedLang && selectedStyle) {
+                    const target = `${selectedLang} - ${selectedStyle}`.toLowerCase();
+                    matchesInteractive = songGenreStr.toLowerCase().includes(target) || songGenreStr.toLowerCase() === target;
+                } else if (selectedLang) {
+                    matchesInteractive = songGenreStr.toLowerCase().includes(selectedLang.toLowerCase());
+                }
+
                 const matchesQuery = !searchQuery || song.title.toLowerCase().includes(searchQuery.toLowerCase());
-                return matchesFilter && matchesQuery;
+                return matchesFilter && matchesInteractive && matchesQuery;
             });
         }
 
@@ -811,7 +938,7 @@
             const songs = getFilteredSongs();
 
             if (songs.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:var(--text-muted);">No se encontraron canciones.</p>`;
+                container.innerHTML = `<p style="text-align:center; color:var(--text-muted);">No se encontraron canciones para esta selección.</p>`;
                 return;
             }
 
@@ -923,7 +1050,14 @@
 
             document.getElementById('edit-song-id').value = song.id;
             document.getElementById('song-title').value = song.title;
-            document.getElementById('song-genre').value = song.genre;
+            
+            // Separar género guardado tipo "Español - Rock"
+            const parts = (song.genre || '').split(' - ');
+            if (parts.length === 2) {
+                document.getElementById('song-lang-input').value = parts[0];
+                document.getElementById('song-style-input').value = parts[1];
+            }
+
             document.getElementById('song-cover').value = song.cover_url || '';
             document.getElementById('song-audio').value = song.audio_url || '';
         }
@@ -936,9 +1070,12 @@
         async function saveSong(event) {
             event.preventDefault();
             
+            const lang = document.getElementById('song-lang-input').value;
+            const style = document.getElementById('song-style-input').value;
+
             const songData = {
                 title: document.getElementById('song-title').value,
-                genre: document.getElementById('song-genre').value,
+                genre: `${lang} - ${style}`,
                 cover_url: document.getElementById('song-cover').value,
                 audio_url: document.getElementById('song-audio').value
             };
