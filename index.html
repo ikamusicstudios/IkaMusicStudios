@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IKAmusicstudios - Streaming Cloud</title>
+    
+    <!-- PWA & MANIFEST INTEGRATION -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#121212">
+
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -257,12 +262,11 @@
         .now-playing-badge { background: var(--gold); color: #000; padding: 2px 8px; border-radius: 50px; font-size: 0.65rem; font-weight: 900; }
         .new-badge { background: var(--accent-secondary); color: #fff; padding: 2px 8px; border-radius: 50px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; }
 
-        /* BOTONES FLOTANTES MÓVIL OPTIMIZADOS */
         .admin-trigger {
-            position: fixed; bottom: 20px; right: 15px; background: var(--card-bg);
-            border: 2px solid var(--accent-primary); color: var(--accent-primary); padding: 10px 18px;
-            border-radius: 50px; cursor: pointer; font-weight: 800; z-index: 900; box-shadow: 0 0 25px rgba(0,240,255,0.5);
-            font-size: 0.85rem;
+            position: fixed; bottom: 25px; right: 25px; background: var(--card-bg);
+            border: 2px solid var(--accent-primary); color: var(--accent-primary); padding: 12px 24px;
+            border-radius: 50px; cursor: pointer; font-weight: 800; z-index: 900; box-shadow: 0 0 30px rgba(0,240,255,0.5);
+            font-size: 0.9rem;
         }
         .admin-trigger:hover { background: var(--accent-primary); color: #000; }
 
@@ -302,8 +306,13 @@
         .toast-notification { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--accent-primary); color: #000; padding: 10px 20px; border-radius: 50px; font-weight: 800; z-index: 2000; transition: transform 0.3s ease; font-size: 0.85rem; width: 90%; max-width: 350px; text-align: center; }
         .toast-notification.show { transform: translateX(-50%) translateY(0); }
 
-        /* REGLAS ESPECÍFICAS PARA PANTALLAS MÓVILES (< 768px) */
+        /* REGLAS MÓVILES (< 768px) */
         @media (max-width: 768px) {
+            /* OCULTAMOS EL BOTÓN ADMIN EN MÓVILES */
+            .admin-trigger {
+                display: none !important;
+            }
+
             .player-console-display {
                 flex-direction: column;
                 text-align: center;
@@ -371,15 +380,13 @@
             }
 
             .scroll-top-btn {
-                left: 15px;
-                padding: 8px 14px;
-                font-size: 0.75rem;
+                left: 50%;
+                transform: translateX(-50%) translateY(100px);
+                padding: 8px 18px;
+                font-size: 0.8rem;
             }
-
-            .admin-trigger {
-                right: 15px;
-                padding: 8px 14px;
-                font-size: 0.75rem;
+            .scroll-top-btn.visible {
+                transform: translateX(-50%) translateY(0);
             }
         }
     </style>
@@ -962,6 +969,13 @@
                 if (error) { alert("Error: " + error.message); return; }
                 fetchSongsFromCloud();
             }
+        }
+
+        // REGISTRO DE SERVICE WORKER PARA PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(() => console.log('Service Worker registrado correctamente'))
+                .catch((err) => console.log('Fallo al registrar el Service Worker', err));
         }
 
         fetchSongsFromCloud();
