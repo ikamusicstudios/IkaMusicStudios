@@ -460,7 +460,19 @@
             </div>
         </div>
 
-        <audio id="audio-element" preload="metadata"></audio>
+       <audio id="audio-element" preload="metadata"></audio>
+
+<div id="suno-player-container" style="display:none;width:100%;margin:15px 0;">
+    <iframe
+        id="suno-player"
+        width="100%"
+        height="150"
+        frameborder="0"
+        allow="autoplay; encrypted-media; fullscreen"
+        allowfullscreen
+        style="border:0;border-radius:12px;">
+    </iframe>
+</div>
 
         <div class="player-controls-bar">
             <button class="control-btn" onclick="prevSong()"><i class="fa-solid fa-backward-step"></i> Anterior</button>
@@ -607,8 +619,8 @@
                     <input type="url" id="song-cover" placeholder="https://...">
                 </div>
                 <div class="form-group">
-                    <label>URL Directa del MP3 (Archive.org)</label>
-                    <input type="url" id="song-audio" required placeholder="https://archive.org/download/.../cancion.mp3">
+                    <label>URL de la canción (MP3 o Suno)</label>
+                    <input type="url" id="song-audio" required placeholder="https://suno.com/song/... o URL MP3">
                 </div>
                 <button type="submit" class="submit-btn" id="form-submit-btn">Guardar Canción</button>
             </form>
@@ -672,39 +684,71 @@
         }
 
         function prepareSong(index) {
-            const songs = getFilteredSongs();
-            if (songs.length === 0) return;
-            currentTrackIndex = index;
-            const song = songs[currentTrackIndex];
-            
-            document.getElementById('current-song-title').innerText = song.title;
-            document.getElementById('current-song-genre').innerText = song.genre;
-            document.getElementById('console-cover-img').src = song.cover_url || 'https://via.placeholder.com/90/111/00f0ff?text=IKA';
-            audioElement.src = song.audio_url;
+    const songs = getFilteredSongs();
+    if (songs.length === 0) return;
 
-            updateMediaSession(song);
-        }
+    currentTrackIndex = index;
+    const song = songs[currentTrackIndex];
 
-        function loadSongToPlayer(index, autoPlay = true) {
-            const songs = getFilteredSongs();
-            if (songs.length === 0) return;
-            
-            currentTrackIndex = index;
-            const song = songs[currentTrackIndex];
-            currentPlayingSongId = song.id;
-            
-            incrementSongViews(song.id);
-            prepareSong(index);
+    document.getElementById('current-song-title').innerText = song.title;
+    document.getElementById('current-song-genre').innerText = song.genre;
+    document.getElementById('console-cover-img').src = song.cover_url || 'https://via.placeholder.com/90/111/00f0ff?text=IKA';
 
-            if (autoPlay) {
-                audioElement.play().then(() => {
-                    updatePlayButtonState(true);
-                }).catch(e => console.log("Autoplay bloqueado por navegador:", e));
-            }
+    const audioUrl = song.audio_url || '';
+    const sunoMatch = audioUrl.match(/suno\.com\/(?:song|embed)\/([a-zA-Z0-9-]+)/);
 
-            document.title = `🎵 ${song.title} - IKAmusicstudios`;
-            renderApp();
-        }
+    const sunoContainer = document.getElementById('suno-player-container');
+    const sunoFrame = document.getElementById('suno-player');
+    const progressContainer = document.getElementById('progress-container');
+    const timeInfo = document.querySelector('.time-info');
+
+    if (sunoMatch) {
+        audioElement.pause();
+        audioElement.removeAttribute('src');
+        audioElement.load();
+
+        sunoContainer.style.display = 'block';
+        sunoFrame.src = 'https://suno.com/embed/' + sunoMatch[1];
+
+        if (progressContainer) progressContainer.style.display = 'none';
+        if (timeInfo) timeInfo.style.display = 'none';
+
+        updateMediaSession(song);
+        return;
+    }
+
+    sunoContainer.style.display = 'none';
+    sunoFrame.src = '';
+
+    if (progressContainer) progressContainer.style.display = '';
+    if (timeInfo) timeInfo.style.display = '';
+
+    audioElement.src = audioUrl;
+    updateMediaSession(song);
+function loadSongToPlayer(index, autoPlay = true) {
+    const songs = getFilteredSongs();
+    if (songs.length === 0) return;
+
+    currentTrackIndex = index;
+    const song = songs[currentTrackIndex];
+    currentPlayingSongId = song.id;
+
+    incrementSongViews(song.id);
+    prepareSong(index);
+
+    const isSuno = /suno\.com\/(?:song|embed)\/[a-zA-Z0-9-]+/.test(song.audio_url || '');
+
+    if (autoPlay && !isSuno) {
+        audioElement.play().then(() => {
+            updatePlayButtonState(true);
+        }).catch(e => console.log("Autoplay bloqueado por navegador:", e));
+    } else {
+        updatePlayButtonState(false);
+    }
+
+    document.title = `♫ ${song.title} - IKAmusicstudios`;
+    renderApp();
+}
 
         /* INTEGRACIÓN CON MEDIASESSION (CONTROLES BLUETOOTH / AURICULARES / NOTIFICACIONES) */
         function updateMediaSession(song) {
