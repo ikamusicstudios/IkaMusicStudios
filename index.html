@@ -431,6 +431,64 @@
         </div>
     </header>
 
+    <!-- SECCIÓN INTERACTIVA DE IDIOMA / ESTILO -->
+    <div class="interactive-mood-box">
+        <h3><i class="fa-solid fa-sliders"></i> ¿Qué te gustaría escuchar?</h3>
+        <div class="interactive-controls">
+            <select id="select-language" class="interactive-select" onchange="handleLanguageChange()">
+                <option value="">-- Elige Idioma --</option>
+                <option value="Español">Español</option>
+                <option value="Inglés">Inglés</option>
+                <option value="Francés">Francés</option>
+                <option value="Italiano">Italiano</option>
+                <option value="Griego">Griego</option>
+                <option value="Turco">Turco</option>
+                <option value="Ruso">Ruso</option>
+            </select>
+
+            <select id="select-style" class="interactive-select" disabled onchange="handleStyleChange()">
+                <option value="">-- Elige Estilo --</option>
+                <option value="Pop">Pop</option>
+                <option value="Rock">Rock</option>
+                <option value="Folk">Folk</option>
+                <option value="EDM">EDM</option>
+                <option value="Baladas">Baladas</option>
+            </select>
+
+            <button class="reset-filter-btn" id="reset-interactive-btn" style="display:none;" onclick="resetInteractiveFilters()">
+                <i class="fa-solid fa-rotate-left"></i> Limpiar filtro
+            </button>
+        </div>
+    </div>
+
+    <!-- BUSCADOR -->
+    <div class="search-container">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="song-search-input" class="search-input" placeholder="Buscar canción..." oninput="handleSearchInput()">
+            <button id="clear-search-btn" class="clear-search-btn" onclick="clearSearch()">&times;</button>
+        </div>
+    </div>
+
+
+    <!-- CATEGORÍAS Y VISTAS -->
+    <div class="categories-controls-wrapper">
+        <div class="categories" id="category-filters">
+            <button class="cat-btn active" data-filter="all">Todas</button>
+            <button class="cat-btn news-filter" data-filter="novedades"><i class="fa-solid fa-fire"></i> 🔥 Novedades</button>
+        </div>
+
+        <div class="view-toggle-bar">
+            <button class="view-btn" id="grid-view-btn" onclick="switchView('grid')" title="Cuadrícula">
+                <i class="fa-solid fa-border-all"></i> Grid
+            </button>
+            <button class="view-btn active" id="list-view-btn" onclick="switchView('list')" title="Lista">
+                <i class="fa-solid fa-bars"></i> Lista
+            </button>
+        </div>
+    </div>
+
+    
     <!-- REPRODUCTOR NATIVO PRO REFINADO -->
     <div class="main-player-section" id="main-player-box">
         <div class="main-player-header">
@@ -474,62 +532,6 @@
             <button class="control-btn" onclick="nextSong()"><i class="fa-solid fa-forward-step"></i> Siguiente</button>
             <button class="control-btn active-mode" id="auto-chain-btn" onclick="toggleAutoChain()"><i class="fa-solid fa-radio"></i> Radio: ON</button>
             <button class="control-btn" id="shuffle-btn" onclick="toggleShuffle()"><i class="fa-solid fa-shuffle"></i> Random: OFF</button>
-        </div>
-    </div>
-
-    <!-- SECCIÓN INTERACTIVA DE IDIOMA / ESTILO -->
-    <div class="interactive-mood-box">
-        <h3><i class="fa-solid fa-sliders"></i> ¿Qué te gustaría escuchar?</h3>
-        <div class="interactive-controls">
-            <select id="select-language" class="interactive-select" onchange="handleLanguageChange()">
-                <option value="">-- Elige Idioma --</option>
-                <option value="Español">Español</option>
-                <option value="Inglés">Inglés</option>
-                <option value="Francés">Francés</option>
-                <option value="Italiano">Italiano</option>
-                <option value="Griego">Griego</option>
-                <option value="Turco">Turco</option>
-                <option value="Ruso">Ruso</option>
-            </select>
-
-            <select id="select-style" class="interactive-select" disabled onchange="handleStyleChange()">
-                <option value="">-- Elige Estilo --</option>
-                <option value="Pop">Pop</option>
-                <option value="Rock">Rock</option>
-                <option value="Folk">Folk</option>
-                <option value="EDM">EDM</option>
-                <option value="Baladas">Baladas</option>
-            </select>
-
-            <button class="reset-filter-btn" id="reset-interactive-btn" style="display:none;" onclick="resetInteractiveFilters()">
-                <i class="fa-solid fa-rotate-left"></i> Limpiar filtro
-            </button>
-        </div>
-    </div>
-
-    <!-- BUSCADOR -->
-    <div class="search-container">
-        <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" id="song-search-input" class="search-input" placeholder="Buscar canción..." oninput="handleSearchInput()">
-            <button id="clear-search-btn" class="clear-search-btn" onclick="clearSearch()">&times;</button>
-        </div>
-    </div>
-
-    <!-- CATEGORÍAS Y VISTAS -->
-    <div class="categories-controls-wrapper">
-        <div class="categories" id="category-filters">
-            <button class="cat-btn active" data-filter="all">Todas</button>
-            <button class="cat-btn news-filter" data-filter="novedades"><i class="fa-solid fa-fire"></i> 🔥 Novedades</button>
-        </div>
-
-        <div class="view-toggle-bar">
-            <button class="view-btn" id="grid-view-btn" onclick="switchView('grid')" title="Cuadrícula">
-                <i class="fa-solid fa-border-all"></i> Grid
-            </button>
-            <button class="view-btn active" id="list-view-btn" onclick="switchView('list')" title="Lista">
-                <i class="fa-solid fa-bars"></i> Lista
-            </button>
         </div>
     </div>
 
