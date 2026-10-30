@@ -143,6 +143,9 @@
             letter-spacing: 0.5px; margin-top: 4px;
         }
 
+        .suno-player-container { width: 100%; margin-top: 12px; display: none; overflow: hidden; border-radius: 12px; }
+        .suno-player-container iframe { display: block; width: 100%; min-height: 150px; border: 0; border-radius: 12px; background: #111; }
+
         .player-controls-bar { display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; }
 
         .control-btn {
@@ -446,6 +449,9 @@
             </div>
             <div class="console-info">
                 <div class="console-title" id="current-song-title">Selecciona una canción para empezar</div>
+                <div class="suno-player-container" id="suno-player-container">
+                    <iframe id="suno-player" title="Reproductor Suno" height="150" allow="autoplay; encrypted-media; fullscreen" allowfullscreen loading="lazy"></iframe>
+                </div>
                 
                 <div class="progress-container" id="progress-container" onclick="seekAudio(event)">
                     <div class="progress-bar" id="progress-bar">
@@ -460,19 +466,7 @@
             </div>
         </div>
 
-       <audio id="audio-element" preload="metadata"></audio>
-
-<div id="suno-player-container" style="display:none;width:100%;margin:15px 0;">
-    <iframe
-        id="suno-player"
-        width="100%"
-        height="150"
-        frameborder="0"
-        allow="autoplay; encrypted-media; fullscreen"
-        allowfullscreen
-        style="border:0;border-radius:12px;">
-    </iframe>
-</div>
+        <audio id="audio-element" preload="metadata"></audio>
 
         <div class="player-controls-bar">
             <button class="control-btn" onclick="prevSong()"><i class="fa-solid fa-backward-step"></i> Anterior</button>
@@ -670,7 +664,7 @@
                     const songIndex = filteredList.findIndex(s => s.id === targetSongId);
                     if (songIndex !== -1) loadSongToPlayer(songIndex);
                     else if (songsCache.length > 0) loadSongToPlayer(0);
-                } else if (songsCache.length > 0 && !audioElement.src) {
+                } else if (songsCache.length > 0 && !audioElement.getAttribute('src')) {
                     prepareSong(0);
                 }
             } catch (err) { console.error(err); }
@@ -683,72 +677,74 @@
             return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
 
+        function getSunoSongId(url) {
+            const match = String(url || '').match(/suno\.com\/(?:song|embed)\/([a-zA-Z0-9-]+)/i);
+            return match ? match[1] : null;
+        }
+
         function prepareSong(index) {
-    const songs = getFilteredSongs();
-    if (songs.length === 0) return;
+            const songs = getFilteredSongs();
+            if (songs.length === 0) return;
 
-    currentTrackIndex = index;
-    const song = songs[currentTrackIndex];
+            currentTrackIndex = index;
+            const song = songs[currentTrackIndex];
+            const sunoId = getSunoSongId(song.audio_url);
+            const sunoContainer = document.getElementById('suno-player-container');
+            const sunoFrame = document.getElementById('suno-player');
+            const timeInfo = document.querySelector('.time-info');
 
-    document.getElementById('current-song-title').innerText = song.title;
-    document.getElementById('current-song-genre').innerText = song.genre;
-    document.getElementById('console-cover-img').src = song.cover_url || 'https://via.placeholder.com/90/111/00f0ff?text=IKA';
+            document.getElementById('current-song-title').innerText = song.title;
+            document.getElementById('current-song-genre').innerText = song.genre;
+            document.getElementById('console-cover-img').src = song.cover_url || 'https://via.placeholder.com/90/111/00f0ff?text=IKA';
 
-    const audioUrl = song.audio_url || '';
-    const sunoMatch = audioUrl.match(/suno\.com\/(?:song|embed)\/([a-zA-Z0-9-]+)/);
+            audioElement.pause();
+            if (sunoId) {
+                audioElement.removeAttribute('src');
+                audioElement.load();
+                sunoContainer.style.display = 'block';
+                sunoFrame.src = 'https://suno.com/embed/' + encodeURIComponent(sunoId);
+                progressContainer.style.display = 'none';
+                if (timeInfo) timeInfo.style.display = 'none';
+                playPauseBtn.style.display = 'none';
+                document.getElementById('current-status-text').innerText = 'Reproductor Suno';
+                eqContainer.classList.remove('playing-active');
+            } else {
+                sunoFrame.src = '';
+                sunoContainer.style.display = 'none';
+                progressContainer.style.display = '';
+                if (timeInfo) timeInfo.style.display = '';
+                playPauseBtn.style.display = '';
+                progressBar.style.width = '0%';
+                timeCurrent.innerText = '0:00';
+                timeTotal.innerText = '0:00';
+                audioElement.src = song.audio_url || '';
+            }
 
-    const sunoContainer = document.getElementById('suno-player-container');
-    const sunoFrame = document.getElementById('suno-player');
-    const progressContainer = document.getElementById('progress-container');
-    const timeInfo = document.querySelector('.time-info');
+            updateMediaSession(song);
+        }
 
-    if (sunoMatch) {
-        audioElement.pause();
-        audioElement.removeAttribute('src');
-        audioElement.load();
+        function loadSongToPlayer(index, autoPlay = true) {
+            const songs = getFilteredSongs();
+            if (songs.length === 0) return;
 
-        sunoContainer.style.display = 'block';
-        sunoFrame.src = 'https://suno.com/embed/' + sunoMatch[1];
+            currentTrackIndex = index;
+            const song = songs[currentTrackIndex];
+            currentPlayingSongId = song.id;
 
-        if (progressContainer) progressContainer.style.display = 'none';
-        if (timeInfo) timeInfo.style.display = 'none';
+            incrementSongViews(song.id);
+            prepareSong(index);
 
-        updateMediaSession(song);
-        return;
-    }
+            if (autoPlay && !getSunoSongId(song.audio_url)) {
+                audioElement.play().then(() => {
+                    updatePlayButtonState(true);
+                }).catch(e => console.log('Autoplay bloqueado por navegador:', e));
+            } else if (getSunoSongId(song.audio_url)) {
+                updatePlayButtonState(false);
+            }
 
-    sunoContainer.style.display = 'none';
-    sunoFrame.src = '';
-
-    if (progressContainer) progressContainer.style.display = '';
-    if (timeInfo) timeInfo.style.display = '';
-
-    audioElement.src = audioUrl;
-    updateMediaSession(song);
-function loadSongToPlayer(index, autoPlay = true) {
-    const songs = getFilteredSongs();
-    if (songs.length === 0) return;
-
-    currentTrackIndex = index;
-    const song = songs[currentTrackIndex];
-    currentPlayingSongId = song.id;
-
-    incrementSongViews(song.id);
-    prepareSong(index);
-
-    const isSuno = /suno\.com\/(?:song|embed)\/[a-zA-Z0-9-]+/.test(song.audio_url || '');
-
-    if (autoPlay && !isSuno) {
-        audioElement.play().then(() => {
-            updatePlayButtonState(true);
-        }).catch(e => console.log("Autoplay bloqueado por navegador:", e));
-    } else {
-        updatePlayButtonState(false);
-    }
-
-    document.title = `♫ ${song.title} - IKAmusicstudios`;
-    renderApp();
-}
+            document.title = `🎵 ${song.title} - IKAmusicstudios`;
+            renderApp();
+        }
 
         /* INTEGRACIÓN CON MEDIASESSION (CONTROLES BLUETOOTH / AURICULARES / NOTIFICACIONES) */
         function updateMediaSession(song) {
@@ -762,27 +758,33 @@ function loadSongToPlayer(index, autoPlay = true) {
                     ]
                 });
 
-                navigator.mediaSession.setActionHandler('play', () => {
-                    audioElement.play();
-                    updatePlayButtonState(true);
-                });
-                navigator.mediaSession.setActionHandler('pause', () => {
-                    audioElement.pause();
-                    updatePlayButtonState(false);
-                });
+                if (!getSunoSongId(song.audio_url)) {
+                    navigator.mediaSession.setActionHandler('play', () => {
+                        audioElement.play().then(() => updatePlayButtonState(true)).catch(console.error);
+                    });
+                    navigator.mediaSession.setActionHandler('pause', () => {
+                        audioElement.pause();
+                        updatePlayButtonState(false);
+                    });
+                } else {
+                    navigator.mediaSession.setActionHandler('play', null);
+                    navigator.mediaSession.setActionHandler('pause', null);
+                }
                 navigator.mediaSession.setActionHandler('previoustrack', () => prevSong());
                 navigator.mediaSession.setActionHandler('nexttrack', () => nextSong());
             }
         }
 
         function togglePlayPause() {
-            if (!audioElement.src) {
+            const songs = getFilteredSongs();
+            const song = songs[currentTrackIndex];
+            if (song && getSunoSongId(song.audio_url)) return;
+            if (!audioElement.getAttribute('src')) {
                 loadSongToPlayer(currentTrackIndex);
                 return;
             }
             if (audioElement.paused) {
-                audioElement.play();
-                updatePlayButtonState(true);
+                audioElement.play().then(() => updatePlayButtonState(true)).catch(console.error);
             } else {
                 audioElement.pause();
                 updatePlayButtonState(false);
@@ -807,6 +809,9 @@ function loadSongToPlayer(index, autoPlay = true) {
         });
 
         function seekAudio(event) {
+            const songs = getFilteredSongs();
+            const song = songs[currentTrackIndex];
+            if (song && getSunoSongId(song.audio_url)) return;
             const width = progressContainer.clientWidth;
             const clickX = event.offsetX;
             const duration = audioElement.duration;
