@@ -704,7 +704,7 @@
                 audioElement.removeAttribute('src');
                 audioElement.load();
                 sunoContainer.style.display = 'block';
-                sunoFrame.src = 'https://suno.com/embed/' + encodeURIComponent(sunoId);
+                sunoFrame.src = 'https://suno.com/embed/' + encodeURIComponent(sunoId) + '?autoplay=1';
                 progressContainer.style.display = 'none';
                 if (timeInfo) timeInfo.style.display = 'none';
                 playPauseBtn.style.display = 'none';
