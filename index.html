@@ -41,14 +41,6 @@
 
         header { text-align: center; margin-top: 0.5rem; margin-bottom: 1.5rem; max-width: 900px; width: 100%; z-index: 2; }
 
-        .brand-badge {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(0, 240, 255, 0.12); border: 2px solid var(--accent-primary);
-            color: var(--accent-primary); padding: 8px 22px; border-radius: 50px;
-            font-size: 0.85rem; font-weight: 800; letter-spacing: 2.5px; text-transform: uppercase;
-            margin-bottom: 1rem; box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
-        }
-
         header h1 {
             font-size: clamp(2rem, 8vw, 3.5rem); 
             font-weight: 900; line-height: 1.1;
@@ -60,11 +52,6 @@
 
         .top-info-bar {
             display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 1.5rem;
-        }
-        .global-likes-badge {
-            background: rgba(255, 0, 127, 0.15); border: 1px solid var(--accent-secondary); color: #fff;
-            padding: 6px 16px; border-radius: 30px; font-weight: 700; font-size: 0.85rem;
-            display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 0 20px rgba(255, 0, 127, 0.4);
         }
         .contact-btn, .about-btn {
             background: rgba(0, 240, 255, 0.1); border: 1px solid var(--accent-primary); color: var(--accent-primary);
@@ -262,7 +249,6 @@
         }
         .container.grid-view .song-card:hover { transform: translateY(-8px); }
         
-        /* AJUSTE MODIFICADO PARA LA VISTA GRID (ASPECT RATIO Y BORDES) */
         .container.grid-view .cover-container { 
             width: 100%; 
             height: auto; 
@@ -350,7 +336,6 @@
 
         /* REGLAS MÓVILES (< 768px) */
         @media (max-width: 768px) {
-            /* OCULTAMOS EL BOTÓN ADMIN EN MÓVILES */
             .admin-trigger {
                 display: none !important;
             }
@@ -431,14 +416,9 @@
 <body>
 
     <header>
-        <div class="brand-badge"><i class="fa-solid fa-bolt"></i> Streaming Studio Pro</div>
         <h1>IKAmusicstudios</h1>
         
         <div class="top-info-bar">
-            <div class="global-likes-badge">
-                <i class="fa-solid fa-heart" style="color: var(--accent-secondary);"></i>
-                <span id="global-likes-count">0</span> Likes Totales
-            </div>
             <button class="about-btn" onclick="openAboutModal()">
                 <i class="fa-solid fa-circle-info"></i> Sobre IkaMusicStudios
             </button>
@@ -668,7 +648,6 @@
                 const { data, error } = await supabaseClient.from('songs').select('*').order('id', { ascending: false });
                 if (error) { console.error(error); return; }
                 songsCache = data || [];
-                updateGlobalLikesCount();
                 renderApp();
                 populateEditSelect();
 
@@ -683,11 +662,6 @@
                     prepareSong(0);
                 }
             } catch (err) { console.error(err); }
-        }
-
-        function updateGlobalLikesCount() {
-            const total = songsCache.reduce((sum, song) => sum + (song.likes || 0), 0);
-            document.getElementById('global-likes-count').innerText = total;
         }
 
         function formatTime(seconds) {
@@ -707,6 +681,8 @@
             document.getElementById('current-song-genre').innerText = song.genre;
             document.getElementById('console-cover-img').src = song.cover_url || 'https://via.placeholder.com/90/111/00f0ff?text=IKA';
             audioElement.src = song.audio_url;
+
+            updateMediaSession(song);
         }
 
         function loadSongToPlayer(index, autoPlay = true) {
@@ -728,6 +704,31 @@
 
             document.title = `🎵 ${song.title} - IKAmusicstudios`;
             renderApp();
+        }
+
+        /* INTEGRACIÓN CON MEDIASESSION (CONTROLES BLUETOOTH / AURICULARES / NOTIFICACIONES) */
+        function updateMediaSession(song) {
+            if ('mediaSession' in navigator && song) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: song.title,
+                    artist: 'IKAmusicstudios',
+                    album: song.genre || 'Música Original',
+                    artwork: [
+                        { src: song.cover_url || 'https://via.placeholder.com/512/111/00f0ff?text=IKA', sizes: '512x512', type: 'image/png' }
+                    ]
+                });
+
+                navigator.mediaSession.setActionHandler('play', () => {
+                    audioElement.play();
+                    updatePlayButtonState(true);
+                });
+                navigator.mediaSession.setActionHandler('pause', () => {
+                    audioElement.pause();
+                    updatePlayButtonState(false);
+                });
+                navigator.mediaSession.setActionHandler('previoustrack', () => prevSong());
+                navigator.mediaSession.setActionHandler('nexttrack', () => nextSong());
+            }
         }
 
         function togglePlayPause() {
@@ -775,10 +776,12 @@
                 playPauseBtn.innerHTML = `<i class="fa-solid fa-pause"></i> Pausa`;
                 eqContainer.classList.add('playing-active');
                 document.getElementById('current-status-text').innerText = "Reproduciendo";
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
             } else {
                 playPauseBtn.innerHTML = `<i class="fa-solid fa-play"></i> Reproducir`;
                 eqContainer.classList.remove('playing-active');
                 document.getElementById('current-status-text').innerText = "En pausa";
+                if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "paused";
             }
         }
 
@@ -812,7 +815,7 @@
             isShuffleActive = !isShuffleActive;
             const btn = document.getElementById('shuffle-btn');
             btn.classList.toggle('active-mode', isShuffleActive);
-            btn.innerHTML = `<i class="fa-solid fa-shuffle"></i> Random: ${isShuffleActive ? 'OFF' : 'OFF'}`;
+            btn.innerHTML = `<i class="fa-solid fa-shuffle"></i> Random: ${isShuffleActive ? 'ON' : 'OFF'}`;
         }
 
         /* LÓGICA DE INTERACCIÓN IDIOMA Y ESTILO */
@@ -861,7 +864,6 @@
             const song = songsCache.find(s => s.id === songId);
             if (!song) return;
             song.likes = (song.likes || 0) + 1;
-            updateGlobalLikesCount();
             renderApp();
             await supabaseClient.from('songs').update({ likes: song.likes }).eq('id', songId);
         }
@@ -879,7 +881,6 @@
                 let matchesFilter = true;
                 if (currentFilter === 'novedades') matchesFilter = index < 3;
 
-                // Filtro por interacción (Idioma - Estilo)
                 let matchesInteractive = true;
                 const songGenreStr = song.genre || '';
                 if (selectedLang && selectedStyle) {
@@ -1003,10 +1004,11 @@
         function openAboutModal() { document.getElementById('about-modal').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+        /* CONTRASEÑA DE ADMINISTRADOR ACTUALIZADA A Roqueros70 */
         function checkAdminPassword() {
             if (isAdmin) { document.getElementById('admin-modal').style.display = 'flex'; return; }
             const pass = prompt("Contraseña de administración:");
-            if (pass === "ika123") {
+            if (pass === "Roqueros70") {
                 isAdmin = true;
                 document.getElementById('admin-btn-text').innerText = "Admin (Activo)";
                 document.getElementById('admin-modal').style.display = 'flex';
@@ -1054,7 +1056,6 @@
             document.getElementById('edit-song-id').value = song.id;
             document.getElementById('song-title').value = song.title;
             
-            // Separar género guardado tipo "Español - Rock"
             const parts = (song.genre || '').split(' - ');
             if (parts.length === 2) {
                 document.getElementById('song-lang-input').value = parts[0];
