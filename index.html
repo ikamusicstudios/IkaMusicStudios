@@ -261,11 +261,19 @@
             flex-direction: column; align-items: stretch; padding: 0; justify-content: space-between;
         }
         .container.grid-view .song-card:hover { transform: translateY(-8px); }
-        .container.grid-view .cover-container { width: 100%; aspect-ratio: 1 / 1; height: auto; }
+        
+        /* AJUSTE MODIFICADO PARA LA VISTA GRID (ASPECT RATIO Y BORDES) */
+        .container.grid-view .cover-container { 
+            width: 100%; 
+            height: auto; 
+            aspect-ratio: 1 / 1; 
+            border-radius: 16px 16px 0 0; 
+        }
+
         .container.grid-view .song-card-body { padding: 1.2rem; width: 100%; flex-direction: column; align-items: flex-start; gap: 10px; }
 
         .cover-container { width: 65px; height: 65px; border-radius: 12px; position: relative; overflow: hidden; background: #111; flex-shrink: 0; }
-        .cover-img { width: 100%; height: 100%; object-fit: cover; }
+        .cover-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         .song-card-body { flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 0.5rem; gap: 10px; flex-wrap: wrap; }
         .song-header { display: flex; align-items: center; gap: 10px; }
@@ -406,11 +414,6 @@
                 width: 100%;
                 justify-content: space-between;
                 margin-top: 8px;
-            }
-
-            .cover-container {
-                width: 100%;
-                aspect-ratio: 1 / 1; height: auto;
             }
 
             .scroll-top-btn {
