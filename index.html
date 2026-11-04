@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IKAmusicstudios - Streaming Cloud</title>
+    <title>AndaluzRock — Música del mundo | Sin filtro de países v8</title>
+    <meta name="description" content="AndaluzRock: un atlas musical para descubrir canciones originales de países, culturas, idiomas y estilos de todo el mundo.">
+    <meta name="application-name" content="AndaluzRock">
+    <link rel="canonical" href="https://atlasika.space/">
+    <meta property="og:site_name" content="AndaluzRock">
+    <meta property="og:title" content="AndaluzRock — Música del mundo">
+    <meta property="og:description" content="Descubre canciones originales de países, culturas, idiomas y estilos de todo el mundo.">
+    <meta property="og:url" content="https://atlasika.space/">
+    <meta property="og:type" content="website">
     
     <!-- PWA & MANIFEST INTEGRATION -->
     <link rel="manifest" href="manifest.json">
@@ -53,6 +61,13 @@
         .top-info-bar {
             display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 1.5rem;
         }
+        .ui-language-label { color: var(--accent-primary); font-size: 1.05rem; }
+        .ui-language-selector { min-width: 145px; padding: 6px 12px; }
+        .song-summary { cursor: pointer; }
+        .song-summary-play { flex: 0 0 36px; width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; border:1px solid var(--accent-primary); background:rgba(0,240,255,.13); color:var(--accent-primary); cursor:pointer; font-size:.9rem; transition:all .2s ease; }
+        .song-summary-play:hover { background:var(--accent-primary); color:#000; box-shadow:0 0 18px rgba(0,240,255,.55); }
+        .song-summary-expand { flex:0 0 38px; width:38px; height:36px; display:inline-flex; align-items:center; justify-content:center; border:0; background:transparent; color:var(--accent-primary); cursor:pointer; }
+        .song-description { color:var(--text-muted); font-size:.9rem; line-height:1.5; margin:10px 0 4px; white-space:pre-wrap; }
         .contact-btn, .about-btn {
             background: rgba(0, 240, 255, 0.1); border: 1px solid var(--accent-primary); color: var(--accent-primary);
             padding: 6px 16px; border-radius: 30px; font-weight: 700; font-size: 0.85rem; text-decoration: none;
@@ -217,6 +232,14 @@
         .cat-btn:hover, .cat-btn.active { background: var(--accent-primary); color: #000; border-color: var(--accent-primary); box-shadow: 0 0 30px rgba(0, 240, 255, 0.7); transform: translateY(-3px); }
         .cat-btn.news-filter { border-color: var(--accent-secondary); color: var(--accent-secondary); background: rgba(255, 0, 127, 0.1); }
         .cat-btn.news-filter:hover, .cat-btn.news-filter.active { background: var(--accent-secondary); color: #fff; box-shadow: 0 0 30px rgba(255, 0, 127, 0.7); }
+        .playlist-filter-select {
+            appearance: auto; -webkit-appearance: auto; max-width: 210px;
+            background: rgba(22, 25, 38, 0.9); border: 1px solid var(--accent-primary);
+            color: var(--accent-primary); padding: 0.55rem 0.85rem; border-radius: 30px;
+            cursor: pointer; font-weight: 700; font-size: 0.85rem; min-height: 38px;
+        }
+        .playlist-filter-select:focus { outline: 2px solid rgba(0,240,255,.35); }
+        .playlist-filter-select option { background: #121420; color: #fff; }
 
         .view-toggle-bar {
             display: flex; gap: 6px; background: rgba(18, 20, 32, 0.8); border: 1px solid var(--border-color);
@@ -273,6 +296,25 @@
         }
         .song-stats-row { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
 
+        /* LISTA COMPACTA: cada canción ocupa una sola fila hasta desplegarla */
+        .song-card { display:block; padding:0; border-radius:13px; }
+        .song-card:hover { transform:none; }
+        .song-summary { width:100%; display:flex; align-items:center; gap:12px; padding:12px 16px; background:transparent; border:0; color:var(--text-main); cursor:pointer; text-align:left; }
+        .song-summary-title { flex:1; min-width:0; font-size:1rem; font-weight:800; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .song-summary-meta { color:var(--text-muted); font-size:.76rem; white-space:nowrap; }
+        .song-summary .expand-icon { color:var(--accent-primary); transition:transform .2s ease; }
+        .song-card.expanded .song-summary .expand-icon { transform:rotate(180deg); }
+        .song-details { display:none; padding:0 14px 14px; border-top:1px solid var(--border-color); }
+        .song-card.expanded .song-details { display:block; }
+        .song-details .cover-container { width:76px; height:76px; }
+        .song-details .song-card-body { padding:12px 0 0; }
+        .song-details .song-header { align-items:flex-start; }
+        .song-details .song-actions-row { margin-top:10px; }
+        .container.grid-view .song-card { padding:0; }
+        .container.grid-view .song-summary { padding:12px; }
+        .container.grid-view .song-details { padding:0 12px 12px; }
+        @media (max-width:600px) { .song-summary { padding:11px 12px; gap:8px; } .song-summary-meta { display:none; } }
+
         .song-actions-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .load-to-player-btn {
             background: rgba(0, 240, 255, 0.12); border: 1px solid var(--accent-primary);
@@ -321,6 +363,47 @@
         .form-group { margin-bottom: 1rem; }
         .form-group label { display: block; margin-bottom: 0.4rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; }
         .form-group input, .form-group select { width: 100%; padding: 0.8rem; border-radius: 10px; border: 1px solid var(--border-color); background: #0a0b10; color: #fff; outline: none; font-size: 0.95rem; }
+
+
+        /* FORMULARIO ADMIN: dos columnas en escritorio, una en móvil */
+        #admin-modal .modal-content {
+            max-width: 920px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        #add-song-form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            column-gap: 18px;
+            row-gap: 0;
+        }
+        #add-song-form .form-group {
+            min-width: 0;
+        }
+        #add-song-form #song-select-group,
+        #add-song-form .form-group:has(textarea),
+        #add-song-form #form-submit-btn {
+            grid-column: 1 / -1;
+        }
+        #add-song-form input,
+        #add-song-form select,
+        #add-song-form textarea {
+            min-width: 0;
+        }
+        @media (max-width: 650px) {
+            #admin-modal .modal-content {
+                padding: 1.2rem;
+                max-height: 92vh;
+            }
+            #add-song-form {
+                grid-template-columns: minmax(0, 1fr);
+            }
+            #add-song-form #song-select-group,
+            #add-song-form .form-group:has(textarea),
+            #add-song-form #form-submit-btn {
+                grid-column: 1;
+            }
+        }
         .submit-btn { width: 100%; background: var(--accent-primary); color: #000; border: none; padding: 0.85rem; border-radius: 10px; font-weight: 800; cursor: pointer; font-size: 0.95rem; }
         
         .admin-mode-selector {
@@ -414,49 +497,149 @@
                 transform: translateX(-50%) translateY(0);
             }
         }
+
+        /* COMENTARIOS POR CANCIÓN */
+        .comments-panel { width:100%; margin-top:12px; padding:12px; border:1px solid var(--border-color); border-radius:14px; background:rgba(0,0,0,.22); }
+        .comments-panel h4 { color:var(--accent-primary); margin-bottom:9px; font-size:.95rem; }
+        .comment-form { display:grid; grid-template-columns:minmax(0,1fr); gap:8px; margin-bottom:12px; }
+        .comment-form input,.comment-form textarea { width:100%; background:#0b1020; color:#fff; border:1px solid var(--border-color); border-radius:9px; padding:10px; font:inherit; }
+        .comment-form textarea { min-height:70px; resize:vertical; }
+        .comment-submit { justify-self:start; border:0; border-radius:20px; padding:8px 15px; background:var(--accent-primary); color:#001014; font-weight:800; cursor:pointer; }
+        .comment-list { display:grid; gap:9px; }
+        .comment-item { padding:9px 10px; border-radius:10px; background:rgba(255,255,255,.045); text-align:left; overflow-wrap:anywhere; }
+        .comment-meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; color:var(--text-muted); font-size:.75rem; margin-bottom:4px; }
+        .comment-author { color:#fff; font-weight:800; }
+        .comment-body { white-space:pre-wrap; line-height:1.4; font-size:.9rem; }
+        .comment-empty { color:var(--text-muted); font-size:.85rem; }
+        .country-chip { display:inline-flex; align-items:center; padding:3px 8px; border:1px solid rgba(0,240,255,.3); border-radius:20px; color:var(--accent-primary); font-size:.76rem; margin-bottom:5px; }
+
+
+        /* CHAT EN DIRECTO ATLASIKA */
+        .live-chat-section{width:100%;max-width:900px;margin:28px auto 34px;padding:18px;border:1px solid var(--border-color);border-radius:18px;background:var(--card-bg);box-shadow:0 12px 36px rgba(0,0,0,.22)}
+        .live-chat-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+        .live-chat-header h2{font-size:1.25rem;color:var(--accent-primary);display:flex;align-items:center;gap:9px}
+        .chat-online{font-size:.8rem;color:#8ee6b0;display:flex;align-items:center;gap:7px}
+        .chat-online:before{content:'';width:8px;height:8px;border-radius:50%;background:#38d987;box-shadow:0 0 9px #38d987}
+        .chat-login{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-bottom:12px}
+        .chat-login input,.chat-compose textarea{min-width:0;width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--border-color);background:#0b1020;color:#fff;font:inherit;outline:none}
+        .chat-messages{height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding:10px;border-radius:12px;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.07)}
+        .chat-message{padding:10px 11px;border-radius:11px;background:rgba(255,255,255,.055);overflow-wrap:anywhere;text-align:left}
+        .chat-message.own{border:1px solid rgba(0,240,255,.24);background:rgba(0,240,255,.055)}
+        .chat-message-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px;font-size:.75rem;color:var(--text-muted)}
+        .chat-message-author{font-weight:800;color:#fff;font-size:.84rem}.chat-message-body{white-space:pre-wrap;line-height:1.45;font-size:.92rem}
+        .chat-edited{font-style:italic;color:var(--text-muted)}
+        .chat-message-actions{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+        .chat-action{border:1px solid var(--border-color);background:rgba(255,255,255,.06);color:#dbeafe;border-radius:7px;padding:4px 8px;font-size:.72rem;cursor:pointer}
+        .chat-action.danger{color:#ff9aa5}.chat-compose{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:11px;align-items:end}
+        .chat-compose textarea{min-height:48px;max-height:120px;resize:vertical}.chat-send,.chat-primary{border:0;border-radius:10px;padding:11px 16px;background:var(--accent-primary);color:#001014;font-weight:800;cursor:pointer}
+        .chat-note{font-size:.75rem;color:var(--text-muted);margin-top:8px;line-height:1.4}.chat-admin-tools{margin-top:9px;padding:9px;border:1px dashed rgba(0,240,255,.3);border-radius:9px;font-size:.75rem;color:var(--text-muted);overflow-wrap:anywhere}
+        .chat-empty{color:var(--text-muted);font-size:.85rem;text-align:center;margin:auto}
+        @media(max-width:600px){.live-chat-section{padding:13px}.chat-messages{height:300px}.chat-login{grid-template-columns:1fr}.chat-compose{grid-template-columns:1fr}.chat-send{justify-self:end}}
+
+
+        .lyrics-toggle{margin-top:10px;border:1px solid var(--accent-primary);background:rgba(0,240,255,.09);color:var(--accent-primary);border-radius:9px;padding:7px 12px;font-weight:800;cursor:pointer}
+        .lyrics-panel{display:none;margin-top:10px;padding:14px;border:1px solid rgba(0,240,255,.22);border-radius:12px;background:rgba(0,0,0,.28);max-height:300px;overflow:auto;white-space:pre-wrap;line-height:1.65;color:#eafaff;text-align:left}
+        .collaborator-section{width:100%;max-width:900px;margin:28px auto;padding:18px;border:1px solid rgba(255,0,127,.28);border-radius:18px;background:var(--card-bg);box-shadow:0 12px 36px rgba(0,0,0,.2)}
+        .collaborator-section h2{color:var(--accent-secondary);font-size:1.2rem;margin-bottom:8px}.collab-intro{color:var(--text-muted);font-size:.86rem;line-height:1.5;margin-bottom:14px}
+        .collab-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.collab-field{display:flex;flex-direction:column;gap:5px}.collab-field.full{grid-column:1/-1}.collab-field label{font-size:.8rem;color:var(--text-muted);font-weight:700}.collab-field input,.collab-field select,.collab-field textarea{width:100%;min-width:0;padding:10px 11px;border:1px solid var(--border-color);border-radius:9px;background:#0b1020;color:#fff;font:inherit;outline:none}.collab-field textarea{resize:vertical;min-height:82px}.collab-submit{justify-self:start;border:0;border-radius:10px;padding:11px 16px;background:var(--accent-secondary);color:#fff;font-weight:800;cursor:pointer}.collab-status-list{margin-top:16px;display:grid;gap:8px}.collab-status-item,.collab-review-item{padding:11px;border:1px solid var(--border-color);border-radius:10px;background:rgba(255,255,255,.035);display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.collab-status{font-size:.75rem;font-weight:800;text-transform:uppercase}.collab-status.pending{color:#ffd166}.collab-status.approved{color:#68e0a5}.collab-status.rejected{color:#ff8995}.collab-review-actions{display:flex;gap:7px;flex-wrap:wrap}.collab-review-actions button{border:1px solid var(--border-color);background:rgba(255,255,255,.07);color:#fff;padding:6px 10px;border-radius:8px;cursor:pointer}.collab-review-actions .approve{color:#68e0a5;border-color:#68e0a5}.collab-review-actions .reject{color:#ff8995;border-color:#ff8995}.collab-admin-panel{margin-top:14px;padding-top:12px;border-top:1px solid var(--border-color)}.collab-admin-panel h3{font-size:1rem;color:var(--accent-primary);margin-bottom:9px}
+        @media(max-width:600px){.collaborator-section{padding:13px}.collab-form{grid-template-columns:1fr}.collab-field.full{grid-column:auto}}
+        .atlas-footer{width:100%;max-width:1100px;margin:38px auto 12px;padding:22px 16px 18px;border-top:1px solid var(--border-color);text-align:center;color:var(--text-muted);font-size:.82rem;line-height:1.8;z-index:2}
+        .atlas-footer-links{display:flex;justify-content:center;gap:8px 18px;flex-wrap:wrap;margin-bottom:10px}
+        .atlas-footer button,.atlas-footer a{border:0;background:none;color:var(--accent-primary);font:inherit;cursor:pointer;text-decoration:none}
+        .atlas-footer button:hover,.atlas-footer a:hover{text-decoration:underline}
+        .legal-content{max-height:65vh;overflow:auto;color:var(--text-muted);line-height:1.6;text-align:left;padding-right:5px}
+        .legal-content h3{color:var(--accent-primary);margin:14px 0 5px}.legal-content p,.legal-content li{margin-bottom:8px}
+
+        .account-modal-content{max-width:520px}
+        .account-status-note,.playlist-note{color:var(--text-muted);line-height:1.5;margin:10px 0 16px}
+        .account-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+        .account-actions button{padding:8px 12px}
+        .song-link-help{margin-top:10px;padding:10px 12px;border:1px solid var(--border-color);border-radius:10px;background:rgba(255,255,255,.03);color:var(--text-muted)}
+        .song-link-help summary{cursor:pointer;color:var(--accent-primary);font-weight:700}
+        .song-link-help ol{padding-left:22px;margin:10px 0}.song-link-help li,.song-link-help p{margin:5px 0;line-height:1.45}
+        .my-playlists-panel{width:100%;max-width:1200px;margin:0 auto 22px;padding:18px;background:var(--card-bg);border:1px solid var(--border-color);border-radius:18px;z-index:2}
+        .playlist-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.playlist-panel-heading h2{font-size:1.15rem;color:var(--accent-primary)}
+        .playlist-item{padding:12px;margin:10px 0;border:1px solid var(--border-color);border-radius:12px;background:rgba(0,0,0,.18)}
+        .playlist-item-head,.playlist-song-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+        .playlist-item-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.playlist-item-actions button,.playlist-song-row button{padding:6px 10px}
+        .playlist-songs-view{margin-top:12px;padding-top:12px;border-top:1px solid var(--border-color)}
+        .playlist-song-row{padding:7px 0;border-bottom:1px solid var(--border-color)}
+        .public-playlists-section{width:100%;max-width:1200px;margin:0 auto 22px;padding:18px;background:var(--card-bg);border:1px solid rgba(0,240,255,.25);border-radius:18px;z-index:2}
+        .public-playlists-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
+        .public-playlist-card{padding:14px;border:1px solid var(--border-color);border-radius:12px;background:rgba(0,0,0,.2)}
+        .public-playlist-card h3{font-size:1rem;margin-bottom:6px;color:#fff}.public-playlist-card p{font-size:.82rem;color:var(--text-muted);margin-bottom:10px}
+        .admin-playlist-panel{display:none}.admin-playlist-panel.active{display:block}
+        .admin-playlist-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+        .admin-playlist-form input,.admin-playlist-form textarea{width:100%;padding:10px;border:1px solid var(--border-color);border-radius:9px;background:#0a0b10;color:#fff;font:inherit}
+        .admin-playlist-form textarea{grid-column:1/-1;min-height:65px}.admin-playlist-form button{grid-column:1/-1}
+        .admin-playlist-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px;border:1px solid var(--border-color);border-radius:10px;margin:8px 0}
+        .admin-playlist-actions{display:flex;gap:6px;flex-wrap:wrap}
+        .playlist-quick-create{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+        .playlist-quick-create input{flex:1;min-width:160px}
+        @media(max-width:600px){.admin-playlist-form{grid-template-columns:1fr}.admin-playlist-form textarea,.admin-playlist-form button{grid-column:1}}
+        [hidden]{display:none!important}
     </style>
 </head>
 <body>
 
     <header>
-        <h1>IKAmusicstudios</h1>
+        <h1>AndaluzRock</h1>
         
         <div class="top-info-bar">
-            <button class="about-btn" onclick="openAboutModal()">
-                <i class="fa-solid fa-circle-info"></i> Sobre IkaMusicStudios
+            <label class="ui-language-label" for="ui-language-selector"><i class="fa-solid fa-language"></i></label>
+            <select id="ui-language-selector" class="interactive-select ui-language-selector" onchange="changeInterfaceLanguage(this.value)" aria-label="Interface language">
+                <option value="en">🇬🇧 English</option>
+                <option value="es" selected>🇪🇸 Español</option>
+                <option value="tr">🇹🇷 Türkçe</option>
+                <option value="fr">🇫🇷 Français</option>
+                <option value="it">🇮🇹 Italiano</option>
+                <option value="ru">🇷🇺 Русский</option>
+                <option value="zh">🇨🇳 中文</option>
+                <option value="ja">🇯🇵 日本語</option>
+                <option value="el">🇬🇷 Ελληνικά</option>
+                <option value="ar">🇸🇦 العربية</option>
+            </select>
+            <button class="about-btn" id="about-btn" data-i18n="aboutButton" onclick="openAboutModal()">
+                <i class="fa-solid fa-circle-info"></i> <span data-i18n="aboutButton">Sobre AndaluzRock</span>
             </button>
+            <button class="contact-btn" id="account-open-btn" type="button" onclick="openAccountModal()"><i class="fa-solid fa-user"></i> <span id="account-button-label">Account</span></button>
             <a href="mailto:ikamusicstudios@gmail.com" class="contact-btn">
-                <i class="fa-solid fa-envelope"></i> Contacto
+                <i class="fa-solid fa-envelope"></i> <span data-i18n="contact">Contacto</span>
             </a>
         </div>
     </header>
 
     <!-- SECCIÓN INTERACTIVA DE IDIOMA / ESTILO -->
     <div class="interactive-mood-box">
-        <h3><i class="fa-solid fa-sliders"></i> ¿Qué te gustaría escuchar?</h3>
+        <h3><i class="fa-solid fa-globe"></i> <span data-i18n="explore">Explora el atlas musical</span></h3>
         <div class="interactive-controls">
             <select id="select-language" class="interactive-select" onchange="handleLanguageChange()">
-                <option value="">-- Elige Idioma --</option>
+                <option value="" data-i18n="chooseLanguage">-- Elige Idioma --</option>
                 <option value="Español">Español</option>
                 <option value="Inglés">Inglés</option>
+                <option value="Turco">Turco</option>
                 <option value="Francés">Francés</option>
                 <option value="Italiano">Italiano</option>
-                <option value="Griego">Griego</option>
-                <option value="Turco">Turco</option>
                 <option value="Ruso">Ruso</option>
+                <option value="Chino">Chino</option>
+                <option value="Japonés">Japonés</option>
+                <option value="Árabe">Árabe</option>
+                <option value="Griego">Griego</option>
+                <option value="Other">Other</option>
             </select>
 
             <select id="select-style" class="interactive-select" disabled onchange="handleStyleChange()">
-                <option value="">-- Elige Estilo --</option>
+                <option value="" data-i18n="chooseStyle">-- Elige Estilo --</option>
                 <option value="Pop">Pop</option>
                 <option value="Rock">Rock</option>
                 <option value="Folk">Folk</option>
                 <option value="EDM">EDM</option>
                 <option value="Baladas">Baladas</option>
+                <option value="World Music">World Music</option>
             </select>
 
             <button class="reset-filter-btn" id="reset-interactive-btn" style="display:none;" onclick="resetInteractiveFilters()">
-                <i class="fa-solid fa-rotate-left"></i> Limpiar filtro
+                <i class="fa-solid fa-rotate-left"></i> <span data-i18n="clearFilter">Limpiar filtro</span>
             </button>
         </div>
     </div>
@@ -465,30 +648,32 @@
     <div class="search-container">
         <div class="search-box">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <input type="text" id="song-search-input" class="search-input" placeholder="Buscar canción..." oninput="handleSearchInput()">
+            <input type="text" id="song-search-input" class="search-input" placeholder="Buscar canción..." data-i18n-placeholder="searchSong" oninput="handleSearchInput()">
             <button id="clear-search-btn" class="clear-search-btn" onclick="clearSearch()">&times;</button>
         </div>
     </div>
 
-
     <!-- CATEGORÍAS Y VISTAS -->
     <div class="categories-controls-wrapper">
         <div class="categories" id="category-filters">
-            <button class="cat-btn active" data-filter="all">Todas</button>
-            <button class="cat-btn news-filter" data-filter="novedades"><i class="fa-solid fa-fire"></i> 🔥 Novedades</button>
+            <button class="cat-btn" id="all-songs-radio-btn" type="button" onclick="playAllSongsRadio()"><i class="fa-solid fa-globe"></i> <span data-i18n="allSongs">All Songs</span></button>
+            <button class="cat-btn news-filter" data-filter="novedades"><i class="fa-solid fa-fire"></i> 🔥 <span data-i18n="newReleases">Novedades</span></button>
+            <select id="public-playlists-dropdown" class="playlist-filter-select" aria-label="Playlists públicas" onchange="handlePublicPlaylistSelect(this.value)">
+                <option value="">🎵 Playlists ▼</option>
+            </select>
         </div>
 
         <div class="view-toggle-bar">
-            <button class="view-btn" id="grid-view-btn" onclick="switchView('grid')" title="Cuadrícula">
-                <i class="fa-solid fa-border-all"></i> Grid
+            <button class="view-btn" id="grid-view-btn" onclick="switchView('grid')" title="Cuadrícula" data-i18n-title="grid">
+                <i class="fa-solid fa-border-all"></i> <span data-i18n="grid">Grid</span>
             </button>
-            <button class="view-btn active" id="list-view-btn" onclick="switchView('list')" title="Lista">
-                <i class="fa-solid fa-bars"></i> Lista
+            <button class="view-btn active" id="list-view-btn" onclick="switchView('list')" title="Lista" data-i18n-title="list">
+                <i class="fa-solid fa-bars"></i> <span data-i18n="list">Lista</span>
             </button>
         </div>
     </div>
 
-    
+
     <!-- REPRODUCTOR NATIVO PRO REFINADO -->
     <div class="main-player-section" id="main-player-box">
         <div class="main-player-header">
@@ -496,19 +681,19 @@
                 <div class="eq-bars" id="eq-animation-container">
                     <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
                 </div>
-                <span id="current-status-text">Consola en Directo</span>
+                <span id="current-status-text" data-i18n="liveConsole">Consola en Directo</span>
             </h2>
             <span class="song-genre" id="current-song-genre">---</span>
         </div>
 
         <div class="player-console-display">
             <div class="console-cover-wrapper">
-                <img id="console-cover-img" src="https://via.placeholder.com/90/111/00f0ff?text=IKA" class="console-cover" alt="Carátula">
+                <img id="console-cover-img" src="https://via.placeholder.com/90/111/00f0ff?text=AndaluzRock" class="console-cover" alt="Cover" data-i18n-alt="cover">
             </div>
             <div class="console-info">
-                <div class="console-title" id="current-song-title">Selecciona una canción para empezar</div>
+                <div class="console-title" id="current-song-title" data-i18n="selectSong">Selecciona una canción para empezar</div>
                 <div class="suno-player-container" id="suno-player-container">
-                    <iframe id="suno-player" title="Reproductor Suno" height="150" allow="autoplay; encrypted-media; fullscreen" allowfullscreen loading="lazy"></iframe>
+                    <div id="suno-player" title="Reproductor multimedia"></div>
                 </div>
                 
                 <div class="progress-container" id="progress-container" onclick="seekAudio(event)">
@@ -523,25 +708,82 @@
                 </div>
             </div>
         </div>
+        <button type="button" id="lyrics-toggle-btn" class="lyrics-toggle" style="display:none" onclick="toggleCurrentLyrics()"><i class="fa-solid fa-align-left"></i> <span id="lyrics-toggle-label">Ver letra</span></button>
+        <div id="current-lyrics-panel" class="lyrics-panel" aria-live="polite"></div>
 
         <audio id="audio-element" preload="metadata"></audio>
 
         <div class="player-controls-bar">
-            <button class="control-btn" onclick="prevSong()"><i class="fa-solid fa-backward-step"></i> Anterior</button>
-            <button class="control-btn primary-btn" id="play-pause-btn" onclick="togglePlayPause()"><i class="fa-solid fa-play"></i> Reproducir</button>
-            <button class="control-btn" onclick="nextSong()"><i class="fa-solid fa-forward-step"></i> Siguiente</button>
-            <button class="control-btn active-mode" id="auto-chain-btn" onclick="toggleAutoChain()"><i class="fa-solid fa-radio"></i> Radio: ON</button>
-            <button class="control-btn" id="shuffle-btn" onclick="toggleShuffle()"><i class="fa-solid fa-shuffle"></i> Random: OFF</button>
+            <button class="control-btn" onclick="prevSong()"><i class="fa-solid fa-backward-step"></i> <span data-i18n="previous">Anterior</span></button>
+            <button class="control-btn primary-btn" id="play-pause-btn" onclick="togglePlayPause()"><i class="fa-solid fa-play"></i> <span data-i18n="play">Reproducir</span></button>
+            <button class="control-btn" onclick="nextSong()"><i class="fa-solid fa-forward-step"></i> <span data-i18n="next">Siguiente</span></button>
+            <button class="control-btn active-mode" id="auto-chain-btn" onclick="toggleAutoChain()" title="Alternar entre pasar a la siguiente canción o repetir la actual"><i class="fa-solid fa-forward-step"></i> <span data-i18n="radio">Al terminar</span>: <span id="end-mode-label" data-i18n="endNext">Siguiente canción</span></button>
+            <button class="control-btn" id="shuffle-btn" onclick="toggleShuffle()"><i class="fa-solid fa-shuffle"></i> <span data-i18n="random">Aleatorio</span>: OFF</button>
         </div>
     </div>
 
+    <!-- Las playlists privadas se han desactivado en AndaluzRock. -->
+
+    <!-- Vista de gestión de canciones de playlists públicas: solo se muestra al administrador -->
+    <div id="public-playlist-songs-view" class="playlist-songs-view" hidden></div>
+
     <!-- LISTADO DE CANCIONES (VISTA LISTA POR DEFECTO) -->
     <div class="container" id="songs-container">
-        <p style="text-align: center; color: var(--text-muted);">Conectando con Supabase...</p>
+        <p style="text-align: center; color: var(--text-muted);" data-i18n="connecting">Conectando con Supabase...</p>
     </div>
 
+
+    <!-- CHAT EN DIRECT -->
+    <section class="live-chat-section" id="live-chat-section" aria-label="Chat en directo">
+        <div class="live-chat-header">
+            <h2><i class="fa-solid fa-comments"></i> <span id="chat-title">Chat en directo</span></h2>
+            <span class="chat-online" id="chat-online-count">Conectando…</span>
+        </div>
+        <div class="chat-login">
+            <input id="chat-nickname" type="text" maxlength="25" autocomplete="nickname" placeholder="Tu apodo (máx. 25 caracteres)" aria-label="Tu apodo">
+            <button class="chat-primary" id="chat-save-nickname" type="button" onclick="saveChatNickname()">Entrar al chat</button>
+        </div>
+        <div class="chat-messages" id="chat-messages" aria-live="polite"><p class="chat-empty">Conectando al chat…</p></div>
+        <form class="chat-compose" id="chat-compose" onsubmit="sendChatMessage(event)">
+            <textarea id="chat-message-input" maxlength="1000" rows="2" placeholder="Escribe un mensaje…" aria-label="Mensaje" required></textarea>
+            <button class="chat-send" id="chat-send-button" type="submit">Enviar <i class="fa-solid fa-paper-plane"></i></button>
+        </form>
+        <p class="chat-note" id="chat-note">Puedes participar con un apodo, sin crear una cuenta. Respeta a los demás usuarios.</p>
+        <div class="chat-admin-tools" id="chat-admin-tools" hidden></div>
+    </section>
+
+    <!-- ENVÍO DE CANCIONES POR COLABORADORES: las propuestas siempre requieren aprobación -->
+    <section class="collaborator-section" id="collaborator-section">
+        <h2><i class="fa-solid fa-music"></i> <span id="collab-title">Comparte tu canción</span></h2>
+        <p class="collab-intro" id="collab-intro">¿Eres creador en Suno? Envía tu canción a AndaluzRock. Tu propuesta quedará pendiente y solo se publicará cuando el administrador la apruebe.</p>
+        <form id="collab-submit-form" class="collab-form" onsubmit="submitCollaboratorSong(event)">
+            <div class="collab-field"><label for="collab-nickname" id="collab-label-nickname">Tu nombre artístico</label><input id="collab-nickname" maxlength="80" required placeholder="Nombre artístico"></div>
+            <div class="collab-field"><label for="collab-title-input" id="collab-label-title">Título de la canción</label><input id="collab-title-input" maxlength="160" required></div>
+            <div class="collab-field"><label for="collab-country" id="collab-label-country">País</label><input id="collab-country" maxlength="80" placeholder="País / bandera"></div>
+            <div class="collab-field"><label for="collab-language" id="collab-label-language">Idioma</label><select id="collab-language"><option>Español</option><option>Inglés</option><option>Turco</option><option>Francés</option><option>Italiano</option><option>Ruso</option><option>Chino</option><option>Japonés</option><option>Árabe</option><option>Griego</option><option>Otro</option></select></div>
+            <div class="collab-field"><label for="collab-style" id="collab-label-style">Estilo musical</label><input id="collab-style" maxlength="80" required placeholder="Rock, Folk, Flamenco…"></div>
+            <div class="collab-field"><label for="collab-suno-url" id="collab-label-url">Suno — dirección del navegador</label><input id="collab-suno-url" type="url" placeholder="Pega la dirección que aparece en la barra del navegador"><small class="chat-note">Abre la canción en tu navegador y copia la dirección de la barra superior. No uses «Share → Copy Link» de Suno.</small></div>
+            <div class="collab-field"><label for="collab-mp3-url">MP3 — enlace público de almacenamiento en la nube</label><input id="collab-mp3-url" type="url" placeholder="Enlace público directo al archivo MP3"><small class="chat-note">El MP3 debe poder reproducirse directamente sin iniciar sesión. Para listas con reproducción automática, utiliza esta opción.</small></div>
+            <div class="collab-field full"><label for="collab-cover" id="collab-label-cover">Enlace de portada (opcional)</label><input id="collab-cover" type="url" placeholder="https://..."></div>
+            <div class="collab-field full"><label for="collab-description" id="collab-label-description">Descripción breve (opcional)</label><textarea id="collab-description" maxlength="500"></textarea></div>
+            <div class="collab-field full"><label for="collab-lyrics" id="collab-label-lyrics">Letra (opcional)</label><textarea id="collab-lyrics" maxlength="12000" placeholder="Pega aquí la letra si quieres que aparezca en el reproductor"></textarea></div>
+            <button class="collab-submit" id="collab-submit-button" type="submit">Enviar canción para revisión</button>
+        </form>
+        <div class="collab-status-list" id="collab-my-submissions"><p class="chat-empty" id="collab-my-label">Tus propuestas aparecerán aquí.</p></div>
+        <div class="collab-admin-panel" id="collab-admin-panel" hidden><h3 id="collab-admin-title">Propuestas pendientes de revisión</h3><div id="collab-review-list"></div></div>
+    </section>
+
+    <footer class="atlas-footer" aria-label="Información legal de AndaluzRock">
+        <nav class="atlas-footer-links">
+            <button onclick="openLegalSection('notice')">Aviso legal</button><button onclick="openLegalSection('privacy')">Privacidad</button><button onclick="openLegalSection('cookies')">Cookies</button><button onclick="openLegalSection('terms')">Condiciones de uso</button><button onclick="openLegalSection('copyright')">Derechos de autor</button><button onclick="openLegalSection('collaborators')">Colaboradores</button><button onclick="openLegalSection('notice')">Contacto</button>
+        </nav>
+        <div>© 2026 AndaluzRock — Todos los derechos reservados.</div>
+
+    <div class="modal" id="legal-modal" role="dialog" aria-modal="true" aria-labelledby="legal-title"><div class="modal-content" style="max-width:820px;max-height:90vh;overflow:auto"><button class="close-modal" onclick="closeModal('legal-modal')">&times;</button><h2 id="legal-title">Información legal</h2><div id="legal-body" class="legal-content"></div></div></div>
+
+
     <button id="scroll-top-btn" class="scroll-top-btn" onclick="scrollToTop()">
-        <i class="fa-solid fa-arrow-up"></i> Arriba
+        <i class="fa-solid fa-arrow-up"></i> <span data-i18n="top">Arriba</span>
     </button>
 
     <button class="admin-trigger" onclick="checkAdminPassword()">
@@ -552,10 +794,38 @@
     <div class="modal" id="about-modal">
         <div class="modal-content about-modal-content">
             <button class="close-modal" onclick="closeModal('about-modal')">&times;</button>
-            <h2>Sobre IkaMusicStudios</h2>
-            <p>Somos <strong>dos amigos con una misma obsesión: la música.</strong> Si has acabado en este rincón de la red, lo más probable es que compartas esa misma pasión con nosotros.</p>
-            <p>Disfrutamos componiendo, produciendo y dando forma a nuestras canciones aprovechando al máximo las herramientas de hoy en día. Sin grandes sellos, sin trampa ni cartón.</p>
-            <p style="color: var(--accent-primary); font-weight: 700; margin-top: 1.5rem;">Sin publicidad y sin interrupciones... Solo pura pasión por la música.</p>
+            <h2 data-i18n="aboutTitle">Sobre AndaluzRock</h2>
+            <p data-i18n="aboutP1">Somos <strong>dos amigos con una misma obsesión: la música.</strong> Si has acabado en este rincón de la red, lo más probable es que compartas esa misma pasión con nosotros.</p>
+            <p data-i18n="aboutP2">Disfrutamos componiendo, produciendo y dando forma a nuestras canciones aprovechando al máximo las herramientas de hoy en día. Sin grandes sellos, sin trampa ni cartón.</p>
+            <p data-i18n="aboutP3" style="color: var(--accent-primary); font-weight: 700; margin-top: 1.5rem;">Sin publicidad y sin interrupciones... Solo pura pasión por la música.</p>
+        </div>
+    </div>
+
+    <!-- CUENTA: registro, inicio de sesión, recuperación y cambio de contraseña -->
+    <div class="modal" id="account-modal" role="dialog" aria-modal="true" aria-labelledby="account-modal-title">
+        <div class="modal-content account-modal-content">
+            <button class="close-modal" onclick="closeModal('account-modal')">&times;</button>
+            <h2 id="account-modal-title">AndaluzRock account</h2>
+            <p id="account-status-note" class="account-status-note">Create an account to save private playlists. Listening remains public.</p>
+            <form id="account-auth-form" onsubmit="submitAccountAuth(event)">
+                <div class="form-group"><label for="account-email">Email</label><input id="account-email" type="email" autocomplete="email" required></div>
+                <div class="form-group"><label for="account-password">Password</label><input id="account-password" type="password" autocomplete="current-password" minlength="8" required></div>
+                <div class="form-group" id="account-confirm-group" hidden><label for="account-confirm-password">Confirm password</label><input id="account-confirm-password" type="password" autocomplete="new-password" minlength="8"></div>
+                <button type="submit" class="submit-btn" id="account-submit-btn">Sign in</button>
+            </form>
+            <div class="account-actions">
+                <button type="button" class="share-btn" onclick="setAccountMode('login')">Sign in</button>
+                <button type="button" class="share-btn" onclick="setAccountMode('register')">Create account</button>
+                <button type="button" class="share-btn" onclick="requestPasswordReset()">Forgot password?</button>
+                <button type="button" class="share-btn" onclick="showPasswordChange()">Change password</button>
+                <button type="button" class="share-btn" id="account-signout-btn" onclick="signOutAccount()" hidden>Sign out</button>
+            </div>
+            <form id="account-password-change-form" onsubmit="changeAccountPassword(event)" hidden>
+                <h3>Set a new password</h3>
+                <div class="form-group"><label for="account-new-password">New password</label><input id="account-new-password" type="password" minlength="8" autocomplete="new-password" required></div>
+                <div class="form-group"><label for="account-new-password-confirm">Confirm new password</label><input id="account-new-password-confirm" type="password" minlength="8" autocomplete="new-password" required></div>
+                <button type="submit" class="submit-btn">Update password</button>
+            </form>
         </div>
     </div>
 
@@ -563,72 +833,125 @@
     <div class="modal" id="admin-modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModal('admin-modal')">&times;</button>
-            <h2 id="admin-modal-title">Gestión del Catálogo</h2>
+            <h2 id="admin-modal-title" data-i18n="catalogManagement">Gestión del Catálogo</h2>
 
             <div class="admin-mode-selector">
                 <button type="button" class="admin-tab-btn active" id="tab-add-btn" onclick="setAdminMode('add')">
-                    <i class="fa-solid fa-plus"></i> Añadir Nueva
+                    <i class="fa-solid fa-plus"></i> <span data-i18n="addNew">Añadir Nueva</span>
                 </button>
                 <button type="button" class="admin-tab-btn" id="tab-edit-btn" onclick="setAdminMode('edit')">
-                    <i class="fa-solid fa-pen-to-square"></i> Modificar
+                    <i class="fa-solid fa-pen-to-square"></i> <span data-i18n="edit">Modificar</span>
                 </button>
+                <button type="button" class="admin-tab-btn" id="tab-playlists-btn" onclick="setAdminMode('playlists')">
+                    <i class="fa-solid fa-list"></i> Playlists
+                </button>
+            </div>
+
+            <div id="admin-playlist-panel" class="admin-playlist-panel">
+                <h3 style="color:var(--accent-primary)">Crear playlist pública</h3>
+                <form id="admin-public-playlist-form" class="admin-playlist-form" onsubmit="savePublicPlaylist(event)">
+                    <input id="public-playlist-name" type="text" maxlength="80" required placeholder="Nombre de la playlist">
+                    <input id="public-playlist-description" type="text" maxlength="180" placeholder="Descripción (opcional)">
+                    <label style="color:var(--text-muted);display:flex;gap:8px;align-items:center"><input id="public-playlist-published" type="checkbox" checked> Publicada y visible para todos</label>
+                    <button type="submit" class="submit-btn">Crear playlist</button>
+                </form>
+                <h3 style="color:var(--accent-primary);margin:18px 0 8px">Playlists públicas existentes</h3>
+                <div id="admin-public-playlists-list"><p class="playlist-note">Cargando…</p></div>
             </div>
 
             <form id="add-song-form" onsubmit="saveSong(event)">
                 <input type="hidden" id="edit-song-id" value="">
 
                 <div class="form-group" id="song-select-group" style="display: none;">
-                    <label>Selecciona la canción a modificar</label>
+                    <label data-i18n="selectSongToEdit">Selecciona la canción a modificar</label>
                     <select id="edit-song-select" onchange="loadSelectedSongToForm()">
-                        <option value="">-- Elige un tema --</option>
+                        <option value="" data-i18n="chooseTrack">-- Elige un tema --</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label>Título de la canción</label>
+                    <label data-i18n="songTitle">Título de la canción</label>
                     <input type="text" id="song-title" required placeholder="Ej: Donde Arde el Sur">
                 </div>
                 <div class="form-group">
-                    <label>Idioma</label>
+                    <label data-i18n="artist">Artista / Intérprete</label>
+                    <input type="text" id="song-artist-input" maxlength="120" value="AndaluzRock" placeholder="AndaluzRock">
+                    <small style="color:var(--text-muted);" data-i18n="artistHelp">AndaluzRock para nuestras canciones; artista original para canciones externas.</small>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="country">País (incluye la bandera si quieres, por ejemplo 🇬🇷 Greece)</label>
+                    <input type="text" id="song-country-input" maxlength="80" placeholder="🇬🇷 Greece">
+                </div>
+                <div class="form-group">
+                    <label data-i18n="songLanguage">Idioma</label>
                     <select id="song-lang-input" required>
                         <option value="Español">Español</option>
                         <option value="Inglés">Inglés</option>
+                        <option value="Turco">Turco</option>
                         <option value="Francés">Francés</option>
                         <option value="Italiano">Italiano</option>
-                        <option value="Griego">Griego</option>
-                        <option value="Turco">Turco</option>
                         <option value="Ruso">Ruso</option>
+                        <option value="Chino">Chino</option>
+                        <option value="Japonés">Japonés</option>
+                        <option value="Árabe">Árabe</option>
+                        <option value="Griego">Griego</option>
+                        <option value="Other">Other</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Estilo / Género</label>
+                    <label data-i18n="styleGenre">Estilo / Género</label>
                     <select id="song-style-input" required>
                         <option value="Pop">Pop</option>
                         <option value="Rock">Rock</option>
                         <option value="Folk">Folk</option>
                         <option value="EDM">EDM</option>
                         <option value="Baladas">Baladas</option>
+                <option value="World Music">World Music</option>
                     </select>
                 </div>
+                <div class="form-group" id="song-public-playlist-group">
+                    <label for="song-public-playlist">Añadir a playlist pública (opcional)</label>
+                    <select id="song-public-playlist"><option value="">No añadir a ninguna playlist</option></select>
+                    <div class="playlist-quick-create" style="margin-top:8px">
+                        <input id="quick-public-playlist-name" type="text" maxlength="80" placeholder="O crea una nueva playlist">
+                        <button type="button" class="share-btn" onclick="quickCreatePublicPlaylist()">Crear</button>
+                    </div>
+                    <small style="color:var(--text-muted)">La canción se añadirá automáticamente a la playlist seleccionada al guardarla.</small>
+                </div>
                 <div class="form-group">
-                    <label>URL de la Portada</label>
+                    <label data-i18n="shortDescription">Descripción corta</label>
+                    <textarea id="song-description-input" maxlength="500" rows="3" placeholder="Describe brevemente esta canción..." data-i18n-placeholder="descriptionPlaceholder" style="width:100%;padding:.8rem;border-radius:10px;border:1px solid var(--border-color);background:#0a0b10;color:#fff;outline:none;font-size:.95rem;resize:vertical;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="song-lyrics-input" id="song-lyrics-label">Letra de la canción</label>
+                    <textarea id="song-lyrics-input" maxlength="12000" rows="8" placeholder="Pega aquí la letra de la canción..." style="width:100%;padding:.8rem;border-radius:10px;border:1px solid var(--border-color);background:#0a0b10;color:#fff;outline:none;font-size:.95rem;resize:vertical;"></textarea>
+                </div>
+                <div class="form-group">
+                    <label data-i18n="coverUrl">URL de la Portada</label>
                     <input type="url" id="song-cover" placeholder="https://...">
                 </div>
                 <div class="form-group">
-                    <label>URL de la canción (MP3 o Suno)</label>
-                    <input type="url" id="song-audio" required placeholder="https://suno.com/song/... o URL MP3">
+                    <label for="song-suno-url">Suno — browser address</label>
+                    <input type="url" id="song-suno-url" placeholder="Paste the address shown in your browser">
+                    <small style="color:var(--text-muted);display:block;margin-top:6px;">Open the song in your browser and copy the address from the browser address bar. Do not use Suno's Share → Copy Link option.</small>
+                    <label for="song-mp3-url" style="display:block;margin-top:12px;">MP3 — public cloud-storage link</label>
+                    <input type="url" id="song-mp3-url" placeholder="Public direct link to the MP3 file">
+                    <small style="color:var(--text-muted);display:block;margin-top:6px;">The MP3 must play directly without signing in. Use this option for automatic playlist playback. Fill in either this field or the Suno field.</small>
                 </div>
-                <button type="submit" class="submit-btn" id="form-submit-btn">Guardar Canción</button>
+                <button type="submit" class="submit-btn" id="form-submit-btn" data-i18n="saveSong">Guardar Canción</button>
             </form>
         </div>
     </div>
 
-    <div class="toast-notification" id="toast">¡Enlace copiado al portapapeles!</div>
+    <div class="toast-notification" id="toast" data-i18n="linkCopied">¡Enlace copiado al portapapeles!</div>
 
     <script>
-        const SUPABASE_URL = 'https://mouvifqcmdlypegtyjfw.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_5bqnQQBhY5QRnhGW9p7fuA_C4Y2crZP';
+        const SUPABASE_URL = 'https://pfjfeomhaythgiuoqpfr.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_AU7AwITMtrCRtmMA2lGs5w_8t84G5Vu';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Cliente independiente para autenticación anónima, chat y propuestas.
+        // Así no cambiamos el rol de la sesión pública que usa el reproductor y el catálogo.
+        const chatSupabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storageKey: 'andaluzrock-chat-auth-token', persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
 
         let isAdmin = false;
         let adminMode = 'add';
@@ -642,6 +965,91 @@
         let isAutoChainActive = true;
         let isListView = true;
         let songsCache = [];
+        let interfaceLanguage = localStorage.getItem('andaluzrock_interface_language') || 'es';
+        let chatUser = null;
+        let chatChannel = null;
+        let isChatAdmin = false;
+        let chatMessagesCache = [];
+        let chatOnlineCount = 0;
+        let chatReady = false;
+        let chatRefreshTimer = null;
+        let accountAuthMode = 'login';
+        let activePlaylistSongIds = null;
+        let cachedMyPlaylists = [];
+        let currentPlaylistId = null;
+        let cachedPublicPlaylists = [];
+        let currentPublicPlaylistId = null;
+
+        const translations = {
+            es: {connecting:'Conectando con Supabase…',aboutButton:'Sobre AndaluzRock',contact:'Contacto',explore:'Explora el atlas musical',allCountries:'-- Todos los países --',chooseLanguage:'-- Elige Idioma --',chooseStyle:'-- Elige Estilo --',clearFilter:'Limpiar filtro',searchSong:'Buscar canción...',liveConsole:'Consola en Directo',sunoPlayer:'Reproductor Suno',atlasPlayer:'Reproductor AndaluzRock',playingStatus:'Reproduciendo',pausedStatus:'En pausa',selectSong:'Selecciona una canción para empezar',previous:'Anterior',play:'Reproducir',pause:'Pausa',next:'Siguiente',radio:'Al terminar',endNext:'Siguiente canción',endRepeat:'Repetir canción',random:'Aleatorio',all:'Todas',allSongs:'Todas las canciones',newReleases:'Novedades',grid:'Cuadrícula',list:'Lista',top:'Arriba',aboutTitle:'Sobre AndaluzRock',aboutP1:'Somos dos amigos con una misma obsesión: la música. Si has acabado en este rincón de la red, lo más probable es que compartas esa misma pasión con nosotros.',aboutP2:'Disfrutamos componiendo, produciendo y dando forma a nuestras canciones aprovechando al máximo las herramientas de hoy en día. Sin grandes sellos, sin trampa ni cartón.',aboutP3:'Sin publicidad y sin interrupciones... Solo pura pasión por la música.',catalogManagement:'Gestión del Catálogo',addNew:'Añadir Nueva',edit:'Modificar',selectSongToEdit:'Selecciona la canción a modificar',chooseTrack:'-- Elige un tema --',songTitle:'Título de la canción',artist:'Artista / Intérprete',artistHelp:'AndaluzRock para nuestras canciones; artista original para canciones externas.',country:'País',songLanguage:'Idioma de la canción',styleGenre:'Estilo / Género',shortDescription:'Descripción corta',descriptionPlaceholder:'Describe brevemente esta canción...',coverUrl:'URL de la Portada',songUrl:'Enlace de la canción',saveSong:'Guardar Canción',linkCopied:'¡Enlace copiado al portapapeles!',noSongs:'No se encontraron canciones para esta selección.',playing:'SONANDO',new:'NUEVO',untitled:'Sin título',views:'reproducciones',suno:'Suno',audio:'Audio',comments:'Comentarios',songComments:'Comentarios de esta canción',aliasPlaceholder:'Tu alias (máx. 25 caracteres)',commentPlaceholder:'Escribe tu comentario (máx. 500 caracteres)',publishComment:'Publicar comentario',loadingComments:'Cargando comentarios…',noComments:'Todavía no hay comentarios. ¡Sé el primero!',commentLoadError:'No se pudieron cargar los comentarios. Comprueba la configuración de comentarios en Supabase.',playNow:'Reproducir',showDetails:'Mostrar detalles',adminActive:'Admin (Activo)',adminPassword:'Contraseña de administración:',wrongPassword:'Contraseña incorrecta.',saveNewSong:'Guardar Nueva Canción',updateSong:'Actualizar Canción',chooseTrackEdit:'-- Elige un tema a modificar --',selectTrackEdit:'Selecciona una canción de la lista para editar.',songAdded:'¡Canción añadida con éxito!',songUpdated:'¡Canción actualizada con éxito!',deleteConfirm:'¿Seguro que deseas eliminar esta canción?',commentPublished:'Comentario publicado. ¡Gracias por participar!',waitComment:'Espera 30 segundos antes de publicar otro comentario.',duplicateComment:'No puedes publicar dos comentarios consecutivos iguales.',commentFailed:'No se pudo publicar el comentario. ',viewsLabel:'reproducciones'},
+            en: {connecting:'Connecting to Supabase…',aboutButton:'About AndaluzRock',contact:'Contact',explore:'Explore the musical atlas',allCountries:'-- All countries --',chooseLanguage:'-- Choose language --',chooseStyle:'-- Choose style --',clearFilter:'Clear filter',searchSong:'Search songs...',liveConsole:'Live Console',sunoPlayer:'Suno Player',atlasPlayer:'AndaluzRock Player',playingStatus:'Playing',pausedStatus:'Paused',selectSong:'Select a song to get started',previous:'Previous',play:'Play',pause:'Pause',next:'Next',radio:'When finished',endNext:'Play next song',endRepeat:'Repeat current song',random:'Shuffle',all:'All',allSongs:'All Songs',newReleases:'New releases',grid:'Grid',list:'List',top:'Top',aboutTitle:'About AndaluzRock',aboutP1:'We are two friends with one shared obsession: music. If you have found this corner of the web, you probably share that same passion.',aboutP2:'We enjoy composing, producing and shaping our songs using the tools available today. No major labels, no tricks.',aboutP3:'No ads and no interruptions... Just pure passion for music.',catalogManagement:'Catalog Management',addNew:'Add New',edit:'Edit',selectSongToEdit:'Select the song to edit',chooseTrack:'-- Choose a track --',songTitle:'Song title',artist:'Artist / Performer',artistHelp:'AndaluzRock for our songs; original artist for external songs.',country:'Country',songLanguage:'Song language',styleGenre:'Style / Genre',shortDescription:'Short description',descriptionPlaceholder:'Briefly describe this song...',coverUrl:'Cover URL',songUrl:'Song link',saveSong:'Save Song',linkCopied:'Link copied to clipboard!',noSongs:'No songs found for this selection.',playing:'NOW PLAYING',new:'NEW',untitled:'Untitled',views:'plays',suno:'Suno',audio:'Audio',comments:'Comments',songComments:'Comments for this song',aliasPlaceholder:'Your name (max. 25 characters)',commentPlaceholder:'Write your comment (max. 500 characters)',publishComment:'Post comment',loadingComments:'Loading comments…',noComments:'No comments yet. Be the first!',commentLoadError:'Could not load comments. Check the comments setup in Supabase.',playNow:'Play',showDetails:'Show details',adminActive:'Admin (Active)',adminPassword:'Admin password:',wrongPassword:'Incorrect password.',saveNewSong:'Save New Song',updateSong:'Update Song',chooseTrackEdit:'-- Choose a song to edit --',selectTrackEdit:'Select a song from the list to edit.',songAdded:'Song added successfully!',songUpdated:'Song updated successfully!',deleteConfirm:'Are you sure you want to delete this song?',commentPublished:'Comment posted. Thanks for participating!',waitComment:'Please wait 30 seconds before posting another comment.',duplicateComment:'You cannot post the same comment twice in a row.',commentFailed:'Could not post the comment. ',viewsLabel:'plays'},
+            fr: {"connecting":"Connexion à Supabase…","aboutButton":"À propos d’AndaluzRock","contact":"Contact","explore":"Explorez l’atlas musical","allCountries":"-- Tous les pays --","chooseLanguage":"-- Choisir une langue --","chooseStyle":"-- Choisir un style --","clearFilter":"Effacer le filtre","searchSong":"Rechercher une chanson…","liveConsole":"Console en direct","sunoPlayer":"Lecteur Suno","atlasPlayer":"Lecteur AndaluzRock","playingStatus":"Lecture en cours","pausedStatus":"En pause","selectSong":"Sélectionnez une chanson pour commencer","previous":"Précédent","play":"Lire","pause":"Pause","next":"Suivant","radio":"À la fin","endNext":"Chanson suivante","endRepeat":"Répéter la chanson","random":"Aléatoire","all":"Tout","allSongs":"Toutes les chansons","newReleases":"Nouveautés","grid":"Grille","list":"Liste","top":"Haut","aboutTitle":"À propos d’AndaluzRock","catalogManagement":"Gestion du catalogue","addNew":"Ajouter","edit":"Modifier","selectSongToEdit":"Sélectionnez la chanson à modifier","chooseTrack":"-- Choisir une piste --","songTitle":"Titre de la chanson","artist":"Artiste / Interprète","country":"Pays","songLanguage":"Langue de la chanson","styleGenre":"Style / Genre","shortDescription":"Description courte","descriptionPlaceholder":"Décrivez brièvement cette chanson…","coverUrl":"URL de la pochette","songUrl":"Lien de la chanson","saveSong":"Enregistrer la chanson","linkCopied":"Lien copié !","noSongs":"Aucune chanson trouvée pour cette sélection.","playing":"EN COURS DE LECTURE","new":"NOUVEAU","untitled":"Sans titre","views":"écoutes","suno":"Suno","audio":"Audio","comments":"Commentaires","songComments":"Commentaires sur cette chanson","aliasPlaceholder":"Votre nom (25 caractères max.)","commentPlaceholder":"Écrivez votre commentaire (500 caractères max.)","publishComment":"Publier le commentaire","loadingComments":"Chargement des commentaires…","noComments":"Aucun commentaire. Soyez le premier !","playNow":"Lire","showDetails":"Afficher les détails","adminActive":"Admin (actif)","adminPassword":"Mot de passe administrateur :","wrongPassword":"Mot de passe incorrect.","saveNewSong":"Enregistrer la nouvelle chanson","updateSong":"Mettre à jour la chanson","chooseTrackEdit":"-- Choisir une chanson à modifier --","selectTrackEdit":"Sélectionnez une chanson dans la liste.","songAdded":"Chanson ajoutée !","songUpdated":"Chanson mise à jour !","deleteConfirm":"Voulez-vous vraiment supprimer cette chanson ?","viewsLabel":"écoutes"},
+            it: {"connecting":"Connessione a Supabase…","aboutButton":"Informazioni su AndaluzRock","contact":"Contatto","explore":"Esplora l’atlante musicale","allCountries":"-- Tutti i paesi --","chooseLanguage":"-- Scegli lingua --","chooseStyle":"-- Scegli stile --","clearFilter":"Cancella filtro","searchSong":"Cerca canzone…","liveConsole":"Console in diretta","sunoPlayer":"Lettore Suno","atlasPlayer":"Lettore AndaluzRock","playingStatus":"In riproduzione","pausedStatus":"In pausa","selectSong":"Seleziona una canzone per iniziare","previous":"Precedente","play":"Riproduci","pause":"Pausa","next":"Successiva","radio":"Alla fine","endNext":"Brano successivo","endRepeat":"Ripeti brano","random":"Casuale","all":"Tutti","allSongs":"Tutte le canzoni","newReleases":"Novità","grid":"Griglia","list":"Elenco","top":"In alto","aboutTitle":"Informazioni su AndaluzRock","catalogManagement":"Gestione catalogo","addNew":"Aggiungi","edit":"Modifica","selectSongToEdit":"Seleziona la canzone da modificare","chooseTrack":"-- Scegli un brano --","songTitle":"Titolo della canzone","artist":"Artista / Interprete","country":"Paese","songLanguage":"Lingua della canzone","styleGenre":"Stile / Genere","shortDescription":"Breve descrizione","descriptionPlaceholder":"Descrivi brevemente questa canzone…","coverUrl":"URL copertina","songUrl":"Link della canzone","saveSong":"Salva canzone","linkCopied":"Link copiato!","noSongs":"Nessuna canzone trovata per questa selezione.","playing":"IN RIPRODUZIONE","new":"NUOVO","untitled":"Senza titolo","views":"ascolti","suno":"Suno","audio":"Audio","comments":"Commenti","songComments":"Commenti su questa canzone","aliasPlaceholder":"Il tuo nome (max 25 caratteri)","commentPlaceholder":"Scrivi il tuo commento (max 500 caratteri)","publishComment":"Pubblica commento","loadingComments":"Caricamento commenti…","noComments":"Ancora nessun commento. Sii il primo!","playNow":"Riproduci","showDetails":"Mostra dettagli","adminActive":"Admin (attivo)","adminPassword":"Password amministratore:","wrongPassword":"Password errata.","saveNewSong":"Salva nuova canzone","updateSong":"Aggiorna canzone","chooseTrackEdit":"-- Scegli una canzone da modificare --","selectTrackEdit":"Seleziona una canzone dall’elenco.","songAdded":"Canzone aggiunta!","songUpdated":"Canzone aggiornata!","deleteConfirm":"Vuoi davvero eliminare questa canzone?","viewsLabel":"ascolti"},
+            ru: {"connecting":"Подключение к Supabase…","aboutButton":"Об AndaluzRock","contact":"Контакт","explore":"Исследуйте музыкальный атлас","allCountries":"-- Все страны --","chooseLanguage":"-- Выберите язык --","chooseStyle":"-- Выберите стиль --","clearFilter":"Сбросить фильтр","searchSong":"Поиск песен…","liveConsole":"Панель воспроизведения","sunoPlayer":"Плеер Suno","atlasPlayer":"Плеер AndaluzRock","playingStatus":"Воспроизводится","pausedStatus":"Пауза","selectSong":"Выберите песню, чтобы начать","previous":"Предыдущая","play":"Играть","pause":"Пауза","next":"Следующая","radio":"После окончания","endNext":"Следующая песня","endRepeat":"Повторять песню","random":"Перемешать","all":"Все","allSongs":"Все песни","newReleases":"Новинки","grid":"Сетка","list":"Список","top":"Наверх","aboutTitle":"Об AndaluzRock","catalogManagement":"Управление каталогом","addNew":"Добавить","edit":"Изменить","selectSongToEdit":"Выберите песню для изменения","chooseTrack":"-- Выберите трек --","songTitle":"Название песни","artist":"Исполнитель","country":"Страна","songLanguage":"Язык песни","styleGenre":"Стиль / Жанр","shortDescription":"Краткое описание","descriptionPlaceholder":"Кратко опишите песню…","coverUrl":"Ссылка на обложку","songUrl":"Ссылка на песню","saveSong":"Сохранить песню","linkCopied":"Ссылка скопирована!","noSongs":"Для этого выбора песни не найдены.","playing":"ИГРАЕТ","new":"НОВОЕ","untitled":"Без названия","views":"прослушиваний","suno":"Suno","audio":"Аудио","comments":"Комментарии","songComments":"Комментарии к песне","aliasPlaceholder":"Ваше имя (до 25 символов)","commentPlaceholder":"Ваш комментарий (до 500 символов)","publishComment":"Опубликовать комментарий","loadingComments":"Загрузка комментариев…","noComments":"Комментариев пока нет. Будьте первым!","playNow":"Играть","showDetails":"Подробнее","adminActive":"Админ (активен)","adminPassword":"Пароль администратора:","wrongPassword":"Неверный пароль.","saveNewSong":"Сохранить новую песню","updateSong":"Обновить песню","chooseTrackEdit":"-- Выберите песню для изменения --","selectTrackEdit":"Выберите песню из списка.","songAdded":"Песня добавлена!","songUpdated":"Песня обновлена!","deleteConfirm":"Вы действительно хотите удалить эту песню?","viewsLabel":"прослушиваний"},
+            zh: {"connecting":"正在连接 Supabase…","aboutButton":"关于 AndaluzRock","contact":"联系","explore":"探索音乐地图","allCountries":"-- 所有国家 --","chooseLanguage":"-- 选择语言 --","chooseStyle":"-- 选择风格 --","clearFilter":"清除筛选","searchSong":"搜索歌曲…","liveConsole":"播放控制台","sunoPlayer":"Suno 播放器","atlasPlayer":"AndaluzRock 播放器","playingStatus":"正在播放","pausedStatus":"已暂停","selectSong":"选择一首歌曲开始","previous":"上一首","play":"播放","pause":"暂停","next":"下一首","radio":"播放结束后","endNext":"播放下一首","endRepeat":"重复当前歌曲","random":"随机播放","all":"全部","allSongs":"全部歌曲","newReleases":"最新发布","grid":"网格","list":"列表","top":"返回顶部","aboutTitle":"关于 AndaluzRock","catalogManagement":"曲库管理","addNew":"新增","edit":"编辑","selectSongToEdit":"选择要编辑的歌曲","chooseTrack":"-- 选择曲目 --","songTitle":"歌曲标题","artist":"艺术家 / 演唱者","country":"国家","songLanguage":"歌曲语言","styleGenre":"风格 / 流派","shortDescription":"简短介绍","descriptionPlaceholder":"简要介绍这首歌曲…","coverUrl":"封面链接","songUrl":"歌曲链接","saveSong":"保存歌曲","linkCopied":"链接已复制！","noSongs":"没有找到符合条件的歌曲。","playing":"正在播放","new":"新","untitled":"未命名","views":"次播放","suno":"Suno","audio":"音频","comments":"评论","songComments":"歌曲评论","aliasPlaceholder":"你的昵称（最多25个字符）","commentPlaceholder":"写下评论（最多500个字符）","publishComment":"发布评论","loadingComments":"正在加载评论…","noComments":"还没有评论。来发表第一条吧！","playNow":"播放","showDetails":"显示详情","adminActive":"管理员（已启用）","adminPassword":"管理员密码：","wrongPassword":"密码错误。","saveNewSong":"保存新歌曲","updateSong":"更新歌曲","chooseTrackEdit":"-- 选择要编辑的歌曲 --","selectTrackEdit":"从列表中选择一首歌曲。","songAdded":"歌曲已添加！","songUpdated":"歌曲已更新！","deleteConfirm":"确定要删除这首歌曲吗？","viewsLabel":"次播放"},
+            ja: {"connecting":"Supabase に接続中…","aboutButton":"AndaluzRock について","contact":"お問い合わせ","explore":"音楽アトラスを探索","allCountries":"-- すべての国 --","chooseLanguage":"-- 言語を選択 --","chooseStyle":"-- スタイルを選択 --","clearFilter":"フィルターをクリア","searchSong":"曲を検索…","liveConsole":"再生コンソール","sunoPlayer":"Suno プレーヤー","atlasPlayer":"AndaluzRock プレーヤー","playingStatus":"再生中","pausedStatus":"一時停止","selectSong":"曲を選んで再生を開始","previous":"前へ","play":"再生","pause":"一時停止","next":"次へ","radio":"再生終了後","endNext":"次の曲","endRepeat":"現在の曲をリピート","random":"シャッフル","all":"すべて","allSongs":"すべての曲","newReleases":"新着曲","grid":"グリッド","list":"リスト","top":"トップへ","aboutTitle":"AndaluzRock について","catalogManagement":"カタログ管理","addNew":"新規追加","edit":"編集","selectSongToEdit":"編集する曲を選択","chooseTrack":"-- 曲を選択 --","songTitle":"曲名","artist":"アーティスト / 演奏者","country":"国","songLanguage":"曲の言語","styleGenre":"スタイル / ジャンル","shortDescription":"簡単な説明","descriptionPlaceholder":"この曲について簡単に説明してください…","coverUrl":"カバー画像 URL","songUrl":"曲のリンク","saveSong":"曲を保存","linkCopied":"リンクをコピーしました！","noSongs":"該当する曲が見つかりません。","playing":"再生中","new":"新着","untitled":"タイトルなし","views":"再生回数","suno":"Suno","audio":"オーディオ","comments":"コメント","songComments":"この曲へのコメント","aliasPlaceholder":"名前（25文字以内）","commentPlaceholder":"コメントを入力（500文字以内）","publishComment":"コメントを投稿","loadingComments":"コメントを読み込み中…","noComments":"まだコメントはありません。最初に投稿しましょう！","playNow":"再生","showDetails":"詳細を表示","adminActive":"管理者（有効）","adminPassword":"管理者パスワード：","wrongPassword":"パスワードが違います。","saveNewSong":"新しい曲を保存","updateSong":"曲を更新","chooseTrackEdit":"-- 編集する曲を選択 --","selectTrackEdit":"リストから曲を選択してください。","songAdded":"曲を追加しました！","songUpdated":"曲を更新しました！","deleteConfirm":"この曲を削除してもよろしいですか？","viewsLabel":"再生回数"},
+            tr: {connecting:'Supabase bağlantısı kuruluyor…',aboutButton:'AndaluzRock Hakkında',contact:'İletişim',explore:'Müzik atlasını keşfet',allCountries:'-- Tüm ülkeler --',chooseLanguage:'-- Dil seçin --',chooseStyle:'-- Tarz seçin --',clearFilter:'Filtreyi temizle',searchSong:'Şarkı ara...',liveConsole:'Canlı Konsol',sunoPlayer:'Suno Oynatıcı',atlasPlayer:'AndaluzRock Oynatıcı',playingStatus:'Çalıyor',pausedStatus:'Duraklatıldı',selectSong:'Başlamak için bir şarkı seçin',previous:'Önceki',play:'Oynat',pause:'Duraklat',next:'Sonraki',radio:'Bittiğinde',endNext:'Sonraki şarkı',endRepeat:'Bu şarkıyı tekrarla',random:'Karışık',all:'Tümü',allSongs:'Tüm Şarkılar',newReleases:'Yeni çıkanlar',grid:'Izgara',list:'Liste',top:'Yukarı',aboutTitle:'AndaluzRock Hakkında',aboutP1:'Biz müzik tutkusu etrafında birleşmiş iki arkadaşız. Bu web köşesini bulduysanız, muhtemelen aynı tutkuyu paylaşıyorsunuz.',aboutP2:'Bugünün araçlarından yararlanarak şarkılar besteliyor, üretiyor ve şekillendiriyoruz. Büyük plak şirketleri yok, hile yok.',aboutP3:'Reklam yok, kesinti yok... Sadece müziğe saf bir tutku.',catalogManagement:'Katalog Yönetimi',addNew:'Yeni Ekle',edit:'Düzenle',selectSongToEdit:'Düzenlenecek şarkıyı seçin',chooseTrack:'-- Bir parça seçin --',songTitle:'Şarkı başlığı',artist:'Sanatçı / Yorumcu',artistHelp:'Kendi şarkılarımız için AndaluzRock; diğer şarkılar için orijinal sanatçı.',country:'Ülke',songLanguage:'Şarkı dili',styleGenre:'Tarz / Tür',shortDescription:'Kısa açıklama',descriptionPlaceholder:'Bu şarkıyı kısaca açıklayın...',coverUrl:'Kapak URL’si',songUrl:'Şarkı bağlantısı',saveSong:'Şarkıyı Kaydet',linkCopied:'Bağlantı panoya kopyalandı!',noSongs:'Bu seçim için şarkı bulunamadı.',playing:'ÇALIYOR',new:'YENİ',untitled:'Başlıksız',views:'dinlenme',suno:'Suno',audio:'Ses',comments:'Yorumlar',songComments:'Bu şarkının yorumları',aliasPlaceholder:'Adınız (en fazla 25 karakter)',commentPlaceholder:'Yorumunuzu yazın (en fazla 500 karakter)',publishComment:'Yorum gönder',loadingComments:'Yorumlar yükleniyor…',noComments:'Henüz yorum yok. İlk siz olun!',commentLoadError:'Yorumlar yüklenemedi. Supabase yorum ayarlarını kontrol edin.',playNow:'Oynat',showDetails:'Ayrıntıları göster',adminActive:'Admin (Aktif)',adminPassword:'Yönetici şifresi:',wrongPassword:'Hatalı şifre.',saveNewSong:'Yeni Şarkıyı Kaydet',updateSong:'Şarkıyı Güncelle',chooseTrackEdit:'-- Düzenlenecek şarkıyı seçin --',selectTrackEdit:'Düzenlemek için listeden bir şarkı seçin.',songAdded:'Şarkı başarıyla eklendi!',songUpdated:'Şarkı başarıyla güncellendi!',deleteConfirm:'Bu şarkıyı silmek istediğinizden emin misiniz?',commentPublished:'Yorum yayınlandı. Katıldığınız için teşekkürler!',waitComment:'Yeni yorum göndermeden önce 30 saniye bekleyin.',duplicateComment:'Aynı yorumu art arda gönderemezsiniz.',commentFailed:'Yorum gönderilemedi. ',viewsLabel:'dinlenme'}
+        };
+
+        Object.assign(translations, {
+            el: {...translations.en,
+                connecting:'Σύνδεση με το Supabase…',aboutButton:'Σχετικά με το AndaluzRock',contact:'Επικοινωνία',explore:'Εξερευνήστε τον μουσικό άτλαντα',allCountries:'-- Όλες οι χώρες --',chooseLanguage:'-- Επιλέξτε γλώσσα --',chooseStyle:'-- Επιλέξτε είδος --',clearFilter:'Καθαρισμός φίλτρου',searchSong:'Αναζήτηση τραγουδιού…',liveConsole:'Ζωντανή κονσόλα',sunoPlayer:'Αναπαραγωγέας Suno',atlasPlayer:'Αναπαραγωγέας AndaluzRock',playingStatus:'Αναπαραγωγή',pausedStatus:'Σε παύση',selectSong:'Επιλέξτε ένα τραγούδι για να ξεκινήσετε',previous:'Προηγούμενο',play:'Αναπαραγωγή',pause:'Παύση',next:'Επόμενο',radio:'Μετά το τέλος',endNext:'Επόμενο τραγούδι',endRepeat:'Επανάληψη τραγουδιού',random:'Τυχαία σειρά',all:'Όλα',allSongs:'Όλα τα τραγούδια',newReleases:'Νέες κυκλοφορίες',grid:'Πλέγμα',list:'Λίστα',top:'Επάνω',aboutTitle:'Σχετικά με το AndaluzRock',catalogManagement:'Διαχείριση καταλόγου',addNew:'Προσθήκη',edit:'Επεξεργασία',selectSongToEdit:'Επιλέξτε τραγούδι για επεξεργασία',chooseTrack:'-- Επιλέξτε κομμάτι --',songTitle:'Τίτλος τραγουδιού',artist:'Καλλιτέχνης / Ερμηνευτής',country:'Χώρα',songLanguage:'Γλώσσα τραγουδιού',styleGenre:'Στυλ / Είδος',shortDescription:'Σύντομη περιγραφή',descriptionPlaceholder:'Περιγράψτε σύντομα αυτό το τραγούδι…',coverUrl:'Σύνδεσμος εξωφύλλου',songUrl:'Σύνδεσμος τραγουδιού',saveSong:'Αποθήκευση τραγουδιού',linkCopied:'Ο σύνδεσμος αντιγράφηκε!',noSongs:'Δεν βρέθηκαν τραγούδια για αυτή την επιλογή.',playing:'ΠΑΙΖΕΙ',new:'ΝΕΟ',untitled:'Χωρίς τίτλο',views:'ακροάσεις',audio:'Ήχος',comments:'Σχόλια',songComments:'Σχόλια για αυτό το τραγούδι',aliasPlaceholder:'Το όνομά σας (έως 25 χαρακτήρες)',commentPlaceholder:'Γράψτε το σχόλιό σας (έως 500 χαρακτήρες)',publishComment:'Δημοσίευση σχολίου',loadingComments:'Φόρτωση σχολίων…',noComments:'Δεν υπάρχουν ακόμη σχόλια. Γίνετε ο πρώτος!',playNow:'Αναπαραγωγή',showDetails:'Εμφάνιση λεπτομερειών',adminActive:'Διαχειριστής (ενεργός)',adminPassword:'Κωδικός διαχειριστή:',wrongPassword:'Λανθασμένος κωδικός.',saveNewSong:'Αποθήκευση νέου τραγουδιού',updateSong:'Ενημέρωση τραγουδιού',selectTrackEdit:'Επιλέξτε τραγούδι από τη λίστα για επεξεργασία.',songAdded:'Το τραγούδι προστέθηκε με επιτυχία!',songUpdated:'Το τραγούδι ενημερώθηκε με επιτυχία!',deleteConfirm:'Θέλετε σίγουρα να διαγράψετε αυτό το τραγούδι;',commentPublished:'Το σχόλιο δημοσιεύτηκε. Ευχαριστούμε!',waitComment:'Περιμένετε 30 δευτερόλεπτα πριν δημοσιεύσετε άλλο σχόλιο.',duplicateComment:'Δεν μπορείτε να δημοσιεύσετε το ίδιο σχόλιο δύο φορές στη σειρά.',viewsLabel:'ακροάσεις'
+            },
+            ar: {...translations.en,
+                connecting:'جارٍ الاتصال بـ Supabase…',aboutButton:'حول AndaluzRock',contact:'اتصل بنا',explore:'استكشف الأطلس الموسيقي',allCountries:'-- جميع البلدان --',chooseLanguage:'-- اختر اللغة --',chooseStyle:'-- اختر النمط --',clearFilter:'مسح التصفية',searchSong:'ابحث عن أغنية…',liveConsole:'البث المباشر',sunoPlayer:'مشغل Suno',atlasPlayer:'مشغل AndaluzRock',playingStatus:'قيد التشغيل',pausedStatus:'متوقف مؤقتًا',selectSong:'اختر أغنية للبدء',previous:'السابق',play:'تشغيل',pause:'إيقاف مؤقت',next:'التالي',radio:'عند الانتهاء',endNext:'تشغيل الأغنية التالية',endRepeat:'تكرار الأغنية',random:'عشوائي',all:'الكل',allSongs:'كل الأغاني',newReleases:'الإصدارات الجديدة',grid:'شبكة',list:'قائمة',top:'أعلى',aboutTitle:'حول AndaluzRock',catalogManagement:'إدارة الكتالوج',addNew:'إضافة جديد',edit:'تعديل',selectSongToEdit:'اختر الأغنية للتعديل',chooseTrack:'-- اختر مقطعًا --',songTitle:'عنوان الأغنية',artist:'الفنان / المؤدي',country:'البلد',songLanguage:'لغة الأغنية',styleGenre:'النمط / النوع',shortDescription:'وصف قصير',descriptionPlaceholder:'اكتب وصفًا موجزًا لهذه الأغنية…',coverUrl:'رابط الغلاف',songUrl:'رابط الأغنية',saveSong:'حفظ الأغنية',linkCopied:'تم نسخ الرابط!',noSongs:'لم يتم العثور على أغانٍ لهذا الاختيار.',playing:'قيد التشغيل',new:'جديد',untitled:'بلا عنوان',views:'استماع',audio:'الصوت',comments:'التعليقات',songComments:'التعليقات على هذه الأغنية',aliasPlaceholder:'اسمك (25 حرفًا كحد أقصى)',commentPlaceholder:'اكتب تعليقك (500 حرف كحد أقصى)',publishComment:'نشر التعليق',loadingComments:'جارٍ تحميل التعليقات…',noComments:'لا توجد تعليقات بعد. كن أول من يعلّق!',playNow:'تشغيل',showDetails:'عرض التفاصيل',adminActive:'المسؤول (نشط)',adminPassword:'كلمة مرور المسؤول:',wrongPassword:'كلمة المرور غير صحيحة.',saveNewSong:'حفظ أغنية جديدة',updateSong:'تحديث الأغنية',selectTrackEdit:'اختر أغنية من القائمة لتعديلها.',songAdded:'تمت إضافة الأغنية بنجاح!',songUpdated:'تم تحديث الأغنية بنجاح!',deleteConfirm:'هل أنت متأكد أنك تريد حذف هذه الأغنية؟',commentPublished:'تم نشر التعليق. شكرًا لمشاركتك!',waitComment:'يرجى الانتظار 30 ثانية قبل نشر تعليق آخر.',duplicateComment:'لا يمكنك نشر التعليق نفسه مرتين متتاليتين.',viewsLabel:'استماع'
+            }
+        });
+
+                function t(key) { return (translations[interfaceLanguage] || translations.es)[key] || translations.es[key] || key; }
+
+        chatSupabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'PASSWORD_RECOVERY') {
+                document.getElementById('account-modal').style.display = 'flex';
+                document.getElementById('account-password-change-form').hidden = false;
+                document.getElementById('account-auth-form').hidden = true;
+                document.getElementById('account-status-note').textContent = 'Enter and confirm your new password.';
+            }
+            setTimeout(() => updateAccountButton(session?.user || null), 0);
+        });
+        const extraUiText={
+            es:{showLyrics:'Ver letra',hideLyrics:'Ocultar letra',lyricsAvailable:'Letra disponible',collabTitle:'Comparte tu canción',collabIntro:'¿Eres creador en Suno? Envía tu canción a AndaluzRock. Tu propuesta quedará pendiente y solo se publicará cuando el administrador la apruebe.',collabNickname:'Tu nombre artístico',collabSongTitle:'Título de la canción',collabCountry:'País',collabLanguage:'Idioma',collabStyle:'Estilo musical',collabUrl:'Enlace de Suno',collabCover:'Enlace de portada (opcional)',collabDescription:'Descripción breve (opcional)',collabLyrics:'Letra (opcional)',collabSend:'Enviar canción para revisión',collabMy:'Tus propuestas aparecerán aquí.',collabAdmin:'Propuestas pendientes de revisión',collabPending:'Pendiente',collabApproved:'Aprobada',collabRejected:'Rechazada',collabSent:'Tu canción se ha enviado. Queda pendiente de aprobación.',collabBadUrl:'Introduce un enlace válido de Suno (suno.com/s/ o suno.com/song/...).',collabError:'No se pudo enviar la propuesta: ',collabApprove:'Aprobar',collabReject:'Rechazar',collabNoPending:'No hay propuestas pendientes.',collabReviewError:'No se pudo actualizar la propuesta: ',collabReviewConfirm:'¿Seguro que quieres ',collabApproveVerb:'aprobar',collabRejectVerb:'rechazar',lyricsLabel:'Letra de la canción'},
+            en:{showLyrics:'Show lyrics',hideLyrics:'Hide lyrics',lyricsAvailable:'Lyrics available',collabTitle:'Share your song',collabIntro:'Are you a Suno creator? Submit your song to AndaluzRock. It will remain pending until an administrator approves it.',collabNickname:'Artist name',collabSongTitle:'Song title',collabCountry:'Country',collabLanguage:'Language',collabStyle:'Music style',collabUrl:'Suno link',collabCover:'Cover image URL (optional)',collabDescription:'Short description (optional)',collabLyrics:'Lyrics (optional)',collabSend:'Submit song for review',collabMy:'Your submissions will appear here.',collabAdmin:'Submissions awaiting review',collabPending:'Pending',collabApproved:'Approved',collabRejected:'Rejected',collabSent:'Your song was submitted and is awaiting approval.',collabBadUrl:'Enter a valid Suno link (suno.com/s/ or suno.com/song/...).',collabError:'Could not submit: ',collabApprove:'Approve',collabReject:'Reject',collabNoPending:'There are no pending submissions.',collabReviewError:'Could not update submission: ',collabReviewConfirm:'Are you sure you want to ',collabApproveVerb:'approve',collabRejectVerb:'reject',lyricsLabel:'Song lyrics'},
+            fr: {"showLyrics":"Afficher les paroles","hideLyrics":"Masquer les paroles","lyricsAvailable":"Paroles disponibles","collabTitle":"Partagez votre chanson","collabIntro":"Vous créez avec Suno ? Envoyez votre chanson à AndaluzRock. Elle sera publiée après approbation de l’administrateur.","collabNickname":"Nom d’artiste","collabSongTitle":"Titre de la chanson","collabCountry":"Pays","collabLanguage":"Langue","collabStyle":"Style musical","collabUrl":"Lien Suno","collabCover":"Lien de la pochette (facultatif)","collabDescription":"Brève description (facultatif)","collabLyrics":"Paroles (facultatif)","collabSend":"Envoyer pour examen","collabMy":"Vos propositions apparaîtront ici.","collabAdmin":"Propositions en attente","collabPending":"En attente","collabApproved":"Approuvée","collabRejected":"Refusée","collabSent":"Votre chanson a été envoyée et attend une approbation.","collabBadUrl":"Saisissez un lien Suno valide.","collabError":"Envoi impossible : ","collabApprove":"Approuver","collabReject":"Refuser","collabNoPending":"Aucune proposition en attente.","collabReviewError":"Impossible de mettre à jour : ","collabReviewConfirm":"Voulez-vous vraiment ","collabApproveVerb":"approuver","collabRejectVerb":"refuser","lyricsLabel":"Paroles de la chanson"},
+            it: {"showLyrics":"Mostra testo","hideLyrics":"Nascondi testo","lyricsAvailable":"Testo disponibile","collabTitle":"Condividi la tua canzone","collabIntro":"Crei musica con Suno? Invia la tua canzone ad AndaluzRock. Sarà pubblicata dopo l’approvazione dell’amministratore.","collabNickname":"Nome d’artista","collabSongTitle":"Titolo della canzone","collabCountry":"Paese","collabLanguage":"Lingua","collabStyle":"Stile musicale","collabUrl":"Link Suno","collabCover":"Link copertina (facoltativo)","collabDescription":"Breve descrizione (facoltativa)","collabLyrics":"Testo (facoltativo)","collabSend":"Invia per revisione","collabMy":"Le tue proposte appariranno qui.","collabAdmin":"Proposte in attesa","collabPending":"In attesa","collabApproved":"Approvata","collabRejected":"Rifiutata","collabSent":"La canzone è stata inviata ed è in attesa di approvazione.","collabBadUrl":"Inserisci un link Suno valido.","collabError":"Invio non riuscito: ","collabApprove":"Approva","collabReject":"Rifiuta","collabNoPending":"Nessuna proposta in attesa.","collabReviewError":"Impossibile aggiornare: ","collabReviewConfirm":"Vuoi davvero ","collabApproveVerb":"approvare","collabRejectVerb":"rifiutare","lyricsLabel":"Testo della canzone"},
+            ru: {"showLyrics":"Показать текст","hideLyrics":"Скрыть текст","lyricsAvailable":"Текст доступен","collabTitle":"Поделитесь своей песней","collabIntro":"Создаёте музыку в Suno? Отправьте песню в AndaluzRock. Она будет опубликована после одобрения администратора.","collabNickname":"Имя исполнителя","collabSongTitle":"Название песни","collabCountry":"Страна","collabLanguage":"Язык","collabStyle":"Музыкальный стиль","collabUrl":"Ссылка Suno","collabCover":"Ссылка на обложку (необязательно)","collabDescription":"Краткое описание (необязательно)","collabLyrics":"Текст песни (необязательно)","collabSend":"Отправить на проверку","collabMy":"Ваши предложения появятся здесь.","collabAdmin":"Ожидают проверки","collabPending":"Ожидает","collabApproved":"Одобрено","collabRejected":"Отклонено","collabSent":"Песня отправлена и ожидает одобрения.","collabBadUrl":"Укажите действительную ссылку Suno.","collabError":"Не удалось отправить: ","collabApprove":"Одобрить","collabReject":"Отклонить","collabNoPending":"Нет предложений на проверке.","collabReviewError":"Не удалось обновить: ","collabReviewConfirm":"Вы уверены, что хотите ","collabApproveVerb":"одобрить","collabRejectVerb":"отклонить","lyricsLabel":"Текст песни"},
+            zh: {"showLyrics":"显示歌词","hideLyrics":"隐藏歌词","lyricsAvailable":"歌词可用","collabTitle":"分享你的歌曲","collabIntro":"你是 Suno 创作者吗？将歌曲提交给 AndaluzRock，管理员批准后才会发布。","collabNickname":"艺名","collabSongTitle":"歌曲标题","collabCountry":"国家","collabLanguage":"语言","collabStyle":"音乐风格","collabUrl":"Suno 链接","collabCover":"封面链接（可选）","collabDescription":"简短介绍（可选）","collabLyrics":"歌词（可选）","collabSend":"提交审核","collabMy":"你的投稿会显示在这里。","collabAdmin":"待审核投稿","collabPending":"待处理","collabApproved":"已批准","collabRejected":"已拒绝","collabSent":"歌曲已提交，等待批准。","collabBadUrl":"请输入有效的 Suno 链接。","collabError":"提交失败：","collabApprove":"批准","collabReject":"拒绝","collabNoPending":"没有待审核投稿。","collabReviewError":"更新失败：","collabReviewConfirm":"确定要","collabApproveVerb":"批准","collabRejectVerb":"拒绝","lyricsLabel":"歌曲歌词"},
+            ja: {"showLyrics":"歌詞を表示","hideLyrics":"歌詞を隠す","lyricsAvailable":"歌詞あり","collabTitle":"あなたの曲を共有","collabIntro":"Suno で音楽を制作していますか？曲を AndaluzRock に送信してください。管理者の承認後に公開されます。","collabNickname":"アーティスト名","collabSongTitle":"曲名","collabCountry":"国","collabLanguage":"言語","collabStyle":"音楽スタイル","collabUrl":"Suno リンク","collabCover":"カバー画像リンク（任意）","collabDescription":"短い説明（任意）","collabLyrics":"歌詞（任意）","collabSend":"審査に送信","collabMy":"あなたの投稿はここに表示されます。","collabAdmin":"審査待ちの投稿","collabPending":"保留中","collabApproved":"承認済み","collabRejected":"却下","collabSent":"曲を送信しました。承認待ちです。","collabBadUrl":"有効な Suno リンクを入力してください。","collabError":"送信できませんでした：","collabApprove":"承認","collabReject":"却下","collabNoPending":"審査待ちの投稿はありません。","collabReviewError":"更新できませんでした：","collabReviewConfirm":"本当に","collabApproveVerb":"承認","collabRejectVerb":"却下","lyricsLabel":"曲の歌詞"},
+            tr:{showLyrics:'Şarkı sözlerini göster',hideLyrics:'Şarkı sözlerini gizle',lyricsAvailable:'Şarkı sözleri mevcut',collabTitle:'Şarkını paylaş',collabIntro:'Suno’da içerik üretiyor musun? Şarkını AndaluzRock’ya gönder. Yönetici onaylayana kadar beklemede kalır.',collabNickname:'Sanatçı adı',collabSongTitle:'Şarkı başlığı',collabCountry:'Ülke',collabLanguage:'Dil',collabStyle:'Müzik tarzı',collabUrl:'Suno bağlantısı',collabCover:'Kapak görseli bağlantısı (isteğe bağlı)',collabDescription:'Kısa açıklama (isteğe bağlı)',collabLyrics:'Şarkı sözleri (isteğe bağlı)',collabSend:'Onay için gönder',collabMy:'Gönderilerin burada görünecek.',collabAdmin:'İnceleme bekleyen gönderiler',collabPending:'Beklemede',collabApproved:'Onaylandı',collabRejected:'Reddedildi',collabSent:'Şarkın gönderildi ve onay bekliyor.',collabBadUrl:'Geçerli bir Suno bağlantısı gir (suno.com/s/ veya suno.com/song/...).',collabError:'Gönderilemedi: ',collabApprove:'Onayla',collabReject:'Reddet',collabNoPending:'Bekleyen gönderi yok.',collabReviewError:'Gönderi güncellenemedi: ',collabReviewConfirm:'Şunu ',collabApproveVerb:'onaylamak',collabRejectVerb:'reddetmek',lyricsLabel:'Şarkı sözleri'}
+        };
+        extraUiText.el = {...extraUiText.en,showLyrics:'Εμφάνιση στίχων',hideLyrics:'Απόκρυψη στίχων',lyricsAvailable:'Διαθέσιμοι στίχοι',collabTitle:'Μοιραστείτε το τραγούδι σας',collabIntro:'Δημιουργείτε μουσική στο Suno; Στείλτε το τραγούδι σας στο AndaluzRock. Θα δημοσιευτεί μόνο μετά την έγκριση διαχειριστή.',collabNickname:'Καλλιτεχνικό όνομα',collabSongTitle:'Τίτλος τραγουδιού',collabCountry:'Χώρα',collabLanguage:'Γλώσσα',collabStyle:'Μουσικό στυλ',collabUrl:'Σύνδεσμος τραγουδιού',collabCover:'Σύνδεσμος εξωφύλλου (προαιρετικό)',collabDescription:'Σύντομη περιγραφή (προαιρετικό)',collabLyrics:'Στίχοι (προαιρετικό)',collabSend:'Αποστολή για έλεγχο',collabMy:'Οι προτάσεις σας θα εμφανιστούν εδώ.',collabAdmin:'Προτάσεις προς έλεγχο',collabPending:'Σε αναμονή',collabApproved:'Εγκρίθηκε',collabRejected:'Απορρίφθηκε',collabSent:'Το τραγούδι στάλθηκε και αναμένει έγκριση.',collabBadUrl:'Εισαγάγετε έναν έγκυρο σύνδεσμο τραγουδιού.',collabError:'Η αποστολή απέτυχε: ',collabApprove:'Έγκριση',collabReject:'Απόρριψη',collabNoPending:'Δεν υπάρχουν προτάσεις προς έλεγχο.',collabReviewError:'Η ενημέρωση απέτυχε: ',lyricsLabel:'Στίχοι τραγουδιού'};
+        extraUiText.ar = {...extraUiText.en,showLyrics:'عرض الكلمات',hideLyrics:'إخفاء الكلمات',lyricsAvailable:'الكلمات متاحة',collabTitle:'شارك أغنيتك',collabIntro:'هل تنشئ الموسيقى باستخدام Suno؟ أرسل أغنيتك إلى AndaluzRock. لن تُنشر إلا بعد موافقة المسؤول.',collabNickname:'الاسم الفني',collabSongTitle:'عنوان الأغنية',collabCountry:'البلد',collabLanguage:'اللغة',collabStyle:'النمط الموسيقي',collabUrl:'رابط الأغنية',collabCover:'رابط الغلاف (اختياري)',collabDescription:'وصف مختصر (اختياري)',collabLyrics:'الكلمات (اختياري)',collabSend:'إرسال للمراجعة',collabMy:'ستظهر مشاركاتك هنا.',collabAdmin:'المشاركات قيد المراجعة',collabPending:'قيد الانتظار',collabApproved:'تمت الموافقة',collabRejected:'مرفوض',collabSent:'تم إرسال الأغنية وهي بانتظار الموافقة.',collabBadUrl:'أدخل رابط أغنية صالحًا.',collabError:'تعذر الإرسال: ',collabApprove:'موافقة',collabReject:'رفض',collabNoPending:'لا توجد مشاركات قيد المراجعة.',collabReviewError:'تعذر التحديث: ',lyricsLabel:'كلمات الأغنية'};
+
+                function extraText(key){return (extraUiText[interfaceLanguage]||extraUiText.es)[key]||extraUiText.es[key]||key;}
+        function applyExtraUiLanguage(){
+            const map={ 'collab-title':'collabTitle','collab-intro':'collabIntro','collab-label-nickname':'collabNickname','collab-label-title':'collabSongTitle','collab-label-country':'collabCountry','collab-label-language':'collabLanguage','collab-label-style':'collabStyle','collab-label-url':'collabUrl','collab-label-cover':'collabCover','collab-label-description':'collabDescription','collab-label-lyrics':'collabLyrics','collab-submit-button':'collabSend','collab-my-label':'collabMy','collab-admin-title':'collabAdmin','song-lyrics-label':'lyricsLabel'};
+            Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=extraText(key);});
+            const lyricsButton=document.getElementById('lyrics-toggle-label');if(lyricsButton){const panel=document.getElementById('current-lyrics-panel');lyricsButton.textContent=panel&&panel.style.display==='block'?extraText('hideLyrics'):extraText('showLyrics');}
+            renderMyCollaboratorSubmissions();
+            if(isChatAdmin)loadCollaboratorReviewQueue();
+        }
+        function applyInterfaceLanguage() {
+            document.documentElement.lang = interfaceLanguage;
+            document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (translations[interfaceLanguage]?.[key]) el.textContent = t(key); });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const key = el.getAttribute('data-i18n-placeholder'); el.placeholder = t(key); });
+            document.querySelectorAll('[data-i18n-title]').forEach(el => { const key = el.getAttribute('data-i18n-title'); el.title = t(key); });
+            const languageSelect = document.getElementById('select-language'); if (languageSelect?.options[0]) languageSelect.options[0].textContent = t('chooseLanguage');
+            const styleSelect = document.getElementById('select-style'); if (styleSelect?.options[0]) styleSelect.options[0].textContent = t('chooseStyle');
+            const editSelect = document.getElementById('edit-song-select'); if (editSelect?.options[0]) editSelect.options[0].textContent = t('chooseTrackEdit');
+            const optionLabels = { 'Español': {es:'Español',en:'Spanish',tr:'İspanyolca'}, 'Inglés': {es:'Inglés',en:'English',tr:'İngilizce'}, 'Francés': {es:'Francés',en:'French',tr:'Fransızca'}, 'Italiano': {es:'Italiano',en:'Italian',tr:'İtalyanca'}, 'Griego': {es:'Griego',en:'Greek',tr:'Yunanca'}, 'Turco': {es:'Turco',en:'Turkish',tr:'Türkçe'}, 'Ruso': {es:'Ruso',en:'Russian',tr:'Rusça'}, 'Chino': {es:'Chino',en:'Chinese',tr:'Çince'}, 'Japonés': {es:'Japonés',en:'Japanese',tr:'Japonca'}, 'Árabe': {es:'Árabe',en:'Arabic',tr:'Arapça'}, 'Baladas': {es:'Baladas',en:'Ballads',tr:'Balad'} };
+            document.querySelectorAll('#select-language option, #song-lang-input option, #select-style option, #song-style-input option').forEach(option => { const labels = optionLabels[option.value]; if (labels) option.textContent = labels[interfaceLanguage] || labels.es; });
+            const adminBtn = document.getElementById('admin-btn-text'); if (adminBtn) adminBtn.textContent = isAdmin ? t('adminActive') : 'Admin';
+            const radioBtn = document.getElementById('auto-chain-btn'); if (radioBtn) radioBtn.innerHTML = `<i class=\"fa-solid ${isAutoChainActive ? 'fa-forward-step' : 'fa-repeat'}\"></i> ${t('radio')}: <span id=\"end-mode-label\">${t(isAutoChainActive ? 'endNext' : 'endRepeat')}</span>`;
+            const shuffleBtn = document.getElementById('shuffle-btn'); if (shuffleBtn) shuffleBtn.innerHTML = `<i class=\"fa-solid fa-shuffle\"></i> ${t('random')}: ${isShuffleActive ? 'ON' : 'OFF'}`;
+            if (document.getElementById('form-submit-btn')) document.getElementById('form-submit-btn').textContent = adminMode === 'add' ? t('saveNewSong') : t('updateSong');
+            if (document.getElementById('play-pause-btn') && !getSunoSongId((getFilteredSongs()[currentTrackIndex] || {}).audio_url)) { const playing = !audioElement.paused && !!audioElement.src; document.getElementById('play-pause-btn').innerHTML = `<i class=\"fa-solid ${playing ? 'fa-pause' : 'fa-play'}\"></i> ${playing ? t('pause') : t('play')}`; }
+            renderApp();
+        }
+        function changeInterfaceLanguage(lang) { interfaceLanguage = translations[lang] ? lang : 'es'; document.documentElement.lang = interfaceLanguage; document.documentElement.dir = interfaceLanguage === 'ar' ? 'rtl' : 'ltr'; localStorage.setItem('andaluzrock_interface_language', interfaceLanguage); applyInterfaceLanguage(); applyChatLanguage(); applyExtraUiLanguage(); }
 
         const audioElement = document.getElementById('audio-element');
         const playPauseBtn = document.getElementById('play-pause-btn');
@@ -658,6 +1066,7 @@
                 songsCache = data || [];
                 renderApp();
                 populateEditSelect();
+                loadPublicPlaylists();
 
                 const urlParams = new URLSearchParams(window.location.search);
                 const targetSongId = parseInt(urlParams.get('song'));
@@ -680,9 +1089,11 @@
         }
 
         function getSunoSongId(url) {
-            const match = String(url || '').match(/suno\.com\/(?:song|embed)\/([a-zA-Z0-9-]+)/i);
+            const match = String(url || '').match(/suno\.com\/(?:s|song|embed)\/([a-zA-Z0-9-]+)/i);
             return match ? match[1] : null;
         }
+
+        function getSongPlatform(song) { return getSunoSongId(song && song.audio_url) ? 'suno' : 'audio'; }
 
         function prepareSong(index) {
             const songs = getFilteredSongs();
@@ -696,22 +1107,29 @@
             const timeInfo = document.querySelector('.time-info');
 
             document.getElementById('current-song-title').innerText = song.title;
+            const lyricsPanel = document.getElementById('current-lyrics-panel');
+            const lyricsButton = document.getElementById('lyrics-toggle-btn');
+            lyricsPanel.textContent = song.lyrics || '';
+            lyricsPanel.style.display = 'none';
+            lyricsButton.style.display = song.lyrics && song.lyrics.trim() ? 'inline-flex' : 'none';
+            document.getElementById('lyrics-toggle-label').textContent = extraText('showLyrics');
             document.getElementById('current-song-genre').innerText = song.genre;
-            document.getElementById('console-cover-img').src = song.cover_url || 'https://via.placeholder.com/90/111/00f0ff?text=IKA';
+            document.getElementById('console-cover-img').src = song.cover_url || 'https://via.placeholder.com/90/111/00f0ff?text=AndaluzRock';
 
             audioElement.pause();
+            audioElement.loop = !isAutoChainActive;
             if (sunoId) {
                 audioElement.removeAttribute('src');
                 audioElement.load();
                 sunoContainer.style.display = 'block';
-                sunoFrame.src = 'https://suno.com/embed/' + encodeURIComponent(sunoId) + '?autoplay=1';
+                sunoFrame.innerHTML = '<iframe title="Reproductor Suno" src="https://suno.com/embed/' + encodeURIComponent(sunoId) + '?autoplay=1" height="150" allow="autoplay; encrypted-media; fullscreen" allowfullscreen loading="lazy" style="width:100%;border:0;border-radius:12px"></iframe>';
                 progressContainer.style.display = 'none';
                 if (timeInfo) timeInfo.style.display = 'none';
                 playPauseBtn.style.display = 'none';
-                document.getElementById('current-status-text').innerText = 'Reproductor Suno';
+                document.getElementById('current-status-text').innerText = t('sunoPlayer');
                 eqContainer.classList.remove('playing-active');
             } else {
-                sunoFrame.src = '';
+                sunoFrame.innerHTML = '';
                 sunoContainer.style.display = 'none';
                 progressContainer.style.display = '';
                 if (timeInfo) timeInfo.style.display = '';
@@ -720,6 +1138,7 @@
                 timeCurrent.innerText = '0:00';
                 timeTotal.innerText = '0:00';
                 audioElement.src = song.audio_url || '';
+                document.getElementById('current-status-text').innerText = t('atlasPlayer');
             }
 
             updateMediaSession(song);
@@ -744,8 +1163,24 @@
                 updatePlayButtonState(false);
             }
 
-            document.title = `🎵 ${song.title} - IKAmusicstudios`;
+            document.title = `🎵 ${song.title} - AndaluzRock`;
             renderApp();
+        }
+
+        function playSongById(songId) {
+            const songs = getFilteredSongs();
+            const index = songs.findIndex(song => String(song.id) === String(songId));
+            if (index < 0) return;
+            loadSongToPlayer(index, true);
+        }
+
+        function toggleCurrentLyrics(){
+            const panel=document.getElementById('current-lyrics-panel');
+            const button=document.getElementById('lyrics-toggle-btn');
+            const opening=panel.style.display==='none'||!panel.style.display;
+            panel.style.display=opening?'block':'none';
+            document.getElementById('lyrics-toggle-label').textContent=extraText(opening?'hideLyrics':'showLyrics');
+            button.setAttribute('aria-expanded',opening?'true':'false');
         }
 
         /* INTEGRACIÓN CON MEDIASESSION (CONTROLES BLUETOOTH / AURICULARES / NOTIFICACIONES) */
@@ -753,10 +1188,10 @@
             if ('mediaSession' in navigator && song) {
                 navigator.mediaSession.metadata = new MediaMetadata({
                     title: song.title,
-                    artist: 'IKAmusicstudios',
+                    artist: song.artist || 'AndaluzRock',
                     album: song.genre || 'Música Original',
                     artwork: [
-                        { src: song.cover_url || 'https://via.placeholder.com/512/111/00f0ff?text=IKA', sizes: '512x512', type: 'image/png' }
+                        { src: song.cover_url || 'https://via.placeholder.com/512/111/00f0ff?text=AndaluzRock', sizes: '512x512', type: 'image/png' }
                     ]
                 });
 
@@ -806,7 +1241,8 @@
             if (isAutoChainActive) {
                 nextSong();
             } else {
-                updatePlayButtonState(false);
+                audioElement.currentTime = 0;
+                audioElement.play().then(() => updatePlayButtonState(true)).catch(() => updatePlayButtonState(false));
             }
         });
 
@@ -824,14 +1260,14 @@
 
         function updatePlayButtonState(isPlaying) {
             if (isPlaying) {
-                playPauseBtn.innerHTML = `<i class="fa-solid fa-pause"></i> Pausa`;
+                playPauseBtn.innerHTML = `<i class="fa-solid fa-pause"></i> ${t('pause')}`;
                 eqContainer.classList.add('playing-active');
-                document.getElementById('current-status-text').innerText = "Reproduciendo";
+                document.getElementById('current-status-text').innerText = t("playingStatus");
                 if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
             } else {
-                playPauseBtn.innerHTML = `<i class="fa-solid fa-play"></i> Reproducir`;
+                playPauseBtn.innerHTML = `<i class="fa-solid fa-play"></i> ${t('play')}`;
                 eqContainer.classList.remove('playing-active');
-                document.getElementById('current-status-text').innerText = "En pausa";
+                document.getElementById('current-status-text').innerText = t("pausedStatus");
                 if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "paused";
             }
         }
@@ -856,21 +1292,47 @@
         }
 
         function toggleAutoChain() {
+            // ON = advance to the next track; OFF = repeat the current MP3 track.
             isAutoChainActive = !isAutoChainActive;
+            audioElement.loop = !isAutoChainActive;
             const btn = document.getElementById('auto-chain-btn');
             btn.classList.toggle('active-mode', isAutoChainActive);
-            btn.innerHTML = `<i class="fa-solid fa-radio"></i> Radio: ${isAutoChainActive ? 'ON' : 'OFF'}`;
+            btn.innerHTML = `<i class="fa-solid ${isAutoChainActive ? 'fa-forward-step' : 'fa-repeat'}"></i> ${t('radio')}: <span id="end-mode-label">${t(isAutoChainActive ? 'endNext' : 'endRepeat')}</span>`;
+            btn.title = t(isAutoChainActive ? 'endNext' : 'endRepeat');
         }
 
         function toggleShuffle() {
             isShuffleActive = !isShuffleActive;
             const btn = document.getElementById('shuffle-btn');
             btn.classList.toggle('active-mode', isShuffleActive);
-            btn.innerHTML = `<i class="fa-solid fa-shuffle"></i> Random: ${isShuffleActive ? 'ON' : 'OFF'}`;
+            btn.innerHTML = `<i class="fa-solid fa-shuffle"></i> ${t('random')}: ${isShuffleActive ? 'ON' : 'OFF'}`;
+        }
+
+
+        // Salir de la cola de una playlist cuando el usuario elige otro filtro del catálogo.
+        function clearActivePlaylistPlayback() {
+            activePlaylistSongIds = null;
+            currentPlaylistId = null;
+            currentPublicPlaylistId = null;
+            const exitButton = document.getElementById('exit-playlist-btn');
+            const playlistView = document.getElementById('playlist-songs-view');
+            if (exitButton) exitButton.hidden = true;
+            if (playlistView) {
+                playlistView.hidden = true;
+                playlistView.innerHTML = '';
+            }
+            const publicPlaylistView = document.getElementById('public-playlist-songs-view');
+            if (publicPlaylistView) {
+                publicPlaylistView.hidden = true;
+                publicPlaylistView.innerHTML = '';
+            }
+            const publicPlaylistSelect = document.getElementById('public-playlists-dropdown');
+            if (publicPlaylistSelect) publicPlaylistSelect.value = '';
         }
 
         /* LÓGICA DE INTERACCIÓN IDIOMA Y ESTILO */
         function handleLanguageChange() {
+            clearActivePlaylistPlayback();
             const langSelect = document.getElementById('select-language');
             const styleSelect = document.getElementById('select-style');
             selectedLang = langSelect.value;
@@ -888,6 +1350,7 @@
         }
 
         function handleStyleChange() {
+            clearActivePlaylistPlayback();
             selectedStyle = document.getElementById('select-style').value;
             updateInteractiveResetButton();
             currentTrackIndex = 0;
@@ -895,6 +1358,7 @@
         }
 
         function resetInteractiveFilters() {
+            clearActivePlaylistPlayback();
             document.getElementById('select-language').value = "";
             const styleSelect = document.getElementById('select-style');
             styleSelect.value = "";
@@ -928,6 +1392,9 @@
         }
 
         function getFilteredSongs() {
+            if (Array.isArray(activePlaylistSongIds)) {
+                return activePlaylistSongIds.map(id => songsCache.find(song => String(song.id) === String(id))).filter(Boolean);
+            }
             return songsCache.filter((song, index) => {
                 let matchesFilter = true;
                 if (currentFilter === 'novedades') matchesFilter = index < 3;
@@ -941,12 +1408,14 @@
                     matchesInteractive = songGenreStr.toLowerCase().includes(selectedLang.toLowerCase());
                 }
 
-                const matchesQuery = !searchQuery || song.title.toLowerCase().includes(searchQuery.toLowerCase());
+                const searchable = `${song.title || ''} ${song.artist || 'AndaluzRock'} ${song.country || ''} ${song.genre || ''}`.toLowerCase();
+                const matchesQuery = !searchQuery || searchable.includes(searchQuery.toLowerCase());
                 return matchesFilter && matchesInteractive && matchesQuery;
             });
         }
 
         function handleSearchInput() {
+            clearActivePlaylistPlayback();
             searchQuery = document.getElementById('song-search-input').value.trim();
             document.getElementById('clear-search-btn').style.display = searchQuery ? 'block' : 'none';
             currentTrackIndex = 0;
@@ -954,10 +1423,35 @@
         }
 
         function clearSearch() {
+            clearActivePlaylistPlayback();
             document.getElementById('song-search-input').value = '';
             searchQuery = '';
             document.getElementById('clear-search-btn').style.display = 'none';
             renderApp();
+        }
+
+        // Inicia la radio con TODO el catálogo, sin filtros de país, idioma, estilo o búsqueda.
+        function playAllSongsRadio() {
+            clearActivePlaylistPlayback();
+            currentFilter = 'all';
+            selectedLang = '';
+            selectedStyle = '';
+            searchQuery = '';
+            const languageSelect = document.getElementById('select-language');
+            const styleSelect = document.getElementById('select-style');
+            const searchInput = document.getElementById('song-search-input');
+            if (languageSelect) languageSelect.value = '';
+            if (styleSelect) { styleSelect.value = ''; styleSelect.disabled = true; }
+            if (searchInput) searchInput.value = '';
+            const clearSearchBtn = document.getElementById('clear-search-btn');
+            if (clearSearchBtn) clearSearchBtn.style.display = 'none';
+            updateInteractiveResetButton();
+            document.querySelectorAll('#category-filters .cat-btn').forEach(btn => btn.classList.toggle('active', btn.id === 'all-songs-radio-btn'));
+            currentTrackIndex = 0;
+            renderApp();
+            const allSongs = getFilteredSongs();
+            if (allSongs.length) loadSongToPlayer(0, true);
+            else alert('Todavía no hay canciones publicadas en AndaluzRock.');
         }
 
         function switchView(viewType) {
@@ -968,13 +1462,16 @@
             container.classList.toggle('grid-view', !isListView);
         }
 
-        function shareSong(songId) {
-            const shareUrl = `${window.location.origin}${window.location.pathname}?song=${songId}`;
-            navigator.clipboard.writeText(shareUrl).then(() => {
-                const toast = document.getElementById('toast');
-                toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 2500);
-            });
+        async function shareSong(songId) {
+            const shareUrl = `${window.location.origin}${window.location.pathname}?song=${encodeURIComponent(songId)}`;
+            try {
+                if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(shareUrl);
+                else {
+                    const helper=document.createElement('textarea');helper.value=shareUrl;helper.style.position='fixed';helper.style.opacity='0';document.body.appendChild(helper);helper.select();
+                    const copied=document.execCommand('copy');helper.remove();if(!copied)throw new Error('Clipboard access is unavailable');
+                }
+                const toast = document.getElementById('toast');toast.classList.add('show');setTimeout(() => toast.classList.remove('show'), 2500);
+            } catch(error) { console.error('Copy song link:',error);prompt('Copy this song link:',shareUrl); }
         }
 
         function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
@@ -987,53 +1484,160 @@
             }
         });
 
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({
+                '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+            }[ch]));
+        }
+
+        function getVisitorToken() {
+            let token = localStorage.getItem('andaluzrock_visitor_id');
+            if (!token) {
+                token = (crypto.randomUUID ? crypto.randomUUID() :
+                    'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                        const r = Math.random() * 16 | 0;
+                        return (c === 'x' ? r : (r & 3 | 8)).toString(16);
+                    }));
+                localStorage.setItem('andaluzrock_visitor_id', token);
+            }
+            return token;
+        }
+
+        async function toggleComments(songId) {
+            const panel = document.getElementById(`comments-${songId}`);
+            const opening = panel.style.display === 'none';
+            panel.style.display = opening ? 'block' : 'none';
+            if (opening) await loadSongComments(songId);
+        }
+
+        async function loadSongComments(songId) {
+            const list = document.getElementById(`comment-list-${songId}`);
+            list.innerHTML = `<p class="comment-empty">${escapeHtml(t('loadingComments'))}</p>`;
+            const { data, error } = await supabaseClient
+                .from('song_comments')
+                .select('id, song_id, alias, message, created_at')
+                .eq('song_id', songId)
+                .order('created_at', { ascending: false })
+                .limit(50);
+            if (error) {
+                list.innerHTML = `<p class="comment-empty">${escapeHtml(t('commentLoadError'))}</p>`;
+                console.error('Comentarios:', error);
+                return;
+            }
+            if (!data || data.length === 0) {
+                list.innerHTML = `<p class="comment-empty">${escapeHtml(t('noComments'))}</p>`;
+                return;
+            }
+            list.innerHTML = data.map(c => {
+                const date = new Date(c.created_at).toLocaleString('es-ES', {
+                    dateStyle: 'medium', timeStyle: 'short'
+                });
+                return `<article class="comment-item">
+                    <div class="comment-meta"><span class="comment-author">${escapeHtml(c.alias)}</span><span>${escapeHtml(date)}</span></div>
+                    <div class="comment-body">${escapeHtml(c.message)}</div>
+                </article>`;
+            }).join('');
+        }
+
+        async function submitSongComment(event, songId) {
+            event.preventDefault();
+            const form = event.currentTarget;
+            const alias = form.elements.alias.value.trim().slice(0, 25);
+            const message = form.elements.message.value.trim().slice(0, 500);
+            if (!alias || !message) return;
+            const button = form.querySelector('button[type="submit"]');
+            button.disabled = true;
+            button.textContent = t('publishComment') + '…';
+            try {
+                const { error } = await supabaseClient.rpc('atlasika_submit_comment', {
+                    p_song_id: songId,
+                    p_alias: alias,
+                    p_message: message,
+                    p_visitor_id: getVisitorToken()
+                });
+                if (error) throw error;
+                form.reset();
+                await loadSongComments(songId);
+                alert(t('commentPublished'));
+            } catch (error) {
+                const msg = String(error.message || '');
+                if (msg.includes('RATE_LIMIT')) alert(t('waitComment'));
+                else if (msg.includes('DUPLICATE')) alert(t('duplicateComment'));
+                else alert(t('commentFailed') + msg);
+            } finally {
+                button.disabled = false;
+                button.textContent = t('publishComment');
+            }
+        }
+
+        function toggleSongDetails(songId) {
+            const card = document.getElementById(`song-card-${songId}`);
+            if (!card) return;
+            const opening = !card.classList.contains('expanded');
+            document.querySelectorAll('.song-card.expanded').forEach(item => { item.classList.remove('expanded'); const oldButton = item.querySelector('.song-summary-expand'); if (oldButton) oldButton.setAttribute('aria-expanded', 'false'); });
+            if (opening) card.classList.add('expanded');
+            const expandButton = card.querySelector('.song-summary-expand');
+            if (expandButton) expandButton.setAttribute('aria-expanded', opening ? 'true' : 'false');
+        }
+
         function renderApp() {
             const container = document.getElementById('songs-container');
             container.innerHTML = '';
             const songs = getFilteredSongs();
 
             if (songs.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:var(--text-muted);">No se encontraron canciones para esta selección.</p>`;
+                container.innerHTML = `<p style="text-align:center; color:var(--text-muted);">${escapeHtml(t('noSongs'))}</p>`;
                 return;
             }
 
             songs.forEach((song, index) => {
                 const isCurrentPlaying = (song.id === currentPlayingSongId);
                 const isNew = songsCache.findIndex(s => s.id === song.id) < 3;
-
                 const card = document.createElement('div');
                 card.className = `song-card ${isCurrentPlaying ? 'now-playing-card' : ''}`;
-                
+                card.id = `song-card-${song.id}`;
                 card.innerHTML = `
-                    <div class="cover-container">
-                        <img src="${song.cover_url || 'https://via.placeholder.com/300/111/00f0ff?text=IKA'}" class="cover-img" alt="${song.title}">
+                    <div class="song-summary" onclick="if (!event.target.closest('button')) toggleSongDetails(${JSON.stringify(song.id)})">
+                        <button type="button" class="song-summary-play" onclick="event.stopPropagation(); playSongById(${JSON.stringify(song.id)})" aria-label="${escapeHtml(t('playNow'))}: ${escapeHtml(song.title || '')}" title="${escapeHtml(t('playNow'))}"><i class="fa-solid fa-play"></i></button>
+                        <span class="song-summary-title">${escapeHtml(song.title || t('untitled'))}</span>
+                        <span class="song-summary-meta">${escapeHtml(song.artist || 'AndaluzRock')} · ${escapeHtml(song.country || '')}</span>
+                        ${isCurrentPlaying ? `<span class="now-playing-badge">${escapeHtml(t('playing'))}</span>` : ''}
+                        <button type="button" class="song-summary-expand" onclick="event.stopPropagation(); toggleSongDetails(${JSON.stringify(song.id)})" aria-expanded="false" aria-label="${escapeHtml(t('showDetails'))}: ${escapeHtml(song.title || '')}" title="${escapeHtml(t('showDetails'))}"><i class="fa-solid fa-chevron-down expand-icon"></i></button>
                     </div>
-                    <div class="song-card-body">
-                        <div class="song-header">
+                    <div class="song-details">
+                        <div style="display:flex;align-items:center;gap:12px;padding-top:12px;">
+                            <div class="cover-container"><img src="${escapeHtml(song.cover_url || 'https://via.placeholder.com/300/111/00f0ff?text=AndaluzRock')}" class="cover-img" alt="${escapeHtml(song.title || '')}"></div>
                             <div class="song-info">
-                                <div style="display:flex; gap:6px; align-items:center; margin-bottom:4px; flex-wrap:wrap;">
-                                    <span class="song-genre">${song.genre}</span>
-                                    ${isCurrentPlaying ? '<span class="now-playing-badge">SONANDO</span>' : ''}
-                                    ${isNew && !isCurrentPlaying ? '<span class="new-badge">NUEVO</span>' : ''}
+                                <div style="display:flex;gap:6px;align-items:center;margin-bottom:5px;flex-wrap:wrap;">
+                                    <span class="song-genre">${escapeHtml(song.genre || '')}</span>
+                                    ${song.country ? `<span class="country-chip">${escapeHtml(song.country)}</span>` : ''}
+                                    ${isNew && !isCurrentPlaying ? `<span class="new-badge">${escapeHtml(t('new'))}</span>` : ''}
                                 </div>
-                                <h3>${song.title}</h3>
+                                <h3>${escapeHtml(song.title || '')}</h3>
+                                <div style="color:var(--text-muted);font-size:.82rem;margin:2px 0 6px;">${escapeHtml(song.artist || 'AndaluzRock')} · ${getSongPlatform(song) === 'suno' ? t('suno') : t('audio')}</div>
+                                ${song.description ? `<p class="song-description">${escapeHtml(song.description)}</p>` : ''}
+                                ${song.lyrics ? `<span class="country-chip"><i class="fa-solid fa-align-left"></i> ${escapeHtml(extraText('lyricsAvailable'))}</span>` : ''}
+                                <div class="song-stats-row"><span><i class="fa-solid fa-eye" style="color:var(--accent-primary);"></i> ${song.views || 0} ${escapeHtml(t('views'))}</span></div>
                             </div>
                         </div>
-                        <div class="song-stats-row">
-                            <span><i class="fa-solid fa-eye" style="color: var(--accent-primary);"></i> ${song.views || 0} reproducciones</span>
-                        </div>
                         <div class="song-actions-row">
-                            <button class="load-to-player-btn" onclick="loadSongToPlayer(${index})">
-                                <i class="fa-solid fa-play"></i> Reproducir
-                            </button>
-                            <button class="like-btn" onclick="likeSong(${song.id})">
-                                <i class="fa-solid fa-heart"></i> ${song.likes || 0}
-                            </button>
-                            <button class="share-btn" onclick="shareSong(${song.id})">
-                                <i class="fa-solid fa-share-nodes"></i>
-                            </button>
-                            ${isAdmin ? `<button class="close-modal" style="position:relative;top:0;right:0;color:#ff4757;font-size:1.2rem;" onclick="deleteSong(${song.id})">&times;</button>` : ''}
+                            <button class="load-to-player-btn" onclick="playSongById(${JSON.stringify(song.id)})"><i class="fa-solid fa-play"></i> ${escapeHtml(t('playNow'))}</button>
+                            <button class="share-btn" onclick="addSongToMyPlaylist(${JSON.stringify(song.id)})" title="Add to my playlist"><i class="fa-solid fa-list"></i> Add to playlist</button>
+                            <button class="like-btn" onclick="likeSong(${JSON.stringify(song.id)})"><i class="fa-solid fa-heart"></i> ${song.likes || 0}</button>
+                            <button class="share-btn" onclick="shareSong(${JSON.stringify(song.id)})" aria-label="Share"><i class="fa-solid fa-share-nodes"></i></button>
+                            <button class="share-btn" onclick="toggleComments(${JSON.stringify(song.id)})" title="${escapeHtml(t('comments'))}"><i class="fa-regular fa-comments"></i> ${escapeHtml(t('comments'))}</button>
+                            ${isAdmin ? `<button class="close-modal" style="position:relative;top:0;right:0;color:#ff4757;font-size:1.2rem;" onclick="deleteSong(${JSON.stringify(song.id)})">&times;</button>` : ''}
                         </div>
+                        <section class="comments-panel" id="comments-${song.id}" style="display:none;">
+                            <h4><i class="fa-regular fa-comments"></i> ${escapeHtml(t('songComments'))}</h4>
+                            <form class="comment-form" onsubmit="submitSongComment(event, ${JSON.stringify(song.id)})">
+                                <input type="text" name="alias" maxlength="25" required placeholder="${escapeHtml(t('aliasPlaceholder'))}">
+                                <textarea name="message" maxlength="500" required placeholder="${escapeHtml(t('commentPlaceholder'))}"></textarea>
+                                <button class="comment-submit" type="submit">${escapeHtml(t('publishComment'))}</button>
+                            </form>
+                            <div class="comment-list" id="comment-list-${song.id}"><p class="comment-empty">${escapeHtml(t('loadingComments'))}</p></div>
+                        </section>
                     </div>
                 `;
                 container.appendChild(card);
@@ -1043,6 +1647,7 @@
 
         document.querySelectorAll('.cat-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
+                clearActivePlaylistPlayback();
                 document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
                 const target = e.target.closest('.cat-btn');
                 target.classList.add('active');
@@ -1052,43 +1657,338 @@
             });
         });
 
+
+        // CHAT: identidad anónima de Supabase Auth; el apodo no es una contraseña.
+        const chatCopy = {
+            es:{title:'Chat en directo',online:n=>`${n} en línea`,connecting:'Conectando…',nickname:'Tu apodo (máx. 25 caracteres)',enter:'Entrar al chat',message:'Escribe un mensaje…',send:'Enviar',note:'Puedes participar con un apodo, sin crear una cuenta. Respeta a los demás usuarios.',empty:'Todavía no hay mensajes. ¡Empieza la conversación!',edited:'editado',edit:'Editar',delete:'Eliminar',ban:'Bloquear',confirmDelete:'¿Eliminar este mensaje?',confirmBan:'¿Bloquear a este usuario? Ya no podrá enviar mensajes.',login:'Escribe un apodo para participar.',failed:'No se pudo conectar al chat. Comprueba la configuración SQL y que esté activado el acceso anónimo en Supabase.',banned:'Tu acceso al chat está bloqueado.',admin:'Moderación activada',uid:'Tu ID de administrador para registrar en Supabase:',saved:'Apodo guardado.'},
+            en:{title:'Live chat',online:n=>`${n} online`,connecting:'Connecting…',nickname:'Your nickname (max. 25 characters)',enter:'Join chat',message:'Write a message…',send:'Send',note:'Join with a nickname, no account registration required. Please respect other users.',empty:'No messages yet. Start the conversation!',edited:'edited',edit:'Edit',delete:'Delete',ban:'Block',confirmDelete:'Delete this message?',confirmBan:'Block this user? They will no longer be able to send messages.',login:'Enter a nickname to participate.',failed:'Could not connect to chat. Check the SQL setup and enable anonymous sign-ins in Supabase.',banned:'Your chat access is blocked.',admin:'Moderation enabled',uid:'Your admin ID to register in Supabase:',saved:'Nickname saved.'},
+            tr:{title:'Canlı sohbet',online:n=>`${n} çevrimiçi`,connecting:'Bağlanıyor…',nickname:'Takma adınız (en fazla 25 karakter)',enter:'Sohbete katıl',message:'Mesaj yazın…',send:'Gönder',note:'Hesap oluşturmadan bir takma adla katılabilirsiniz. Lütfen diğer kullanıcılara saygı gösterin.',empty:'Henüz mesaj yok. Sohbeti başlatın!',edited:'düzenlendi',edit:'Düzenle',delete:'Sil',ban:'Engelle',confirmDelete:'Bu mesaj silinsin mi?',confirmBan:'Bu kullanıcı engellensin mi? Artık mesaj gönderemez.',login:'Katılmak için bir takma ad yazın.',failed:'Sohbete bağlanılamadı. SQL ayarlarını kontrol edin ve Supabase anonim girişini etkinleştirin.',banned:'Sohbet erişiminiz engellendi.',admin:'Moderasyon etkin',uid:'Supabase’e kaydetmek için yönetici kimliğiniz:',saved:'Takma ad kaydedildi.'}
+        };
+        chatCopy.el={title:'Ζωντανή συνομιλία',online:n=>`${n} συνδεδεμένοι`,connecting:'Σύνδεση…',nickname:'Το ψευδώνυμό σας (έως 25 χαρακτήρες)',enter:'Συμμετοχή στη συνομιλία',message:'Γράψτε ένα μήνυμα…',send:'Αποστολή',note:'Μπορείτε να συμμετάσχετε με ψευδώνυμο, χωρίς λογαριασμό. Σεβαστείτε τους άλλους χρήστες.',empty:'Δεν υπάρχουν ακόμη μηνύματα. Ξεκινήστε τη συζήτηση!',edited:'επεξεργάστηκε',edit:'Επεξεργασία',delete:'Διαγραφή',ban:'Αποκλεισμός',confirmDelete:'Να διαγραφεί αυτό το μήνυμα;',confirmBan:'Να αποκλειστεί αυτός ο χρήστης;',login:'Εισαγάγετε ψευδώνυμο για να συμμετάσχετε.',failed:'Δεν ήταν δυνατή η σύνδεση στη συνομιλία.',banned:'Η πρόσβασή σας στη συνομιλία έχει αποκλειστεί.',admin:'Η εποπτεία είναι ενεργή',uid:'Το αναγνωριστικό διαχειριστή σας για το Supabase:',saved:'Το ψευδώνυμο αποθηκεύτηκε.'};
+        chatCopy.ar={title:'دردشة مباشرة',online:n=>`${n} متصل`,connecting:'جارٍ الاتصال…',nickname:'اسمك المستعار (25 حرفًا كحد أقصى)',enter:'انضم إلى الدردشة',message:'اكتب رسالة…',send:'إرسال',note:'يمكنك المشاركة باسم مستعار دون إنشاء حساب. يرجى احترام المستخدمين الآخرين.',empty:'لا توجد رسائل بعد. ابدأ المحادثة!',edited:'تم التعديل',edit:'تعديل',delete:'حذف',ban:'حظر',confirmDelete:'هل تريد حذف هذه الرسالة؟',confirmBan:'هل تريد حظر هذا المستخدم؟',login:'أدخل اسمًا مستعارًا للمشاركة.',failed:'تعذر الاتصال بالدردشة.',banned:'تم حظر وصولك إلى الدردشة.',admin:'الإشراف مفعّل',uid:'معرّف المسؤول في Supabase:',saved:'تم حفظ الاسم المستعار.'};
+
+                function ctext(key){return (chatCopy[interfaceLanguage]||chatCopy.es)[key]}
+        function applyChatLanguage(){
+            const d=chatCopy[interfaceLanguage]||chatCopy.es;
+            document.getElementById('chat-title').textContent=d.title;
+            document.getElementById('chat-online-count').textContent=chatReady?d.online(chatOnlineCount):d.connecting;
+            document.getElementById('chat-nickname').placeholder=d.nickname;
+            document.getElementById('chat-save-nickname').textContent=d.enter;
+            document.getElementById('chat-message-input').placeholder=d.message;
+            document.getElementById('chat-send-button').innerHTML=`${d.send} <i class="fa-solid fa-paper-plane"></i>`;
+            document.getElementById('chat-note').textContent=d.note;
+            renderChatMessages();
+            renderChatAdminTools();
+        }
+        async function initLiveChat(){
+            const nick=localStorage.getItem('andaluzrock_chat_nickname')||'';
+            document.getElementById('chat-nickname').value=nick;
+            try{
+                let {data:{session}}=await chatSupabaseClient.auth.getSession();
+                if(!session){
+                    const result=await chatSupabaseClient.auth.signInAnonymously();
+                    if(result.error) throw result.error;
+                    session=result.data.session;
+                }
+                chatUser=session.user;
+                updateAccountButton(chatUser);
+                const {data:ban}=await chatSupabaseClient.from('chat_bans').select('user_id').eq('user_id',chatUser.id).maybeSingle();
+                if(ban){document.getElementById('chat-message-input').disabled=true;document.getElementById('chat-send-button').disabled=true;document.getElementById('chat-note').textContent=ctext('banned');}
+                const adminCheck=await chatSupabaseClient.rpc('andaluzrock_is_admin');
+                isChatAdmin=!adminCheck.error && adminCheck.data===true;
+                await loadChatMessages();
+                await loadMyCollaboratorSubmissions();
+                if(isChatAdmin) await loadCollaboratorReviewQueue();
+                chatChannel=chatSupabaseClient.channel('atlasika-live-chat',{config:{presence:{key:chatUser.id}}})
+                    .on('postgres_changes',{event:'*',schema:'public',table:'chat_messages'},()=>loadChatMessages())
+                    .on('postgres_changes',{event:'*',schema:'public',table:'collaborator_submissions'},()=>{loadMyCollaboratorSubmissions();if(isChatAdmin)loadCollaboratorReviewQueue();})
+                    .on('presence',{event:'sync'},()=>{chatOnlineCount=Object.keys(chatChannel.presenceState()).length;applyChatLanguage();})
+                    .subscribe(async status=>{
+                        if(status==='SUBSCRIBED'){
+                            chatReady=true;
+                            await chatChannel.track({nickname:localStorage.getItem('andaluzrock_chat_nickname')||'Oyente',online_at:new Date().toISOString()});
+                            applyChatLanguage();
+                        }
+                    });
+                applyChatLanguage();
+            }catch(err){
+                console.error('AndaluzRock chat:',err);
+                document.getElementById('chat-messages').innerHTML=`<p class="chat-empty">${escapeHtml(ctext('failed'))}</p>`;
+                document.getElementById('chat-online-count').textContent='—';
+            }
+        }
+        async function loadChatMessages(){
+            const {data,error}=await chatSupabaseClient.from('chat_messages').select('id,user_id,nickname,message,created_at,updated_at').order('created_at',{ascending:true}).limit(100);
+            if(error){console.error('Chat messages:',error);return;}
+            chatMessagesCache=data||[];
+            renderChatMessages();
+        }
+        function saveChatNickname(){
+            const value=document.getElementById('chat-nickname').value.trim().slice(0,25);
+            if(!value){alert(ctext('login'));return;}
+            localStorage.setItem('andaluzrock_chat_nickname',value);
+            if(chatChannel&&chatReady)chatChannel.track({nickname:value,online_at:new Date().toISOString()});
+            document.getElementById('chat-note').textContent=ctext('saved');
+            renderChatAdminTools();
+        }
+        async function sendChatMessage(event){
+            event.preventDefault();
+            if(!chatUser){alert(ctext('failed'));return;}
+            const nickname=(localStorage.getItem('andaluzrock_chat_nickname')||'').trim();
+            const input=document.getElementById('chat-message-input');
+            const message=input.value.trim();
+            if(!nickname){alert(ctext('login'));document.getElementById('chat-nickname').focus();return;}
+            if(!message)return;
+            const {error}=await chatSupabaseClient.from('chat_messages').insert({user_id:chatUser.id,nickname,message});
+            if(error){console.error(error);alert(error.code==='42501'?ctext('banned'):'No se pudo enviar el mensaje: '+error.message);return;}
+            input.value='';
+            await loadChatMessages();
+        }
+        function renderChatMessages(){
+            const box=document.getElementById('chat-messages');if(!box)return;
+            if(!chatMessagesCache.length){box.innerHTML=`<p class="chat-empty">${escapeHtml(ctext('empty'))}</p>`;return;}
+            const wasNearBottom=box.scrollHeight-box.scrollTop-box.clientHeight<70;
+            box.innerHTML=chatMessagesCache.map(m=>{
+                const own=chatUser&&m.user_id===chatUser.id;
+                const date=new Date(m.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+                const edited=new Date(m.updated_at).getTime()-new Date(m.created_at).getTime()>1000;
+                const actions=(own||isChatAdmin)?`<div class="chat-message-actions">${own?`<button class="chat-action" onclick="editChatMessage('${m.id}')">${escapeHtml(ctext('edit'))}</button>`:''}<button class="chat-action danger" onclick="deleteChatMessage('${m.id}')">${escapeHtml(ctext('delete'))}</button>${isChatAdmin&&!own?`<button class="chat-action danger" onclick="banChatUser('${m.user_id}')">${escapeHtml(ctext('ban'))}</button>`:''}</div>`:'';
+                return `<article class="chat-message ${own?'own':''}"><div class="chat-message-meta"><span class="chat-message-author">${escapeHtml(m.nickname)}</span><span>${date}</span>${edited?`<span class="chat-edited">· ${escapeHtml(ctext('edited'))}</span>`:''}</div><div class="chat-message-body">${escapeHtml(m.message)}</div>${actions}</article>`;
+            }).join('');
+            if(wasNearBottom)box.scrollTop=box.scrollHeight;
+        }
+        async function editChatMessage(id){
+            const msg=chatMessagesCache.find(m=>String(m.id)===String(id));if(!msg)return;
+            const revised=prompt(interfaceLanguage==='en'?'Edit your message':interfaceLanguage==='tr'?'Mesajınızı düzenleyin':'Corrige tu mensaje',msg.message);
+            if(revised===null)return;
+            const clean=revised.trim();if(!clean||clean.length>1000)return;
+            const {error}=await chatSupabaseClient.from('chat_messages').update({message:clean,updated_at:new Date().toISOString()}).eq('id',id);
+            if(error)alert('No se pudo editar: '+error.message);else await loadChatMessages();
+        }
+        async function deleteChatMessage(id){
+            if(!confirm(ctext('confirmDelete')))return;
+            const {error}=await chatSupabaseClient.from('chat_messages').delete().eq('id',id);
+            if(error)alert('No se pudo eliminar: '+error.message);else await loadChatMessages();
+        }
+       
+
+async function banChatUser(userId){
+    if(!isChatAdmin||!userId||userId===chatUser?.id)return;
+
+    if(!confirm('¿Bloquear a este usuario y eliminar TODOS sus mensajes del chat? Esta acción no se puede deshacer.'))return;
+
+    const {data:existingBan,error:checkError}=await chatSupabaseClient
+        .from('chat_bans')
+        .select('user_id')
+        .eq('user_id',userId)
+        .maybeSingle();
+
+    if(checkError){
+        alert('No se pudo comprobar el bloqueo: '+checkError.message);
+        return;
+    }
+
+    if(!existingBan){
+        const {error:banError}=await chatSupabaseClient
+            .from('chat_bans')
+            .insert({user_id:userId,banned_by:chatUser.id});
+
+        if(banError){
+            alert('No se pudo bloquear al usuario: '+banError.message);
+            return;
+        }
+    }
+
+    const {error:deleteError}=await chatSupabaseClient
+        .from('chat_messages')
+        .delete()
+        .eq('user_id',userId);
+
+    if(deleteError){
+        alert('Usuario bloqueado, pero no se pudieron eliminar todos sus mensajes: '+deleteError.message);
+        return;
+    }
+
+    await loadChatMessages();
+    alert('Usuario bloqueado y todos sus mensajes eliminados.');
+}
+
+        function renderChatAdminTools(){
+            const box=document.getElementById('chat-admin-tools');if(!box)return;
+            if(!isAdmin&&!isChatAdmin){box.hidden=true;return;}
+            box.hidden=false;
+            const reviewPanel=document.getElementById('collab-admin-panel');if(reviewPanel)reviewPanel.hidden=!isChatAdmin;
+            if(isChatAdmin)loadCollaboratorReviewQueue();
+            const uid=chatUser?.id||'—';
+            const statusLabel=isChatAdmin?ctext('admin'):(interfaceLanguage==='en'?'Admin setup':interfaceLanguage==='tr'?'Yönetici kurulumu':'Configurar moderación');
+            const copyLabel=interfaceLanguage==='en'?'Copy ID':interfaceLanguage==='tr'?'Kimliği kopyala':'Copiar ID';
+            box.innerHTML=`<strong>${escapeHtml(statusLabel)}</strong><br>${escapeHtml(ctext('uid'))}<br><code>${escapeHtml(uid)}</code> <button class="chat-action" onclick="navigator.clipboard.writeText('${uid}')">${copyLabel}</button>`;
+        }
+
+
+        // PROPUESTAS DE COLABORADORES: cada visitante solo puede crear y consultar sus propias propuestas.
+        async function submitCollaboratorSong(event){
+            event.preventDefault();
+            if(!chatUser){alert(extraText('collabError')+'No hay sesión anónima activa. Recarga la página.');return;}
+            const sunoUrl=document.getElementById('collab-suno-url').value.trim();
+            const mp3Url=document.getElementById('collab-mp3-url').value.trim();
+            if(!!sunoUrl===!!mp3Url){alert('Completa solo uno de los dos campos: dirección de Suno o enlace público MP3.');return;}
+            const audioUrl=sunoUrl||mp3Url;
+            let parsedUrl;try{parsedUrl=new URL(audioUrl);}catch(_){alert('Introduce un enlace válido.');return;}
+            const sunoValid=/^(?:www\.)?suno\.com$/i.test(parsedUrl.hostname)&&/^\/(?:s|song|embed)\/[A-Za-z0-9-]+(?:\/[^?#]*)?\/?$/i.test(parsedUrl.pathname);
+            const mp3Valid=parsedUrl.protocol==='https:'&&/\.mp3(?:$|[?#])/i.test(audioUrl);
+            if(parsedUrl.protocol!=='https:'||(sunoUrl?!sunoValid:!mp3Valid)){alert(sunoUrl?'Abre la canción en Suno y copia la dirección de la barra del navegador.':'Introduce un enlace público directo a un archivo MP3.');return;}
+            const nickname=(document.getElementById('collab-nickname').value.trim()||localStorage.getItem('andaluzrock_chat_nickname')||'').slice(0,80);
+            const title=document.getElementById('collab-title-input').value.trim();
+            const lang=document.getElementById('collab-language').value;
+            const style=document.getElementById('collab-style').value.trim();
+            if(!nickname||!title||!style){alert(interfaceLanguage==='en'?'Complete the required fields.':interfaceLanguage==='tr'?'Zorunlu alanları doldurun.':'Completa los campos obligatorios.');return;}
+            const payload={user_id:chatUser.id,artist:nickname,title,country:document.getElementById('collab-country').value.trim(),genre:`${lang} - ${style}`,audio_url:audioUrl,cover_url:document.getElementById('collab-cover').value.trim()||null,description:document.getElementById('collab-description').value.trim()||null,lyrics:document.getElementById('collab-lyrics').value.trim()||null,status:'pending'};
+            const button=document.getElementById('collab-submit-button');button.disabled=true;
+            const {error}=await chatSupabaseClient.from('collaborator_submissions').insert(payload);
+            button.disabled=false;
+            if(error){console.error('Collaborator submission:',error);alert(extraText('collabError')+error.message);return;}
+            document.getElementById('collab-submit-form').reset();
+            alert(extraText('collabSent'));
+            await loadMyCollaboratorSubmissions();
+        }
+        async function loadMyCollaboratorSubmissions(){
+            if(!chatUser)return;
+            const {data,error}=await chatSupabaseClient.from('collaborator_submissions').select('id,title,status,created_at,admin_note').eq('user_id',chatUser.id).order('created_at',{ascending:false}).limit(30);
+            if(error){console.warn('My submissions:',error.message);return;}
+            myCollaboratorSubmissions=data||[];renderMyCollaboratorSubmissions();
+        }
+        let myCollaboratorSubmissions=[];
+        function renderMyCollaboratorSubmissions(){
+            const box=document.getElementById('collab-my-submissions');if(!box)return;
+            if(!myCollaboratorSubmissions.length){box.innerHTML=`<p class="chat-empty">${escapeHtml(extraText('collabMy'))}</p>`;return;}
+            box.innerHTML=myCollaboratorSubmissions.map(item=>`<div class="collab-status-item"><strong>${escapeHtml(item.title)}</strong><span class="collab-status ${escapeHtml(item.status)}">${escapeHtml(extraText(item.status==='approved'?'collabApproved':item.status==='rejected'?'collabRejected':'collabPending'))}</span>${item.admin_note?`<small>${escapeHtml(item.admin_note)}</small>`:''}</div>`).join('');
+        }
+        async function loadCollaboratorReviewQueue(){
+            const panel=document.getElementById('collab-admin-panel');if(!panel||!isChatAdmin)return;
+            panel.hidden=false;
+            const box=document.getElementById('collab-review-list');box.innerHTML='<p class="chat-empty">Loading…</p>';
+            const {data,error}=await chatSupabaseClient.from('collaborator_submissions').select('id,user_id,artist,title,country,genre,audio_url,cover_url,description,lyrics,created_at').eq('status','pending').order('created_at',{ascending:true}).limit(100);
+            if(error){box.innerHTML=`<p class="chat-empty">${escapeHtml(error.message)}</p>`;return;}
+            if(!data||!data.length){box.innerHTML=`<p class="chat-empty">${escapeHtml(extraText('collabNoPending'))}</p>`;return;}
+            box.innerHTML=data.map(item=>`<article class="collab-review-item"><div style="min-width:0;flex:1"><strong>${escapeHtml(item.title)}</strong><div class="chat-note">${escapeHtml(item.artist)} · ${escapeHtml(item.genre)} · ${escapeHtml(item.country||'')}</div><a href="${escapeHtml(item.audio_url)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-primary);font-size:.8rem">Open Suno link</a>${item.description?`<p class="chat-note">${escapeHtml(item.description)}</p>`:''}${item.lyrics?`<details class="chat-note"><summary>Lyrics</summary><p style="white-space:pre-wrap">${escapeHtml(item.lyrics)}</p></details>`:''}</div><div class="collab-review-actions"><button class="approve" onclick="reviewCollaboratorSubmission('${item.id}','approved')">${escapeHtml(extraText('collabApprove'))}</button><button class="reject" onclick="reviewCollaboratorSubmission('${item.id}','rejected')">${escapeHtml(extraText('collabReject'))}</button></div></article>`).join('');
+        }
+        async function reviewCollaboratorSubmission(id,decision){
+            if(!isChatAdmin)return;
+            const verb=decision==='approved'?extraText('collabApproveVerb'):extraText('collabRejectVerb');
+            if(!confirm(extraText('collabReviewConfirm')+verb+'?'))return;
+            const note=prompt(interfaceLanguage==='en'?'Optional note to the creator:':interfaceLanguage==='tr'?'İçerik üreticiye not (isteğe bağlı):':'Nota para el creador (opcional):','');
+            if(note===null)return;
+            const {error}=await chatSupabaseClient.rpc('review_collaborator_submission',{p_submission_id:id,p_decision:decision,p_admin_note:note.trim()||null});
+            if(error){alert(extraText('collabReviewError')+error.message);return;}
+            await loadCollaboratorReviewQueue();
+            await loadMyCollaboratorSubmissions();
+            if(decision==='approved')await fetchSongsFromCloud();
+        }
+
+        const legalTexts={
+          es:{notice:`<h3>Aviso legal</h3><p>Titular del sitio: [Nombre completo]. NIF: [NIF]. Domicilio: [Domicilio]. Correo de contacto: [Correo de contacto]. AndaluzRock es un proyecto musical gestionado actualmente por una persona física.</p><p>Los datos identificativos y de contacto deberán completarse y verificarse antes de publicar esta información.</p>`,privacy:`<h3>Política de privacidad</h3><p>AndaluzRock utiliza una sesión anónima de Supabase para permitir el chat, las propuestas musicales y los mensajes privados. El nombre de usuario y los mensajes se procesan para prestar esas funciones.</p><p>Las estadísticas utilizan identificadores seudónimos guardados en el navegador para estimar visitas y visitantes recurrentes. No se pretende identificar personalmente a los visitantes.</p><p>Contacto para solicitudes de privacidad: [Correo de contacto]. Esta política es un borrador y debe completarse con los plazos de conservación, encargados, transferencias y derechos aplicables antes de publicarse.</p>`,cookies:`<h3>Política de cookies y almacenamiento local</h3><p>La web utiliza almacenamiento local del navegador para recordar el idioma, la sesión de chat y un identificador seudónimo de estadísticas. También carga recursos externos como fuentes, iconos y servicios de Supabase/Suno.</p><p>Antes de publicar, debe revisarse técnicamente qué cookies y tecnologías similares instala cada servicio externo y configurar, cuando corresponda, el consentimiento previo. Este texto no afirma que todas las tecnologías estén exentas de consentimiento.</p>`,terms:`<h3>Condiciones de uso</h3><p>El usuario se compromete a utilizar AndaluzRock de forma lícita y respetuosa, sin vulnerar derechos de terceros ni interferir en el funcionamiento del sitio.</p><p>AndaluzRock puede modificar, ocultar o retirar cualquier canción, publicación o contenido en cualquier momento, especialmente si incumple estas condiciones, existen dudas sobre derechos, se recibe una reclamación o deja de encajar en el proyecto. La aprobación no garantiza la permanencia del contenido.</p><p>El acceso a funciones comunitarias puede limitarse o suspenderse ante abusos o incumplimientos.</p>`,copyright:`<h3>Derechos de autor y retirada de contenidos</h3><p>Quien envía una canción declara que dispone de los derechos, licencias y autorizaciones necesarios para compartir el enlace, la letra, la portada y la información asociada.</p><p>Si consideras que un contenido vulnera tus derechos, escribe a [Correo de contacto] indicando el enlace concreto, la obra protegida, tus datos de contacto y la razón de la reclamación. AndaluzRock podrá ocultar preventivamente el contenido mientras revisa la solicitud.</p>`,collaborators:`<h3>Normas para colaboradores</h3><ul><li>Solo se aceptan enlaces de Suno o enlaces directos a MP3 alojados en Internet.</li><li>No se pueden adjuntar ni subir archivos de audio desde el ordenador o el móvil.</li><li>El colaborador debe tener los derechos y permisos necesarios.</li><li>Las propuestas quedan pendientes hasta su aprobación.</li><li>AndaluzRock puede rechazar o retirar una canción aprobada cuando lo considere necesario.</li></ul>`,chat:`<h3>Normas del chat</h3><ul><li>Respeto: no se permiten insultos, acoso, amenazas ni ataques personales.</li><li>No se permiten mensajes discriminatorios ni incitación al odio.</li><li>No se permite spam, publicidad repetitiva ni enlaces maliciosos.</li><li>No suplantes a otros usuarios ni publiques datos personales sin consentimiento.</li><li>Respeta los derechos de autor y la privacidad de los demás.</li><li>Usa @username para dirigirte a otros sin acosarlos.</li></ul><p>Moderación: AndaluzRock puede retirar mensajes, limitar funciones, bloquear temporalmente o suspender cuentas. En caso de bloqueo, podrá eliminar mensajes del usuario cuando sea técnicamente posible y conforme a la normativa aplicable. Las reclamaciones sobre el chat pueden enviarse al contacto indicado en el aviso legal.</p>`},
+          en:{notice:`<h3>Legal notice</h3><p>Site owner: [Full name]. Tax ID: [Tax ID]. Address: [Address]. Contact: [Contact email]. AndaluzRock is currently a music project managed by an individual.</p><p>Complete and verify the identification details before publishing.</p>`,privacy:`<h3>Privacy policy</h3><p>AndaluzRock uses an anonymous Supabase session for chat, music submissions and private messages. Usernames and messages are processed to provide these features.</p><p>Analytics use pseudonymous browser identifiers to estimate visits and returning visitors. This draft must be completed with retention periods, processors, transfers and applicable rights before publication.</p>`,cookies:`<h3>Cookies and local storage</h3><p>The site uses browser storage for language, chat session and pseudonymous analytics identifiers, and loads third-party resources. Review the cookies and similar technologies used by each external service and obtain consent where required.</p>`,terms:`<h3>Terms of use</h3><p>Users must use AndaluzRock lawfully and respectfully. AndaluzRock may hide or remove any song, post or content at any time, particularly for rule violations, rights concerns, complaints or editorial reasons. Approval does not guarantee permanent publication.</p>`,copyright:`<h3>Copyright and takedowns</h3><p>Submitters confirm they hold the rights and permissions needed to share submitted links, lyrics, artwork and related information. Rights complaints can be sent to [Contact email] with the exact URL and supporting details. Content may be temporarily hidden while reviewed.</p>`,collaborators:`<h3>Contributor rules</h3><ul><li>Only Suno links or direct links to MP3 files hosted online are accepted.</li><li>Audio files cannot be attached or uploaded from a device.</li><li>Contributors must hold the necessary rights and permissions.</li><li>Submissions require administrator approval.</li><li>AndaluzRock may reject or later remove approved content.</li></ul>`,chat:`<h3>Chat rules</h3><ul><li>Be respectful; no insults, harassment, threats or personal attacks.</li><li>No discriminatory or hateful content.</li><li>No spam, repeated advertising or malicious links.</li><li>No impersonation or sharing personal data without consent.</li><li>Respect privacy and copyright.</li><li>Use @username respectfully.</li></ul><p>AndaluzRock may remove messages, restrict features, temporarily block or suspend users. Chat complaints can be sent using the contact details in the legal notice.</p>`},
+          tr:{notice:`<h3>Yasal bildirim</h3><p>Site sahibi: [Ad Soyad]. Vergi/Kimlik No: [Numara]. Adres: [Adres]. İletişim: [İletişim e-postası]. AndaluzRock şu anda bir gerçek kişi tarafından yönetilen müzik projesidir.</p><p>Yayınlamadan önce kimlik ve iletişim bilgilerini tamamlayıp doğrulayın.</p>`,privacy:`<h3>Gizlilik politikası</h3><p>AndaluzRock sohbet, müzik gönderileri ve özel mesajlar için anonim Supabase oturumu kullanır. Kullanıcı adları ve mesajlar bu özellikleri sağlamak için işlenir.</p><p>İstatistikler, ziyaretleri tahmin etmek için takma adlı tarayıcı kimlikleri kullanır. Bu taslak yayınlanmadan önce saklama süreleri, hizmet sağlayıcılar, aktarımlar ve haklarla tamamlanmalıdır.</p>`,cookies:`<h3>Çerezler ve yerel depolama</h3><p>Site dil, sohbet oturumu ve takma adlı istatistik kimlikleri için tarayıcı depolamasını kullanır ve üçüncü taraf kaynakları yükler. Gerekli durumlarda çerezler ve benzer teknolojiler incelenmeli ve izin alınmalıdır.</p>`,terms:`<h3>Kullanım koşulları</h3><p>Kullanıcılar AndaluzRock'yı hukuka uygun ve saygılı biçimde kullanmalıdır. AndaluzRock; kural ihlali, hak şüphesi, şikâyet veya editoryal nedenlerle içerikleri gizleyebilir ya da kaldırabilir. Onay, içeriğin kalıcı yayımlanacağı anlamına gelmez.</p>`,copyright:`<h3>Telif hakları ve içerik kaldırma</h3><p>Gönderi yapanlar, bağlantı, söz ve görselleri paylaşmak için gerekli haklara sahip olduklarını beyan eder. Hak ihlali bildirimleri ilgili URL ve kanıtlarla [İletişim e-postası] adresine gönderilebilir. İnceleme sırasında içerik geçici olarak gizlenebilir.</p>`,collaborators:`<h3>Katılımcı kuralları</h3><ul><li>Yalnızca Suno bağlantıları veya internette barındırılan doğrudan MP3 bağlantıları kabul edilir.</li><li>Cihazdan ses dosyası eklenemez veya yüklenemez.</li><li>Gönderen gerekli hak ve izinlere sahip olmalıdır.</li><li>Gönderiler yönetici onayı bekler.</li><li>AndaluzRock onaylanmış içeriği de reddedebilir veya kaldırabilir.</li></ul>`,chat:`<h3>Sohbet kuralları</h3><ul><li>Saygılı olun; hakaret, taciz, tehdit ve kişisel saldırı yasaktır.</li><li>Ayrımcı veya nefret içeren içerik yasaktır.</li><li>Spam, tekrarlanan reklam ve zararlı bağlantılar yasaktır.</li><li>Başkasını taklit etmeyin ve izinsiz kişisel veri paylaşmayın.</li><li>Gizliliğe ve telif haklarına saygı gösterin.</li><li>@username özelliğini saygılı kullanın.</li></ul><p>AndaluzRock mesajları kaldırabilir, özellikleri kısıtlayabilir veya kullanıcıları geçici ya da kalıcı olarak engelleyebilir.</p>`}
+        };
+        const legalTitles={notice:['Aviso legal','Legal notice','Yasal bildirim'],privacy:['Política de privacidad','Privacy policy','Gizlilik politikası'],cookies:['Política de cookies','Cookie policy','Çerez politikası'],terms:['Condiciones de uso','Terms of use','Kullanım koşulları'],copyright:['Derechos de autor','Copyright','Telif hakları'],collaborators:['Normas para colaboradores','Contributor rules','Katılımcı kuralları'],chat:['Normas del chat','Chat rules','Sohbet kuralları']};
+        function openLegalSection(key){const lang=interfaceLanguage==='en'?1:interfaceLanguage==='tr'?2:0;document.getElementById('legal-title').textContent=legalTitles[key][lang];document.getElementById('legal-body').innerHTML=(legalTexts[interfaceLanguage]||legalTexts.es)[key];document.getElementById('legal-modal').style.display='flex';}
+
+        function applyLegalLanguage(){
+            const labels={es:['Aviso legal','Privacidad','Cookies','Condiciones de uso','Derechos de autor','Colaboradores','Contacto'],en:['Legal notice','Privacy','Cookies','Terms of use','Copyright','Contributors','Contact'],tr:['Yasal bildirim','Gizlilik','Çerezler','Kullanım koşulları','Telif hakları','Katılımcılar','İletişim']};
+            document.querySelectorAll('.atlas-footer-links button').forEach((button,index)=>button.textContent=(labels[interfaceLanguage]||labels.es)[index]);
+        }
+
         function openAboutModal() { document.getElementById('about-modal').style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        /* CONTRASEÑA DE ADMINISTRADOR ACTUALIZADA A Roqueros70 */
-        function checkAdminPassword() {
-            if (isAdmin) { document.getElementById('admin-modal').style.display = 'flex'; return; }
-            const pass = prompt("Contraseña de administración:");
-            if (pass === "Roqueros70") {
+        /* Acceso de administración mediante código OTP enviado al email registrado en Supabase. */
+        async function checkAdminPassword() {
+            try {
+                let { data: { session } } = await chatSupabaseClient.auth.getSession();
+                let user = session?.user || null;
+
+                // Si no hay sesión autenticada por email, solicitar el código de acceso.
+                if (!user || user.is_anonymous || !user.email) {
+                    const email = prompt('Introduce el email de administrador registrado en AndaluzRock:');
+                    if (!email) return;
+                    const normalizedEmail = email.trim().toLowerCase();
+                    const { error: otpError } = await chatSupabaseClient.auth.signInWithOtp({
+                        email: normalizedEmail,
+                        options: {
+                            shouldCreateUser: false,
+                            emailRedirectTo: 'https://andaluzrock.github.io/andaluzrock/'
+                        }
+                    });
+                    if (otpError) throw otpError;
+
+                    const token = prompt('Te hemos enviado un código a tu email. Introduce aquí el código:');
+                    if (!token) return;
+                    const { data, error: verifyError } = await chatSupabaseClient.auth.verifyOtp({
+                        email: normalizedEmail,
+                        token: token.trim(),
+                        type: 'email'
+                    });
+                    if (verifyError) throw verifyError;
+                    user = data.user;
+                    if (!user) throw new Error('Supabase no devolvió un usuario autenticado.');
+                    alert('Email verificado. Vamos a comprobar tus permisos de administrador.');
+                    window.location.reload();
+                    return;
+                }
+
+                chatUser = user;
+                const { data: adminResult, error: adminError } = await chatSupabaseClient.rpc('andaluzrock_is_admin');
+                if (adminError) throw adminError;
+                isChatAdmin = adminResult === true;
+                if (!isChatAdmin) {
+                    alert('Tu cuenta de email no está registrada como administradora de AndaluzRock.');
+                    return;
+                }
+
                 isAdmin = true;
-                document.getElementById('admin-btn-text').innerText = "Admin (Activo)";
+                document.getElementById('admin-btn-text').innerText = t('adminActive');
                 document.getElementById('admin-modal').style.display = 'flex';
+                renderChatAdminTools();
                 renderApp();
-            } else if (pass !== null) { alert("Contraseña incorrecta."); }
+                renderPublicPlaylists();
+                renderAdminPublicPlaylists();
+            } catch (err) {
+                console.error('AndaluzRock admin login:', err);
+                alert('No se pudo iniciar sesión: ' + (err.message || 'Error de autenticación'));
+            }
         }
 
         function setAdminMode(mode) {
             adminMode = mode;
-            document.getElementById('tab-add-btn').classList.toggle('active', mode === 'add');
-            document.getElementById('tab-edit-btn').classList.toggle('active', mode === 'edit');
-            
-            const selectGroup = document.getElementById('song-select-group');
-            const submitBtn = document.getElementById('form-submit-btn');
-
-            if (mode === 'add') {
-                selectGroup.style.display = 'none';
-                submitBtn.innerText = "Guardar Nueva Canción";
+            ['add','edit','playlists'].forEach(tab => {
+                const button=document.getElementById(`tab-${tab}-btn`);
+                if(button) button.classList.toggle('active', mode===tab);
+            });
+            const form=document.getElementById('add-song-form');
+            const playlistPanel=document.getElementById('admin-playlist-panel');
+            const selectGroup=document.getElementById('song-select-group');
+            const submitBtn=document.getElementById('form-submit-btn');
+            const isPlaylistMode=mode==='playlists';
+            form.hidden=isPlaylistMode;
+            playlistPanel.classList.toggle('active',isPlaylistMode);
+            if(isPlaylistMode){loadPublicPlaylists(true);return;}
+            if(mode==='add'){
+                selectGroup.style.display='none';
+                submitBtn.innerText=t("saveNewSong");
                 resetAdminForm();
-            } else {
-                selectGroup.style.display = 'block';
-                submitBtn.innerText = "Actualizar Canción";
+                loadPublicPlaylists(true);
+            }else{
+                selectGroup.style.display='block';
+                submitBtn.innerText=t("updateSong");
                 populateEditSelect();
+                loadPublicPlaylists(true);
             }
         }
 
         function populateEditSelect() {
             const select = document.getElementById('edit-song-select');
-            select.innerHTML = '<option value="">-- Elige un tema a modificar --</option>';
+            select.innerHTML = `<option value="">${escapeHtml(t('chooseTrackEdit'))}</option>`;
             songsCache.forEach(song => {
                 const opt = document.createElement('option');
                 opt.value = song.id;
@@ -1106,6 +2006,10 @@
 
             document.getElementById('edit-song-id').value = song.id;
             document.getElementById('song-title').value = song.title;
+            document.getElementById('song-artist-input').value = song.artist || 'AndaluzRock';
+            document.getElementById('song-country-input').value = song.country || '';
+            document.getElementById('song-description-input').value = song.description || '';
+            document.getElementById('song-lyrics-input').value = song.lyrics || '';
             
             const parts = (song.genre || '').split(' - ');
             if (parts.length === 2) {
@@ -1114,40 +2018,77 @@
             }
 
             document.getElementById('song-cover').value = song.cover_url || '';
-            document.getElementById('song-audio').value = song.audio_url || '';
+            const existingUrl = song.audio_url || '';
+            const isExistingSuno = !!getSunoSongId(existingUrl);
+            document.getElementById('song-suno-url').value = isExistingSuno ? existingUrl : '';
+            document.getElementById('song-mp3-url').value = isExistingSuno ? '' : existingUrl;
         }
 
         function resetAdminForm() {
             document.getElementById('add-song-form').reset();
             document.getElementById('edit-song-id').value = '';
+            const playlistSelect=document.getElementById('song-public-playlist');
+            if(playlistSelect) playlistSelect.value='';
+            const quickName=document.getElementById('quick-public-playlist-name');
+            if(quickName) quickName.value='';
         }
 
         async function saveSong(event) {
             event.preventDefault();
+            if (!isChatAdmin) { alert(interfaceLanguage==='en'?'Administrator permissions are required.':interfaceLanguage==='tr'?'Yönetici izni gerekiyor.':'Necesitas permisos de administrador.'); return; }
             
             const lang = document.getElementById('song-lang-input').value;
             const style = document.getElementById('song-style-input').value;
+            const sunoUrl = document.getElementById('song-suno-url').value.trim();
+            const mp3Url = document.getElementById('song-mp3-url').value.trim();
+            if (!!sunoUrl === !!mp3Url) { alert('Fill in exactly one field: the Suno browser address OR the public MP3 link.'); return; }
+            const audioUrl = sunoUrl || mp3Url;
+            let parsedAudioUrl;
+            try { parsedAudioUrl = new URL(audioUrl); } catch (_) { alert('Enter a valid song URL.'); return; }
+            const isSunoUrl = /^(?:www\.)?suno\.com$/i.test(parsedAudioUrl.hostname) && /^\/(?:s|song|embed)\/[A-Za-z0-9-]+(?:\/[^?#]*)?\/?$/i.test(parsedAudioUrl.pathname);
+            let decodedPath=''; try { decodedPath=decodeURIComponent(parsedAudioUrl.pathname); } catch (_) { alert('The song URL contains invalid encoding.'); return; }
+            const isDirectMp3 = /^https?:$/.test(parsedAudioUrl.protocol) && /\.mp3$/i.test(decodedPath);
+            if (parsedAudioUrl.protocol !== 'https:' || (sunoUrl ? !isSunoUrl : !isDirectMp3)) { alert(sunoUrl ? 'Use the Suno song address copied from your browser address bar.' : 'Use a public direct HTTPS MP3 link ending in .mp3.'); return; }
 
             const songData = {
                 title: document.getElementById('song-title').value,
+                artist: document.getElementById('song-artist-input').value.trim() || 'AndaluzRock',
+                country: document.getElementById('song-country-input').value.trim(),
+                description: document.getElementById('song-description-input').value.trim(),
+                lyrics: document.getElementById('song-lyrics-input').value.trim(),
                 genre: `${lang} - ${style}`,
                 cover_url: document.getElementById('song-cover').value,
-                audio_url: document.getElementById('song-audio').value
+                audio_url: audioUrl
             };
 
+            let savedSongId=null;
             if (adminMode === 'add') {
                 songData.likes = 0;
                 songData.views = 0;
-                const { error } = await supabaseClient.from('songs').insert([songData]);
+                const { data: insertedSong, error } = await chatSupabaseClient.from('songs').insert([songData]).select('id').single();
                 if (error) { alert("Error al guardar: " + error.message); return; }
-                alert("¡Canción añadida con éxito!");
+                savedSongId=insertedSong.id;
+                const playlistId=document.getElementById('song-public-playlist').value;
+                if(playlistId){
+                    const {error:linkError}=await chatSupabaseClient.from('andaluzrock_public_playlist_songs').insert({playlist_id:Number(playlistId),song_id:savedSongId});
+                    if(linkError && linkError.code!=='23505'){
+                        alert('La canción se guardó en el catálogo, pero Supabase rechazó añadirla a la playlist. Código: '+(linkError.code||'sin código')+' · '+linkError.message+'\n\nNo cierres este mensaje sin copiar el error.');
+                        return;
+                    }
+                }
+                alert(playlistId?'Canción guardada y añadida a la playlist.':t("songAdded"));
             } else {
                 const editId = parseInt(document.getElementById('edit-song-id').value);
-                if (!editId) { alert("Selecciona una canción de la lista para editar."); return; }
+                if (!editId) { alert(t("selectTrackEdit")); return; }
 
-                const { error } = await supabaseClient.from('songs').update(songData).eq('id', editId);
+                const { error } = await chatSupabaseClient.from('songs').update(songData).eq('id', editId);
                 if (error) { alert("Error al actualizar: " + error.message); return; }
-                alert("¡Canción actualizada con éxito!");
+                const playlistId=document.getElementById('song-public-playlist').value;
+                if(playlistId){
+                    const {error:linkError}=await chatSupabaseClient.from('andaluzrock_public_playlist_songs').insert({playlist_id:Number(playlistId),song_id:editId});
+                    if(linkError && linkError.code!=='23505'){alert('La canción se actualizó, pero no se pudo añadir a la playlist: '+linkError.message);return;}
+                }
+                alert(t("songUpdated"));
             }
 
             resetAdminForm();
@@ -1156,12 +2097,293 @@
         }
 
         async function deleteSong(id) {
-            if (confirm("¿Seguro que deseas eliminar esta canción?")) {
-                const { error } = await supabaseClient.from('songs').delete().eq('id', id);
+            if (!isChatAdmin) { alert(interfaceLanguage==='en'?'Administrator permissions are required.':interfaceLanguage==='tr'?'Yönetici izni gerekiyor.':'Necesitas permisos de administrador.'); return; }
+            if (confirm(t("deleteConfirm"))) {
+                const { error } = await chatSupabaseClient.from('songs').delete().eq('id', id);
                 if (error) { alert("Error: " + error.message); return; }
-                fetchSongsFromCloud();
+            fetchSongsFromCloud();
             }
         }
+
+        // PLAYLISTS PÚBLICAS: lectura para visitantes; escritura validada por RLS y is_chat_admin().
+        async function loadPublicPlaylists(forAdmin=false){
+            const {data,error}=await chatSupabaseClient.from('andaluzrock_public_playlists')
+                .select('id,name,description,is_published,created_at')
+                .order('created_at',{ascending:false});
+            if(error){
+                console.error('Public playlists:',error);
+                const msg='Las playlists públicas aún no están configuradas. Ejecuta el SQL de AndaluzRock para playlists públicas en Supabase.';
+                const publicRoot=document.getElementById('public-playlists-list');
+                if(publicRoot) publicRoot.innerHTML=`<p class="playlist-note">${escapeHtml(msg)}</p>`;
+                const adminRoot=document.getElementById('admin-public-playlists-list');
+                if(adminRoot) adminRoot.innerHTML=`<p class="playlist-note">${escapeHtml(msg)}</p>`;
+                return;
+            }
+            cachedPublicPlaylists=data||[];
+            renderPublicPlaylists();
+            renderAdminPublicPlaylists();
+            populatePublicPlaylistSelect();
+        }
+        function renderPublicPlaylists(){
+            populatePublicPlaylistDropdown();
+        }
+        function populatePublicPlaylistDropdown(){
+            const select=document.getElementById('public-playlists-dropdown');if(!select)return;
+            const current=select.value;
+            const visible=cachedPublicPlaylists.filter(p=>p.is_published||isChatAdmin);
+            select.innerHTML='<option value="">🎵 Playlists ▼</option>'+visible.map(p=>`<option value="${Number(p.id)}">${escapeHtml(p.name)}</option>`).join('');
+            if(visible.some(p=>String(p.id)===String(current)))select.value=current;
+        }
+        function handlePublicPlaylistSelect(id){
+            if(!id)return;
+            playPublicPlaylist(Number(id));
+        }
+        function renderAdminPublicPlaylists(){
+            const root=document.getElementById('admin-public-playlists-list');if(!root)return;
+            if(!isChatAdmin){root.innerHTML='<p class="playlist-note">Solo el administrador puede gestionar playlists.</p>';return;}
+            if(!cachedPublicPlaylists.length){root.innerHTML='<p class="playlist-note">Aún no has creado playlists.</p>';return;}
+            root.innerHTML=cachedPublicPlaylists.map(p=>`<div class="admin-playlist-row"><div><strong>${escapeHtml(p.name)}</strong><div class="playlist-note">${p.is_published?'Publicada':'Borrador'}${p.description?' · '+escapeHtml(p.description):''}</div></div><div class="admin-playlist-actions"><button class="share-btn" onclick="togglePublicPlaylistPublish(${Number(p.id)},${!p.is_published})">${p.is_published?'Ocultar':'Publicar'}</button><button class="share-btn" onclick="renamePublicPlaylist(${Number(p.id)})">Renombrar</button><button class="share-btn" onclick="managePublicPlaylistSongs(${Number(p.id)})">Canciones</button><button class="share-btn" onclick="deletePublicPlaylist(${Number(p.id)})">Eliminar</button></div></div>`).join('');
+        }
+        function populatePublicPlaylistSelect(){
+            const select=document.getElementById('song-public-playlist');if(!select)return;
+            const current=select.value;
+            select.innerHTML='<option value="">No añadir a ninguna playlist</option>'+cachedPublicPlaylists.map(p=>`<option value="${Number(p.id)}">${escapeHtml(p.name)}${p.is_published?'':' (Borrador)'}</option>`).join('');
+            if([...select.options].some(o=>o.value===current))select.value=current;
+        }
+        async function savePublicPlaylist(event){
+            event.preventDefault();if(!isChatAdmin){alert('Se requieren permisos de administrador.');return;}
+            const name=document.getElementById('public-playlist-name').value.trim();
+            const description=document.getElementById('public-playlist-description').value.trim();
+            if(!name)return;
+            const {error}=await chatSupabaseClient.from('andaluzrock_public_playlists').insert({name:name.slice(0,80),description:description.slice(0,180),is_published:document.getElementById('public-playlist-published').checked});
+            if(error){alert('No se pudo crear la playlist: '+error.message);return;}
+            document.getElementById('admin-public-playlist-form').reset();
+            await loadPublicPlaylists(true);
+            alert('Playlist pública creada.');
+        }
+        async function quickCreatePublicPlaylist(){
+            if(!isChatAdmin)return;
+            const input=document.getElementById('quick-public-playlist-name');
+            const name=input.value.trim();if(!name){alert('Escribe el nombre de la nueva playlist.');input.focus();return;}
+            const {data,error}=await chatSupabaseClient.from('andaluzrock_public_playlists').insert({name:name.slice(0,80),description:'',is_published:true}).select('id,name,is_published').single();
+            if(error){alert('No se pudo crear la playlist: '+error.message);return;}
+            await loadPublicPlaylists();
+            document.getElementById('song-public-playlist').value=String(data.id);
+            input.value='';
+            alert('Playlist creada y seleccionada. La canción se añadirá al guardarla.');
+        }
+        async function togglePublicPlaylistPublish(id,published){
+            if(!isChatAdmin)return;
+            const {error}=await chatSupabaseClient.from('andaluzrock_public_playlists').update({is_published:published}).eq('id',id);
+            if(error){alert('No se pudo actualizar: '+error.message);return;}await loadPublicPlaylists(true);
+        }
+        async function renamePublicPlaylist(id){
+            if(!isChatAdmin)return;
+            const p=cachedPublicPlaylists.find(x=>Number(x.id)===Number(id));if(!p)return;
+            const name=prompt('Nuevo nombre de la playlist:',p.name);if(!name||!name.trim())return;
+            const {error}=await chatSupabaseClient.from('andaluzrock_public_playlists').update({name:name.trim().slice(0,80)}).eq('id',id);
+            if(error){alert('No se pudo renombrar: '+error.message);return;}await loadPublicPlaylists(true);
+        }
+        async function deletePublicPlaylist(id){
+            if(!isChatAdmin||!confirm('¿Eliminar esta playlist pública y su lista de canciones?'))return;
+            const {error}=await chatSupabaseClient.from('andaluzrock_public_playlists').delete().eq('id',id);
+            if(error){alert('No se pudo eliminar: '+error.message);return;}
+            if(Number(currentPublicPlaylistId)===Number(id)){
+                currentPublicPlaylistId=null;
+                const view=document.getElementById('public-playlist-songs-view');if(view)view.hidden=true;
+                const dropdown=document.getElementById('public-playlists-dropdown');if(dropdown)dropdown.value='';
+                activePlaylistSongIds=null;
+            }
+            await loadPublicPlaylists(true);
+        }
+        async function managePublicPlaylistSongs(id){
+            if(!isChatAdmin)return;
+            const p=cachedPublicPlaylists.find(x=>Number(x.id)===Number(id));if(!p)return;
+            const {data,error}=await chatSupabaseClient.from('andaluzrock_public_playlist_songs').select('song_id,added_at').eq('playlist_id',id).order('added_at',{ascending:true});
+            if(error){alert('No se pudo abrir la playlist: '+error.message);return;}
+            const rows=(data||[]).map(item=>{const song=songsCache.find(x=>String(x.id)===String(item.song_id));return song?`<div class="playlist-song-row"><span>${escapeHtml(song.title)} — ${escapeHtml(song.artist||'AndaluzRock')}</span><button class="share-btn" onclick="removeSongFromPublicPlaylist(${Number(id)},${Number(song.id)})">Quitar</button></div>`:''}).join('');
+            const view=document.getElementById('public-playlist-songs-view');view.hidden=false;
+            view.innerHTML=`<h3>${escapeHtml(p.name)}</h3>${rows||'<p class="playlist-note">Esta playlist está vacía.</p>'}`;
+            view.scrollIntoView({behavior:'smooth',block:'nearest'});
+        }
+        async function removeSongFromPublicPlaylist(playlistId,songId){
+            if(!isChatAdmin)return;
+            const {error}=await chatSupabaseClient.from('andaluzrock_public_playlist_songs').delete().eq('playlist_id',playlistId).eq('song_id',songId);
+            if(error){alert('No se pudo quitar la canción: '+error.message);return;}await managePublicPlaylistSongs(playlistId);
+        }
+        async function playPublicPlaylist(id){
+            const p=cachedPublicPlaylists.find(x=>Number(x.id)===Number(id));
+            if(!p||(!p.is_published&&!isChatAdmin))return;
+            const {data,error}=await chatSupabaseClient.from('andaluzrock_public_playlist_songs').select('song_id,added_at').eq('playlist_id',id).order('added_at',{ascending:true});
+            if(error){alert('No se pudo reproducir la playlist: '+error.message);return;}
+            activePlaylistSongIds=(data||[]).map(x=>String(x.song_id)).filter(songId=>songsCache.some(song=>String(song.id)===songId));
+            if(!activePlaylistSongIds.length){
+                alert('Esta playlist todavía no contiene canciones.');
+                activePlaylistSongIds=null;
+                const playlistDropdown=document.getElementById('public-playlists-dropdown');
+                if(playlistDropdown)playlistDropdown.value='';
+                return;
+            }
+            currentPublicPlaylistId=id;
+            const playlistDropdown=document.getElementById('public-playlists-dropdown');
+            if(playlistDropdown)playlistDropdown.value=String(id);
+            const view=document.getElementById('public-playlist-songs-view');
+            view.hidden=false;view.innerHTML=`<h3>${escapeHtml(p.name)}</h3><p class="playlist-note">${activePlaylistSongIds.length} canciones</p>`;
+            renderApp();loadSongToPlayer(0,true);
+        }
+
+        // CUENTAS: el chat y la cuenta comparten el cliente Auth para que el ID
+        // autenticado sea también el que Supabase comprueba en las políticas RLS.
+        function openAccountModal(){
+            document.getElementById('account-modal').style.display='flex';
+            setAccountMode('login');
+            updateAccountButton();
+        }
+        function setAccountMode(mode){
+            accountAuthMode=mode;
+            document.getElementById('account-auth-form').hidden=false;
+            document.getElementById('account-password-change-form').hidden=true;
+            document.getElementById('account-confirm-group').hidden=mode!=='register';
+            document.getElementById('account-password').autocomplete=mode==='register'?'new-password':'current-password';
+            document.getElementById('account-submit-btn').textContent=mode==='register'?'Create account':'Sign in';
+            document.getElementById('account-status-note').textContent=mode==='register'?'Create an account with your email and a password of at least 8 characters. Email confirmation may be required.':'Sign in to manage your private playlists. Listening to AndaluzRock remains public.';
+        }
+        async function updateAccountButton(user=null){
+            try{if(!user){const {data}=await chatSupabaseClient.auth.getSession();user=data.session?.user||null;}
+                const permanent=!!user&&!user.is_anonymous;
+                document.getElementById('account-button-label').textContent=permanent?(user.email||'My account'):'Account';
+                document.getElementById('account-signout-btn').hidden=!permanent;
+                document.getElementById('my-playlists-panel').hidden=!permanent;
+                if(permanent) await loadMyPlaylists(); else {cachedMyPlaylists=[];document.getElementById('my-playlists-list').innerHTML='';}
+            }catch(e){console.warn('Account UI:',e);}
+        }
+        async function submitAccountAuth(event){
+            event.preventDefault();
+            const email=document.getElementById('account-email').value.trim();
+            const password=document.getElementById('account-password').value;
+            if(password.length<8){alert('Use a password with at least 8 characters.');return;}
+            const button=document.getElementById('account-submit-btn');button.disabled=true;
+            try{
+                if(accountAuthMode==='register'){
+                    const confirm=document.getElementById('account-confirm-password').value;
+                    if(password!==confirm){alert('The passwords do not match.');return;}
+                    const {data:{session}}=await chatSupabaseClient.auth.getSession();
+                    if(session?.user?.is_anonymous){
+                        const {error}=await chatSupabaseClient.auth.updateUser({email});
+                        if(error)throw error;
+                        document.getElementById('account-status-note').textContent='We sent a confirmation email. Confirm your email address, return to AndaluzRock, then choose “Change password” to set your password. Your existing chat identity is preserved.';
+                        document.getElementById('account-password-change-form').hidden=true;
+                        document.getElementById('account-auth-form').hidden=false;
+                    }else{
+                        const {data,error}=await chatSupabaseClient.auth.signUp({email,password,options:{emailRedirectTo:window.location.origin+window.location.pathname}});
+                        if(error)throw error;
+                        document.getElementById('account-status-note').textContent=data.session?'Account created. You are signed in.':'Account created. Check your email to confirm it, then return here and sign in.';
+                        if(data.session){chatUser=data.user;updateAccountButton(data.user);setTimeout(()=>window.location.reload(),700);}
+                    }
+                }else{
+                    const {data,error}=await chatSupabaseClient.auth.signInWithPassword({email,password});
+                    if(error)throw error;
+                    chatUser=data.user;await updateAccountButton(data.user);window.location.reload();
+                }
+            }catch(error){console.error(error);alert('Account error: '+(error.message||'Please try again.'));}
+            finally{button.disabled=false;}
+        }
+        async function requestPasswordReset(){
+            const email=document.getElementById('account-email').value.trim();
+            if(!email){alert('Enter your account email first.');document.getElementById('account-email').focus();return;}
+            const {error}=await chatSupabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+            if(error){alert('Could not send the recovery email: '+error.message);return;}
+            document.getElementById('account-status-note').textContent='If an account exists for this email, a password recovery link has been sent. Check your inbox.';
+        }
+        function showPasswordChange(){
+            document.getElementById('account-password-change-form').hidden=false;
+            document.getElementById('account-auth-form').hidden=true;
+            document.getElementById('account-status-note').textContent='You must be signed in to change your password. For a forgotten password, use Forgot password.';
+        }
+        async function changeAccountPassword(event){
+            event.preventDefault();
+            const a=document.getElementById('account-new-password').value,b=document.getElementById('account-new-password-confirm').value;
+            if(a.length<8||a!==b){alert('Passwords must match and contain at least 8 characters.');return;}
+            const {data:{session}}=await chatSupabaseClient.auth.getSession();
+            if(!session){alert('Sign in or use Forgot password first.');return;}
+            const {error}=await chatSupabaseClient.auth.updateUser({password:a});
+            if(error){alert('Could not update password: '+error.message);return;}
+            document.getElementById('account-status-note').textContent='Your password has been updated.';
+            document.getElementById('account-password-change-form').reset();
+            document.getElementById('account-password-change-form').hidden=true;
+            document.getElementById('account-auth-form').hidden=false;
+        }
+        async function signOutAccount(){
+            const {error}=await chatSupabaseClient.auth.signOut();
+            if(error){alert('Could not sign out: '+error.message);return;}
+            window.location.reload();
+        }
+        async function requirePermanentAccount(){
+            const {data:{session}}=await chatSupabaseClient.auth.getSession();
+            if(!session||session.user.is_anonymous){alert('Create an account or sign in to use private playlists.');openAccountModal();return null;}
+            return session.user;
+        }
+        async function loadMyPlaylists(){
+            const user=await requirePermanentAccount();if(!user)return;
+            const {data,error}=await chatSupabaseClient.from('andaluzrock_playlists').select('id,name,created_at').eq('user_id',user.id).order('created_at',{ascending:false});
+            if(error){console.error('Playlists:',error);document.getElementById('my-playlists-list').innerHTML='<p class="playlist-note">Playlists are not configured yet. The administrator must run the AndaluzRock security SQL script in Supabase.</p>';return;}
+            cachedMyPlaylists=data||[];renderMyPlaylists();
+        }
+        function renderMyPlaylists(){
+            const root=document.getElementById('my-playlists-list');if(!root)return;
+            if(!cachedMyPlaylists.length){root.innerHTML='<p class="playlist-note">You have no playlists yet. Create your first one.</p>';return;}
+            root.innerHTML=cachedMyPlaylists.map(p=>`<div class="playlist-item"><div class="playlist-item-head"><strong>${escapeHtml(p.name)}</strong><span class="playlist-note">Private</span></div><div class="playlist-item-actions"><button class="load-to-player-btn" onclick="openPlaylist(${Number(p.id)})">Open</button><button class="share-btn" onclick="playPlaylist(${Number(p.id)})">Play playlist</button><button class="share-btn" onclick="renameMyPlaylist(${Number(p.id)})">Rename</button><button class="share-btn" onclick="deleteMyPlaylist(${Number(p.id)})">Delete</button></div></div>`).join('');
+        }
+        async function createMyPlaylist(){
+            const user=await requirePermanentAccount();if(!user)return;
+            const name=prompt('Name your playlist:');if(!name||!name.trim())return;
+            const {error}=await chatSupabaseClient.from('andaluzrock_playlists').insert({user_id:user.id,name:name.trim().slice(0,80)});
+            if(error){alert('Could not create playlist: '+error.message);return;}await loadMyPlaylists();
+        }
+        async function renameMyPlaylist(id){
+            const p=cachedMyPlaylists.find(x=>Number(x.id)===Number(id));if(!p)return;
+            const name=prompt('New playlist name:',p.name);if(!name||!name.trim())return;
+            const {error}=await chatSupabaseClient.from('andaluzrock_playlists').update({name:name.trim().slice(0,80)}).eq('id',id);
+            if(error){alert('Could not rename playlist: '+error.message);return;}await loadMyPlaylists();
+        }
+        async function deleteMyPlaylist(id){
+            if(!confirm('Delete this playlist and its saved song list?'))return;
+            const {error}=await chatSupabaseClient.from('andaluzrock_playlists').delete().eq('id',id);
+            if(error){alert('Could not delete playlist: '+error.message);return;}
+            if(Number(currentPlaylistId)===Number(id)){currentPlaylistId=null;document.getElementById('playlist-songs-view').hidden=true;}
+            await loadMyPlaylists();
+        }
+        async function addSongToMyPlaylist(songId){
+            const user=await requirePermanentAccount();if(!user)return;
+            if(!cachedMyPlaylists.length) await loadMyPlaylists();
+            if(!cachedMyPlaylists.length){if(confirm('You do not have a playlist yet. Create one now?'))await createMyPlaylist();if(!cachedMyPlaylists.length)return;}
+            let chosen=cachedMyPlaylists[0];
+            if(cachedMyPlaylists.length>1){const menu=cachedMyPlaylists.map((p,i)=>`${i+1}. ${p.name}`).join('\n');const answer=prompt('Choose a playlist number:\n'+menu,'1');const n=Number(answer);if(!Number.isInteger(n)||n<1||n>cachedMyPlaylists.length)return;chosen=cachedMyPlaylists[n-1];}
+            const {error}=await chatSupabaseClient.from('andaluzrock_playlist_songs').insert({playlist_id:chosen.id,song_id:songId});
+            if(error){if(error.code==='23505'){alert('This song is already in that playlist.');return;}alert('Could not add song: '+error.message);return;}
+            alert('Song added to '+chosen.name+'.');
+        }
+        async function openPlaylist(id){
+            const p=cachedMyPlaylists.find(x=>Number(x.id)===Number(id));if(!p)return;
+            const {data,error}=await chatSupabaseClient.from('andaluzrock_playlist_songs').select('id,song_id,added_at').eq('playlist_id',id).order('added_at',{ascending:true});
+            if(error){alert('Could not open playlist: '+error.message);return;}
+            currentPlaylistId=id;const view=document.getElementById('playlist-songs-view');view.hidden=false;
+            const rows=(data||[]).map(item=>{const song=songsCache.find(x=>String(x.id)===String(item.song_id));return song?`<div class="playlist-song-row"><span>${escapeHtml(song.title)} — ${escapeHtml(song.artist||'AndaluzRock')}</span><button class="share-btn" onclick="removeSongFromPlaylist(${Number(id)},${Number(song.id)})">Remove</button></div>`:''}).join('');
+            view.innerHTML=`<h3>${escapeHtml(p.name)}</h3>${rows||'<p class="playlist-note">This playlist is empty.</p>'}`;
+            document.getElementById('exit-playlist-btn').hidden=false;
+        }
+        async function removeSongFromPlaylist(playlistId,songId){
+            const {error}=await chatSupabaseClient.from('andaluzrock_playlist_songs').delete().eq('playlist_id',playlistId).eq('song_id',songId);
+            if(error){alert('Could not remove song: '+error.message);return;}await openPlaylist(playlistId);
+        }
+        async function playPlaylist(id){
+            const {data,error}=await chatSupabaseClient.from('andaluzrock_playlist_songs').select('song_id,added_at').eq('playlist_id',id).order('added_at',{ascending:true});
+            if(error){alert('Could not play playlist: '+error.message);return;}
+            activePlaylistSongIds=(data||[]).map(x=>String(x.song_id)).filter(id=>songsCache.some(s=>String(s.id)===id));
+            if(!activePlaylistSongIds.length){alert('This playlist has no available songs.');activePlaylistSongIds=null;return;}
+            document.getElementById('exit-playlist-btn').hidden=false;renderApp();loadSongToPlayer(0,true);
+        }
+        function exitPlaylistPlayback(){activePlaylistSongIds=null;currentPlaylistId=null;document.getElementById('exit-playlist-btn').hidden=true;document.getElementById('playlist-songs-view').hidden=true;renderApp();}
 
         // REGISTRO DE SERVICE WORKER PARA PWA
         if ('serviceWorker' in navigator) {
@@ -1169,8 +2391,14 @@
                 .then(() => console.log('Service Worker registrado correctamente'))
                 .catch((err) => console.log('Fallo al registrar el Service Worker', err));
         }
-
-        fetchSongsFromCloud();
+            document.getElementById('ui-language-selector').value = interfaceLanguage;
+            document.documentElement.lang = interfaceLanguage;
+            document.documentElement.dir = interfaceLanguage === 'ar' ? 'rtl' : 'ltr';
+            applyInterfaceLanguage();
+            applyExtraUiLanguage();
+            applyLegalLanguage();
+            fetchSongsFromCloud();
+            initLiveChat();
     </script>
 </body>
 </html>
