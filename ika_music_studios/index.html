@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IKA Music Studios — Music Library</title>
+  <meta name="description" content="Discover albums and playlists from IKA Music Studios.">
+  <meta name="application-name" content="IKA Music Studios">
+  <meta name="theme-color" content="#05060a">
+  <link rel="canonical" href="https://ikamusic.site/">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand-mark">IKA<span> MUSIC</span></div>
+    <p class="eyebrow">MUSIC STUDIOS</p>
+    <p class="intro">Explore music. Discover albums. Build your soundtrack.</p>
+    <div class="header-tools">
+      <label class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input id="search" type="search" placeholder="Search albums and playlists…" autocomplete="off"></label>
+    </div>
+    <nav class="main-nav" aria-label="Music library sections">
+      <button class="nav-tab active" data-target="albums-section"><i class="fa-solid fa-compact-disc"></i> Albums</button>
+      <button class="nav-tab" data-target="playlists-section"><i class="fa-solid fa-list-music"></i> Playlists</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="library-section active" id="albums-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">THE COLLECTION</p><h1>Albums</h1><p class="section-subtitle">Full releases and musical projects.</p></div>
+        <div class="view-switch" role="group" aria-label="Album display">
+          <button class="view-btn active" data-view="grid" data-kind="albums" aria-label="Albums as cards"><i class="fa-solid fa-grip"></i></button>
+          <button class="view-btn" data-view="list" data-kind="albums" aria-label="Albums as list"><i class="fa-solid fa-list"></i></button>
+        </div>
+      </div>
+      <div class="collection-grid" id="albums-grid"></div>
+      <p class="empty-state" id="albums-empty" hidden>No albums match your search.</p>
+    </section>
+
+    <section class="library-section" id="playlists-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">CURATED MUSIC</p><h1>Playlists</h1><p class="section-subtitle">Collections selected for every mood.</p></div>
+        <div class="view-switch" role="group" aria-label="Playlist display">
+          <button class="view-btn active" data-view="grid" data-kind="playlists" aria-label="Playlists as cards"><i class="fa-solid fa-grip"></i></button>
+          <button class="view-btn" data-view="list" data-kind="playlists" aria-label="Playlists as list"><i class="fa-solid fa-list"></i></button>
+        </div>
+      </div>
+      <div class="collection-grid" id="playlists-grid"></div>
+      <p class="empty-state" id="playlists-empty" hidden>No playlists match your search.</p>
+    </section>
+  </main>
+
+  <footer><span>IKA MUSIC STUDIOS</span><span>Music connects us.</span></footer>
+  <script src="catalog.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
